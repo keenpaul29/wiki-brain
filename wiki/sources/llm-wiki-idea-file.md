@@ -1,7 +1,7 @@
 ---
 title: LLM Wiki Idea File
 type: source
-source_path: "C:\\Users\\giftlaya\\Downloads\\442a6bf555914893e9891c11519de94f-ac46de1ad27f92b28ac95459c782c07f6b8c964a\\llm-wiki.md"
+source_path: "llm-wiki.md"
 created: 2026-04-28
 tags:
   - source
@@ -21,7 +21,11 @@ The architecture has three layers:
 - Wiki: LLM-written markdown pages with summaries, concept pages, synthesis, index, and log.
 - Schema: operating instructions that tell the LLM how to maintain the wiki consistently.
 
-The source proposes three recurring operations: ingest new material, query the wiki for grounded answers, and lint the wiki for contradictions, stale claims, or missing links.
+The source proposes three recurring operations: ingest new material, query the wiki for grounded answers, and lint the wiki for contradictions, stale claims, orphan pages, missing links, and data gaps.
+
+The human role is curation and direction: choose sources, ask good questions, inspect the results, and decide what matters. The LLM role is maintenance: summarize, cross-reference, update pages, note contradictions, and keep the index and log current. Obsidian is framed as the IDE, the LLM as the programmer, and the wiki as the codebase.
+
+The pattern is intentionally broad. It can support personal reflection, research projects, book notes, business/team knowledge, competitive analysis, due diligence, trip planning, course notes, or hobby deep dives. The common denominator is accumulating knowledge over time and wanting organized synthesis instead of scattered chat history.
 
 ## Key Ideas
 
@@ -30,6 +34,16 @@ The source proposes three recurring operations: ingest new material, query the w
 - `index.md` is content-oriented; `log.md` is chronological.
 - Good answers to questions should often become new wiki pages.
 - Obsidian can act as the viewing and navigation environment while the LLM acts as the maintainer.
+- Query outputs can be markdown pages, comparison tables, slide decks, charts, canvases, or other durable artifacts when the question deserves them.
+- Optional tools can improve the workflow as the wiki grows: markdown search, Obsidian Web Clipper, local image downloads, graph view, Marp, Dataview, and git history.
+- The schema should evolve with the wiki so repeated preferences become durable maintenance rules.
+
+## Practical Notes
+
+- The index can remain enough at moderate scale, but larger wikis may need dedicated markdown search such as local BM25/vector tooling.
+- Images clipped from the web should be downloaded locally when they matter, because remote URLs are brittle and images may need separate LLM inspection.
+- Frontmatter makes the wiki more queryable with tools like Dataview.
+- The log should use consistent headings so recent activity is easy to parse.
 
 ## Links
 

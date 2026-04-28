@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "raw/Self-Evolving Hooks.md",
+                "file": "llm-wiki.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Self-Evolving Hooks"
+              "title": "llm-wiki"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "raw/Self-Evolving Hooks.md",
+                "file": "llm-wiki.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Self-Evolving Hooks"
+              "title": "Backlinks for llm-wiki"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "raw/Self-Evolving Hooks.md",
+                "file": "llm-wiki.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Self-Evolving Hooks"
+              "title": "Outgoing links from llm-wiki"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "raw/Self-Evolving Hooks.md",
+                "file": "llm-wiki.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Self-Evolving Hooks"
+              "title": "Outline of llm-wiki"
             }
           }
         ]
@@ -185,42 +185,42 @@
   },
   "active": "100cb724e755975f",
   "lastOpenFiles": [
-    "README.md",
-    "wiki/_state/raw-manifest.json",
-    "wiki/concepts/self-improving-agent-workflows.md",
-    "wiki/sources/self-evolving-hooks.md",
-    "wiki/_state/daily-scan.md",
-    "wiki/_state",
-    "AGENTS.md",
-    "wiki/automation.md",
-    "scripts/update-wiki-state.ps1",
-    "scripts",
-    "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.  by Prakash Sharma.md",
-    "raw/Self-Evolving Hooks.md",
-    "wiki/concepts/system-design-case-studies.md",
-    "wiki/concepts/reliability-and-operations.md",
-    "wiki/concepts/communication-and-architecture-patterns.md",
-    "wiki/concepts/data-storage-and-consistency.md",
-    "wiki/concepts/infrastructure-primitives.md",
-    "wiki/concepts/system-design-interview-workflow.md",
-    "wiki/maintenance.md",
+    "scripts/lint-wiki.ps1",
+    "raw/Microservices vs. Monoliths When to Choose What (and Why It Matters).md",
+    "llm-wiki.md",
+    "scripts/check-wiki-links.ps1",
+    "wiki/sources/stop-feeding-me-ai-slop.md",
+    "wiki/sources/agent-skills-real-engineers.md",
+    "wiki/sources/microservices-vs-monoliths.md",
+    "wiki/sources/gpt-5-5-agents-replaced-python-backend.md",
+    "raw/Stop Feeding Me AI Slop.md",
+    "Index.base",
+    "raw/Skills for Real Engineers. Straight from my .claude directory.md",
     "wiki/synthesis/software-engineering-learning-os.md",
-    "wiki/concepts/recurrent-depth-transformers.md",
-    "wiki/concepts/system-design.md",
-    "wiki/concepts/structured-learning-and-retention.md",
+    "wiki/index.md",
+    "raw/GPT-5.5 Agents Replaced My Python Backend. 83% Cost Cut.  by inprogrammer.md",
+    "wiki/concepts/data-storage-and-consistency.md",
+    "wiki/concepts/communication-and-architecture-patterns.md",
     "wiki/concepts/ai-era-software-engineering.md",
     "wiki/concepts/llm-maintained-wiki.md",
-    "wiki/sources/openmythos.md",
-    "wiki/sources/system-design-course.md",
-    "wiki/sources/retaining-cs-knowledge.md",
-    "wiki/sources/learn-from-course-content.md",
-    "wiki/sources/ai-replaced-80-percent-coding.md",
+    "wiki/concepts/recurrent-depth-transformers.md",
+    "wiki/concepts/system-design-interview-workflow.md",
+    "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.  by Prakash Sharma.md",
+    "wiki/maintenance.md",
+    "wiki/sources/self-evolving-hooks.md",
+    "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.md",
+    "raw/The technology behind Amazon’s GenAI-powered shopping assistant, Rufus.md",
+    "wiki/sources/amazon-rufus-technology.md",
+    "wiki/sources/google-stitch-design-md-claude-code.md",
+    "raw/How to Use Google Stitch's Design.md File with Claude Code for Consistent UI.md",
+    "wiki/_state/raw-manifest.json",
+    "wiki/_state",
+    "scripts/update-wiki-state.ps1",
+    "scripts",
     "wiki/synthesis",
     "wiki/concepts",
     "wiki/sources",
     "Untitled.canvas",
-    "Clippings",
-    "wiki",
-    "raw"
+    "Clippings"
   ]
 }

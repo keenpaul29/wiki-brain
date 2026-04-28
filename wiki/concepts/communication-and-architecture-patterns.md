@@ -42,9 +42,11 @@ Communication and architecture patterns shape how system components interact. Th
 
 Microservices are not a default upgrade. The source explicitly warns about distributed monoliths and notes that many systems do not need microservices until team, scale, or domain boundaries justify the operational cost.
 
+The microservices-vs-monoliths source reinforces the same rule from a team-and-operations angle: start simple when the system and organization are still small, then extract services only when independent scaling, deployment, ownership, or technology choices justify the added failure modes.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
 - Related: [[concepts/infrastructure-primitives|Infrastructure Primitives]]
 - Source: [[sources/system-design-course|System Design Course]]
-
+- Source: [[sources/microservices-vs-monoliths|Microservices vs. Monoliths]]

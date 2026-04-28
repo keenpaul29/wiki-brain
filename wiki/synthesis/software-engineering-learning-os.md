@@ -36,6 +36,16 @@ AI reduces the cost of producing code and summaries. That makes structure, verif
 
 [[sources/self-evolving-hooks|Self-Evolving Hooks]] adds the behavioral-learning layer: repeated user corrections can become durable agent rules. This complements the wiki pattern because both systems turn transient interaction into persistent structure.
 
+[[sources/google-stitch-design-md-claude-code|Google Stitch design.md + Claude Code]] adds a concrete example of the same principle applied to UI: put the design system in a versioned file the agent always reads, and reinforce it with configuration constraints so consistency survives multi-step generation.
+
+[[sources/amazon-rufus-technology|Technology Behind Amazon Rufus]] adds a production case study: shipping a GenAI assistant requires evidence grounding (RAG), feedback loops, and serious inference infrastructure work (latency, throughput, streaming UX). This is a reminder that "AI writes code" doesn't remove system design; it increases it.
+
+[[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]] adds a boundary-setting case study: agents can take over adaptable backend tasks, but deterministic security, mutation, payment, and compliance paths still need ordinary code and tests.
+
+[[sources/microservices-vs-monoliths|Microservices vs. Monoliths]] reinforces the architecture judgment theme: a simpler monolith is often correct until team size, domain boundaries, or scaling pressure justify distributed complexity.
+
+[[sources/agent-skills-real-engineers|Agent Skills for Real Engineers]] and [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]] add the collaboration layer. Effective AI work depends on alignment questions, shared language, durable decisions, and human distillation rather than generic generated prose.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:
@@ -65,3 +75,4 @@ The daily workflow is now documented in [[automation]]. A helper script scans `r
 - Which technical topics should get dedicated practice plans first: distributed systems, databases, networking, or LLM architecture?
 - Should the wiki include flash-card export pages for spaced repetition?
 - Should future ingests create one page per system design primitive, or keep primitives grouped until the wiki grows?
+- Should the wiki maintain a shared engineering language page, similar to a `CONTEXT.md`, for recurring project terms and decisions?

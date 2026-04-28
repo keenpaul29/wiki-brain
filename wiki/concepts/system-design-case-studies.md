@@ -61,6 +61,31 @@ Useful patterns:
 - Analytics and metrics.
 - High storage and bandwidth estimation.
 
+## GenAI Shopping Assistant
+
+Core problem: answer open-ended shopping questions with low latency, evidence grounding, and useful product-aware rendering at very large concurrency. The Rufus source frames this as a full production system: domain data preparation, custom LLM training, RAG over trusted shopping sources, feedback-driven improvement, accelerator-backed inference, continuous batching, and token-level streaming with response hydration.
+
+Useful patterns:
+
+- Domain-specialized model or adaptation.
+- RAG over source-specific evidence with relevance by question type.
+- Feedback loop for response-quality improvement.
+- Accelerator and compiler/runtime work for low-latency inference.
+- Continuous batching for high-throughput LLM serving.
+- Streaming responses plus structured markup for product-aware UX.
+
+## Agent-Backed Backend Slice
+
+Core problem: replace frequently changing backend behavior with agent workflows while preserving deterministic boundaries. The GPT-5.5 backend source frames a candidate slice around validation, recommendation, reporting, and scheduling, with traditional code retained for auth, writes, payments, and compliance.
+
+Useful patterns:
+
+- Run agents side-by-side with existing code before cutover.
+- Validate behavior with output suites rather than only implementation-level unit tests.
+- Log agent decisions and tool calls for observability.
+- Monitor token/API costs as part of system cost.
+- Keep critical security and mutation paths deterministic.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -68,4 +93,5 @@ Useful patterns:
 - Related: [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
 - Related: [[concepts/reliability-and-operations|Reliability and Operations]]
 - Source: [[sources/system-design-course|System Design Course]]
-
+- Source: [[sources/amazon-rufus-technology|Technology Behind Amazon Rufus]]
+- Source: [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]]

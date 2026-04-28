@@ -20,7 +20,7 @@ This page defines the automated daily workflow for keeping the wiki current.
 4. Update or create source pages under `wiki/sources/`.
 5. Update existing concept and synthesis pages before creating new pages.
 6. Update [[index]] and append a dated entry to [[log]].
-7. Run the wiki link check.
+7. Run the wiki link check and lint check.
 8. After successful ingest, run `powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1 -CommitState`.
 
 ## Ingest Rules
@@ -34,27 +34,20 @@ This page defines the automated daily workflow for keeping the wiki current.
 
 ## Link Check
 
-Use this PowerShell check after edits:
+Use this check after edits:
 
 ```powershell
-$root = (Resolve-Path 'wiki').Path
-$files = Get-ChildItem -Recurse -File wiki -Filter *.md
-$targets = @{}
-foreach ($f in $files) {
-  $rel = $f.FullName.Substring($root.Length + 1).Replace('\','/')
-  $targets[$rel -replace '\.md$',''] = $true
-  $targets[[IO.Path]::GetFileNameWithoutExtension($f.Name)] = $true
-}
-$missing = @()
-foreach ($f in $files) {
-  $text = Get-Content -Raw -LiteralPath $f.FullName
-  [regex]::Matches($text, '\[\[([^\]|]+)(?:\|[^\]]+)?\]\]') | ForEach-Object {
-    $target = $_.Groups[1].Value
-    if (-not $targets.ContainsKey($target)) {
-      $missing += "$($f.FullName.Substring($root.Length + 1)): $target"
-    }
-  }
-}
-if ($missing.Count) { $missing } else { 'All wiki links resolved by relative path or basename.' }
+powershell -ExecutionPolicy Bypass -File scripts/check-wiki-links.ps1
 ```
 
+The script validates Obsidian-style links by relative wiki path or basename and exits non-zero when missing links are found.
+
+## Lint Check
+
+Use this check after edits:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/lint-wiki.ps1
+```
+
+The script reports wiki pages with no inbound links (excluding index/log/workflow/state pages) and exits non-zero when orphan pages are found.

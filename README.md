@@ -38,9 +38,20 @@ If the report lists new or changed raw files, ask Codex to ingest them into `wik
 powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1 -CommitState
 ```
 
+Check wiki links after edits:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/check-wiki-links.ps1
+```
+
+Run the orphan-page lint check:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/lint-wiki.ps1
+```
+
 ## Daily Automation
 
 The Codex automation `daily-wiki-auto-update` runs every day at 9:00 AM local time.
 
 It scans `raw/`, updates `wiki/` when sources change, runs the wiki link check, and commits the raw manifest only after a successful ingest.
-

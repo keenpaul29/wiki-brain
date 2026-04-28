@@ -26,6 +26,7 @@ Reliability and operations convert an architecture from a diagram into a system 
 - Common rate-limit algorithms include leaky bucket, token bucket, fixed window, sliding log, and sliding window.
 - Circuit breakers stop repeated calls into failing dependencies and allow controlled recovery.
 - Backpressure prevents producers from overwhelming consumers.
+- Microservice boundaries turn local function calls into fallible network calls, so retries, timeouts, circuit breakers, and monitoring become part of the architecture rather than optional polish.
 
 ## Service Operations
 
@@ -34,6 +35,10 @@ Reliability and operations convert an architecture from a diagram into a system 
 - SLI: measured indicator used to judge whether the target is met.
 - Disaster recovery uses RTO and RPO to reason about recovery time and acceptable data loss.
 - Cold sites, hot sites, and backups represent different cost/recovery tradeoffs.
+
+## Agent Operations
+
+Agent-backed production paths need reliability controls that ordinary request handlers may not expose by default: decision logs, tool-call traces, output validation, fallback paths, latency distribution monitoring, and API cost tracking. Debugging shifts from stack traces alone toward reconstructing the agent's context, instructions, tools, and intermediate decisions.
 
 ## Security and Identity
 
@@ -47,4 +52,5 @@ Reliability and operations convert an architecture from a diagram into a system 
 - Parent concept: [[concepts/system-design|System Design]]
 - Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
 - Source: [[sources/system-design-course|System Design Course]]
-
+- Source: [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]]
+- Source: [[sources/microservices-vs-monoliths|Microservices vs. Monoliths]]

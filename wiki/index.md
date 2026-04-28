@@ -25,7 +25,7 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/data-storage-and-consistency|Data Storage and Consistency]] - Storage types, database families, replication, sharding, transactions, and consistency tradeoffs.
 - [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] - Monoliths, microservices, event-driven systems, queues, pub/sub, REST, GraphQL, gRPC, and realtime patterns.
 - [[concepts/reliability-and-operations|Reliability and Operations]] - Availability, fault tolerance, rate limiting, circuit breakers, SLOs, disaster recovery, and identity/security.
-- [[concepts/system-design-case-studies|System Design Case Studies]] - URL shortener, WhatsApp, Twitter, and Netflix design patterns.
+- [[concepts/system-design-case-studies|System Design Case Studies]] - URL shortener, WhatsApp, Twitter, Netflix, and GenAI shopping-assistant design patterns.
 - [[concepts/recurrent-depth-transformers|Recurrent-Depth Transformers]] - Looped transformer architectures, latent reasoning, stability, MoE breadth, and inference-time depth.
 
 ## Sources
@@ -38,6 +38,12 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/system-design-course|System Design Course]] - A broad system design curriculum and set of large-scale design examples.
 - [[sources/openmythos|OpenMythos]] - A speculative open-source reconstruction of a recurrent-depth transformer architecture.
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]] - A hook-based workflow for turning repeated user corrections into persistent agent rules.
+- [[sources/google-stitch-design-md-claude-code|Google Stitch design.md + Claude Code]] - Using an agent-readable design-system file to reduce UI drift in generated code.
+- [[sources/amazon-rufus-technology|Technology Behind Amazon Rufus]] - A production GenAI assistant case study: domain LLM, RAG, feedback loops, and low-latency inference infra.
+- [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]] - A selective agent-backend migration case study with deterministic boundaries.
+- [[sources/microservices-vs-monoliths|Microservices vs. Monoliths]] - Architecture choice guidance for monolith-first, microservices, and hybrid extraction paths.
+- [[sources/agent-skills-real-engineers|Agent Skills for Real Engineers]] - Small composable skills for aligning coding agents through questions, shared language, and ADRs.
+- [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]] - A critique of AI-generated technical communication that lacks human judgment and distillation.
 
 ## Maintenance Notes
 
