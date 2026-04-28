@@ -1,0 +1,45 @@
+---
+title: System Design
+type: concept
+created: 2026-04-28
+tags:
+  - concept
+  - system-design
+---
+
+# System Design
+
+System design is the practice of defining architecture, interfaces, data, and operational behavior for a system that satisfies requirements. It is one of the main places where human engineering judgment remains valuable in AI-assisted software work.
+
+## Design Flow
+
+1. Clarify functional requirements.
+2. Clarify non-functional requirements such as latency, availability, durability, throughput, cost, and consistency.
+3. Estimate traffic, storage, bandwidth, and request rates.
+4. Define APIs and data models.
+5. Choose architecture and service boundaries.
+6. Select storage, cache, communication, and delivery patterns.
+7. Identify bottlenecks, single points of failure, and scaling paths.
+8. Revisit tradeoffs as constraints change.
+
+## Building Blocks
+
+Important primitives from the source include IP, OSI layers, TCP/UDP, DNS, load balancing, caching, CDN, proxies, API styles, message brokers, databases, replication, sharding, consistency, rate limiting, service discovery, and observability.
+
+## Subpages
+
+- [[concepts/system-design-interview-workflow|System Design Interview Workflow]]
+- [[concepts/infrastructure-primitives|Infrastructure Primitives]]
+- [[concepts/data-storage-and-consistency|Data Storage and Consistency]]
+- [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
+- [[concepts/reliability-and-operations|Reliability and Operations]]
+- [[concepts/system-design-case-studies|System Design Case Studies]]
+
+## Link to AI-Era Work
+
+The [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]] source argues that architecture and distributed debugging are exactly where AI tools struggle. That makes system design practice a priority skill for working well with code-generation agents.
+
+## Source Support
+
+- [[sources/system-design-course|System Design Course]]
+- [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]]

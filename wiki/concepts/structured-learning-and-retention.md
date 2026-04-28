@@ -1,0 +1,33 @@
+---
+title: Structured Learning and Retention
+type: concept
+created: 2026-04-28
+tags:
+  - concept
+  - learning
+---
+
+# Structured Learning and Retention
+
+Structured learning combines a roadmap, active practice, and spaced review. The sources argue against passive overconsumption: long videos, random articles, and one-time study sessions feel productive but often fail to build durable knowledge.
+
+## Learning Loop
+
+1. Get a curriculum or topic map.
+2. Identify what you already know and what is missing.
+3. Study targeted written or video material.
+4. Practice by implementing, solving, explaining, or designing.
+5. Convert durable facts and prompts into review material.
+6. Revisit topics over increasing intervals.
+7. File good summaries and answers into the wiki.
+
+## Practical Implication
+
+For technical growth, use [[sources/system-design-course|System Design Course]] as a roadmap, [[sources/retaining-cs-knowledge|Retaining Computer Science Knowledge]] as the retention mechanic, and [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]] as the long-term memory layer.
+
+## Source Support
+
+- [[sources/learn-from-course-content|How to Learn from Course Content Without Paying for It]]
+- [[sources/retaining-cs-knowledge|Retaining Computer Science Knowledge]]
+- [[sources/karpathy-second-brain-article|Karpathy Second Brain Article]]
+

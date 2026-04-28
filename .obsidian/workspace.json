@@ -1,0 +1,226 @@
+{
+  "main": {
+    "id": "c1ccac348535d992",
+    "type": "split",
+    "children": [
+      {
+        "id": "40000b5ff85e162f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "100cb724e755975f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "raw/Self-Evolving Hooks.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Self-Evolving Hooks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8552ad657ebc5a2d",
+    "type": "split",
+    "children": [
+      {
+        "id": "74ef0fae6046fb71",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c51d7ea9de57ea42",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "77a00b69a683bc74",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "f98e1da99e2ebbfa",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6376afbc93adcd75",
+    "type": "split",
+    "children": [
+      {
+        "id": "f0ca970a97810416",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c431b1ad6ca9239a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "raw/Self-Evolving Hooks.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Self-Evolving Hooks"
+            }
+          },
+          {
+            "id": "27d1a36a8470db4d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "raw/Self-Evolving Hooks.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Self-Evolving Hooks"
+            }
+          },
+          {
+            "id": "e0665f04b58788c6",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "5d5da8bec0173ded",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "c2ad2c1e82a682b6",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "raw/Self-Evolving Hooks.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Self-Evolving Hooks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "100cb724e755975f",
+  "lastOpenFiles": [
+    "README.md",
+    "wiki/_state/raw-manifest.json",
+    "wiki/concepts/self-improving-agent-workflows.md",
+    "wiki/sources/self-evolving-hooks.md",
+    "wiki/_state/daily-scan.md",
+    "wiki/_state",
+    "AGENTS.md",
+    "wiki/automation.md",
+    "scripts/update-wiki-state.ps1",
+    "scripts",
+    "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.  by Prakash Sharma.md",
+    "raw/Self-Evolving Hooks.md",
+    "wiki/concepts/system-design-case-studies.md",
+    "wiki/concepts/reliability-and-operations.md",
+    "wiki/concepts/communication-and-architecture-patterns.md",
+    "wiki/concepts/data-storage-and-consistency.md",
+    "wiki/concepts/infrastructure-primitives.md",
+    "wiki/concepts/system-design-interview-workflow.md",
+    "wiki/maintenance.md",
+    "wiki/synthesis/software-engineering-learning-os.md",
+    "wiki/concepts/recurrent-depth-transformers.md",
+    "wiki/concepts/system-design.md",
+    "wiki/concepts/structured-learning-and-retention.md",
+    "wiki/concepts/ai-era-software-engineering.md",
+    "wiki/concepts/llm-maintained-wiki.md",
+    "wiki/sources/openmythos.md",
+    "wiki/sources/system-design-course.md",
+    "wiki/sources/retaining-cs-knowledge.md",
+    "wiki/sources/learn-from-course-content.md",
+    "wiki/sources/ai-replaced-80-percent-coding.md",
+    "wiki/synthesis",
+    "wiki/concepts",
+    "wiki/sources",
+    "Untitled.canvas",
+    "Clippings",
+    "wiki",
+    "raw"
+  ]
+}

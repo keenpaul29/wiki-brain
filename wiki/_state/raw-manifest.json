@@ -1,0 +1,44 @@
+﻿[
+    {
+        "path":  "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.  by Prakash Sharma.md",
+        "sha256":  "3488dc37100295d419cb9d3d9cbef5c941b1e62e4f381d582ccaacaa7c7a067f",
+        "length":  12140,
+        "last_write_time":  "2026-04-28T12:56:02.9553408+05:30"
+    },
+    {
+        "path":  "raw/Andrej Karpathy Stopped Using AI to Write Code. He\u0027s Using It to Build a Second Brain Instead  by Nikhil  in Neural Notions.md",
+        "sha256":  "ab2434021697eac0e87f305761688a54252e5d77e7c37f3db36232a36b199720",
+        "length":  19583,
+        "last_write_time":  "2026-04-28T12:08:15.8249075+05:30"
+    },
+    {
+        "path":  "raw/How to Learn from Course Content Without Paying for It.md",
+        "sha256":  "4dd906502901cdd667d27c0d445af4d033ff8c7dc5518a758f3a4e2cad43df21",
+        "length":  2744,
+        "last_write_time":  "2026-04-28T12:15:00.5552418+05:30"
+    },
+    {
+        "path":  "raw/Learn how to design systems at scale and prepare for system design interviews.md",
+        "sha256":  "b2161ea7aa35d69c04ac8ca2510f0d623013e142fd51a326c3115bd1d35a7ec8",
+        "length":  284952,
+        "last_write_time":  "2026-04-28T12:14:43.5955691+05:30"
+    },
+    {
+        "path":  "raw/OpenMythos - a theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research literature.md",
+        "sha256":  "d5e6a1aa98636e9263aecc8002af1445e91f248298c43a6fee35c695b4f4ec1c",
+        "length":  22227,
+        "last_write_time":  "2026-04-28T12:12:51.5191013+05:30"
+    },
+    {
+        "path":  "raw/Retaining Computer Science Knowledge.md",
+        "sha256":  "d10fa0838bd5b5aa4dceefdd1aa46098a145ccc5cb43b501f963c1bb2ae8ce1b",
+        "length":  3680,
+        "last_write_time":  "2026-04-28T12:10:51.8628885+05:30"
+    },
+    {
+        "path":  "raw/Self-Evolving Hooks.md",
+        "sha256":  "d3f6b5e24c9f63f7795fdb30a6887f575a18790b0154a0e29b14ce14e84d4aca",
+        "length":  12853,
+        "last_write_time":  "2026-04-28T12:56:02.9223259+05:30"
+    }
+]
