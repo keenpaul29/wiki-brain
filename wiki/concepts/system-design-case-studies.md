@@ -86,6 +86,18 @@ Useful patterns:
 - Monitor token/API costs as part of system cost.
 - Keep critical security and mutation paths deterministic.
 
+## Rewards Platform Flash Sale
+
+Core problem: a consumer rewards platform grew from MVP traffic to major partner flash-sale traffic without revisiting its original monolithic architecture. The outage pattern was a classic scale transition: one application instance, one primary database, no cache, no rate limits, no circuit breakers, and insufficient observability.
+
+Useful patterns:
+
+- Treat early feature velocity as different from production readiness.
+- Add cache and read replicas before predictable high-read spikes.
+- Use rate limits and circuit breakers around high-volume and third-party paths.
+- Split service boundaries only where scaling and fault isolation justify the cost.
+- Add metrics, dashboards, tracing, backups, and failure drills before the next major event.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -95,3 +107,4 @@ Useful patterns:
 - Source: [[sources/system-design-course|System Design Course]]
 - Source: [[sources/amazon-rufus-technology|Technology Behind Amazon Rufus]]
 - Source: [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]]
+- Source: [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]

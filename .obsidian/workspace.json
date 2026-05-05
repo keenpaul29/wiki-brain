@@ -11,10 +11,14 @@
             "id": "100cb724e755975f",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "wiki/concepts/system-design.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "system-design"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "wiki/concepts/system-design.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for system-design"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "wiki/concepts/system-design.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from system-design"
             }
           },
           {
@@ -150,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "wiki/concepts/system-design.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of system-design"
             }
           }
         ]
@@ -178,42 +185,42 @@
   },
   "active": "100cb724e755975f",
   "lastOpenFiles": [
-    "scripts/update-wiki-state.ps1",
-    "scripts/lint-wiki.ps1",
-    "scripts/check-wiki-links.ps1",
-    "scripts",
+    "raw/How to Structure .claude Folder for Maximum Efficiency.md",
+    "wiki/log.md",
+    "wiki/concepts/infrastructure-primitives.md",
+    "raw/tech skills vs system design Unlock case study in Production.md",
+    "raw/The 4 Cognitive Archetypes of Developers Using AI.md",
+    "raw/How to Secure and Optimize Docker images  Best Practices.md",
+    "raw/How I Made a Desktop App Invisible to Screen Sharing (Electron + OS-Level Tricks).md",
+    "raw/Beyond Shipped What Actually Breaks in Production AI.md",
+    "raw/A FastAPI Update Broke My Production App. Here Is the Fix.  by inprogrammer  in Artificial Intelligence in Plain English.md",
+    "raw/Docker Was Slowing My Deploys. Podman Fixed It in 45 Seconds.  by inprogrammer.md",
+    "raw/Claude Code Best Practices 12 Patterns Agentic Engineers Use  by huizhou92  in Level Up Coding.md",
+    "raw/RAG, LLM Wiki, or Gbrain -  How Your Agent Remembers Changes Everything.md",
+    "raw/Stop Using the Wrong LLM  by Jose Crespo, PhD  in AI Advances.md",
+    "raw/I Deployed Local LLMs in Production for a Year. Part 2 The Operational Playbook  by Mustafa Genc  in AI Advances.md",
+    "raw/I Deployed Local LLMs in Production for a Year. Part 1 The Mental Model  by Mustafa Genc  in AI Advances.md",
+    "raw/Top Skills Frontend Developers Need in 2026 (Beyond React)  by Kevin - MERN Stack Developer.md",
+    "wiki/synthesis/software-engineering-learning-os.md",
+    "raw/Improving Site Performance With Webpack Tree Shaking.md",
+    "raw/Create a tunnel (dashboard).md",
+    "wiki/concepts/system-design.md",
     "wiki/_state/raw-manifest.json",
     "wiki/_state/daily-scan.md",
-    "wiki/synthesis/software-engineering-learning-os.md",
     "wiki/sources/system-design-course.md",
     "wiki/sources/stop-feeding-me-ai-slop.md",
     "wiki/sources/self-evolving-hooks.md",
     "wiki/sources/retaining-cs-knowledge.md",
     "wiki/sources/openmythos.md",
-    "wiki/sources/microservices-vs-monoliths.md",
-    "wiki/sources/llm-wiki-idea-file.md",
-    "wiki/sources/learn-from-course-content.md",
-    "wiki/sources/karpathy-second-brain-article.md",
-    "wiki/sources/gpt-5-5-agents-replaced-python-backend.md",
-    "wiki/sources/google-stitch-design-md-claude-code.md",
-    "wiki/sources/amazon-rufus-technology.md",
-    "wiki/sources/ai-replaced-80-percent-coding.md",
-    "wiki/sources/agent-skills-real-engineers.md",
-    "wiki/concepts/system-design.md",
-    "wiki/concepts/system-design-interview-workflow.md",
-    "wiki/concepts/system-design-case-studies.md",
-    "wiki/concepts/structured-learning-and-retention.md",
-    "wiki/concepts/self-improving-agent-workflows.md",
-    "wiki/concepts/reliability-and-operations.md",
-    "wiki/concepts/recurrent-depth-transformers.md",
-    "wiki/concepts/llm-maintained-wiki.md",
-    "wiki/concepts/infrastructure-primitives.md",
     "wiki/_state",
     "wiki/synthesis",
     "wiki/sources",
     "wiki/concepts",
     "wiki",
     "raw",
+    "Index.base",
+    "LICENSE",
+    "scripts/update-wiki-state.ps1",
     "Untitled.canvas"
   ]
 }

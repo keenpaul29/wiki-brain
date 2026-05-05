@@ -92,3 +92,42 @@ Re-read `raw/Microservices vs. Monoliths When to Choose What (and Why It Matters
 ## [2026-04-28] maintenance | Orphan-page lint script
 
 Added `scripts/lint-wiki.ps1` to detect orphan wiki pages with no inbound links (excluding index/log/workflow/state pages). Updated [[automation]], [[maintenance]], and `README.md` with the command.
+
+## [2026-05-02] ingest | Cloudflare Tunnel source
+
+Processed new raw source:
+
+- `raw/Create a tunnel (dashboard).md`
+
+Added [[sources/create-tunnel-dashboard|Create a tunnel (dashboard)]] documenting Cloudflare Tunnel setup via Zero Trust dashboard. Connected to [[concepts/infrastructure-primitives|Infrastructure Primitives]] and [[concepts/reliability-and-operations|Reliability and Operations]]. Updated [[index]].
+
+## [2026-05-05] ingest | Webpack tree shaking and tunnel refresh
+
+Processed new/changed raw sources:
+
+- `raw/Improving Site Performance With Webpack Tree Shaking.md`
+- `raw/Create a tunnel (dashboard).md`
+
+Added [[sources/webpack-tree-shaking-performance|Improving Site Performance With Webpack Tree Shaking]] and [[concepts/frontend-build-performance|Frontend Build Performance]] for ES module migration, tree shaking requirements, codemod review, and incremental performance rollout. Refreshed [[sources/create-tunnel-dashboard|Create a tunnel (dashboard)]] with current dashboard flow, published application/private network options, Access policy note, and connector health states. Updated [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
+## [2026-05-05] ingest | Production AI, local LLMs, agent memory, containers, and frontend skills
+
+Processed new raw sources:
+
+- `raw/A FastAPI Update Broke My Production App. Here Is the Fix.  by inprogrammer  in Artificial Intelligence in Plain English.md`
+- `raw/Beyond Shipped What Actually Breaks in Production AI.md`
+- `raw/Claude Code Best Practices 12 Patterns Agentic Engineers Use  by huizhou92  in Level Up Coding.md`
+- `raw/Docker Was Slowing My Deploys. Podman Fixed It in 45 Seconds.  by inprogrammer.md`
+- `raw/How I Made a Desktop App Invisible to Screen Sharing (Electron + OS-Level Tricks).md`
+- `raw/How to Secure and Optimize Docker images  Best Practices.md`
+- `raw/I Deployed Local LLMs in Production for a Year. Part 1 The Mental Model  by Mustafa Genc  in AI Advances.md`
+- `raw/I Deployed Local LLMs in Production for a Year. Part 2 The Operational Playbook  by Mustafa Genc  in AI Advances.md`
+- `raw/RAG, LLM Wiki, or Gbrain -  How Your Agent Remembers Changes Everything.md`
+- `raw/Stop Using the Wrong LLM  by Jose Crespo, PhD  in AI Advances.md`
+- `raw/tech skills vs system design Unlock case study in Production.md`
+- `raw/The 4 Cognitive Archetypes of Developers Using AI.md`
+- `raw/Top Skills Frontend Developers Need in 2026 (Beyond React)  by Kevin - MERN Stack Developer.md`
+
+Added source summaries for FastAPI migration risk, production AI failure modes, Claude Code practices, Podman deploys, Electron screen-capture protection, Docker image security, local LLM serving mental model and operations, RAG/wiki/GBrain memory architectures, LLM task-fit selection, the Unlock system-design case study, AI developer cognitive archetypes, and frontend skills beyond React.
+
+Created [[concepts/local-llm-serving|Local LLM Serving]]. Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/system-design|System Design]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/frontend-build-performance|Frontend Build Performance]], [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]], [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].

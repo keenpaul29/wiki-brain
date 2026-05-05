@@ -40,12 +40,23 @@ Reliability and operations convert an architecture from a diagram into a system 
 
 Agent-backed production paths need reliability controls that ordinary request handlers may not expose by default: decision logs, tool-call traces, output validation, fallback paths, latency distribution monitoring, and API cost tracking. Debugging shifts from stack traces alone toward reconstructing the agent's context, instructions, tools, and intermediate decisions.
 
+Production AI systems add specific failure modes: weak retrieval, hallucinated answers, agent loops, tool-call failures, prompt injection, runaway inference cost, inconsistent output format, and missing evaluation gates. Mature systems separate probabilistic decisions from deterministic execution, enforce step limits, validate tool inputs and outputs, replay traces, and run both offline regression evals and online drift checks.
+
+Local LLM serving needs its own operational telemetry. Prefill duration, decode duration, token counts, queue depth, GPU memory, loaded models, truncation checks, and p50/p95/p99 latency by request type are required to distinguish prefill, decode, queuing, eviction, and memory pressure problems.
+
 ## Security and Identity
 
 - OAuth 2.0 delegates authorization.
 - OpenID Connect adds identity on top of OAuth.
 - SSO centralizes authentication across services.
 - TLS secures transport; mTLS authenticates both sides and is common in zero-trust microservice environments.
+- Zero Trust tunnels should pair exposed hostnames with explicit access policy where needed, and connector health states should be monitored after setup.
+- Container operations should avoid unnecessary daemon exposure, prefer rootless execution where practical, scan images during the lifecycle, and protect remote engine access with SSH or TLS.
+- Model-serving endpoints such as Ollama should not be exposed directly without a reverse proxy, TLS, authentication, and rate limits.
+
+## Migration and Release Risk
+
+Framework upgrades can make systems safer while still breaking production behavior. FastAPI `0.115` examples include stricter dependency signatures, response validation, CORS enforcement, WebSocket disconnect handling, optional query typing, and serializer changes. The safe pattern is to categorize failures, fix critical paths first, test with real frontend/configuration behavior, and roll out gradually with monitoring.
 
 ## Links
 
@@ -54,3 +65,11 @@ Agent-backed production paths need reliability controls that ordinary request ha
 - Source: [[sources/system-design-course|System Design Course]]
 - Source: [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]]
 - Source: [[sources/microservices-vs-monoliths|Microservices vs. Monoliths]]
+- Source: [[sources/create-tunnel-dashboard|Create a tunnel (dashboard)]]
+- Source: [[sources/fastapi-0-115-migration|FastAPI 0.115 Migration Breakages]]
+- Source: [[sources/production-ai-failure-modes|Beyond Shipped - Production AI Failure Modes]]
+- Source: [[sources/local-llm-serving-mental-model|Local LLM Serving Mental Model]]
+- Source: [[sources/local-llm-serving-operational-playbook|Local LLM Serving Operational Playbook]]
+- Source: [[sources/docker-image-security-optimization|Docker Image Security and Optimization]]
+- Source: [[sources/podman-python-deploys|Podman for Faster Python Deploys]]
+- Source: [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]

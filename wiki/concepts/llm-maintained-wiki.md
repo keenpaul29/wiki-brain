@@ -36,6 +36,12 @@ At small scale, [[index]] and [[log]] are enough for navigation and memory. As t
 
 [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]] apply the same compounding idea to behavior instead of knowledge. Corrections are captured, distilled into rules, and loaded in later sessions. In this wiki, new raw sources are captured, distilled into pages, and loaded as durable context for later questions.
 
+## Compared With RAG and Fat Skills
+
+RAG is strongest when the corpus is large, changes often, and users need answers immediately from many documents. Its weakness is that it retrieves and re-derives rather than compiling durable understanding. LLM Wiki is strongest when a smaller source set should compound into interlinked synthesis over time. Fat-skill or GBrain-style systems extend the pattern from knowledge into action: skills declare triggers, tools, write targets, and quality bars so the agent can monitor, enrich, and run workflows autonomously.
+
+The likely long-term pattern is hybrid: retrieval for scale, wiki pages for synthesis, and skills for scheduled or event-driven action.
+
 ## Agent-Readable Specs
 
 One practical pattern for LLM work is to put "house rules" and "reference truth" into plain-text files the agent can read every time. This wiki uses that approach for knowledge, and the same approach can be applied to other domains like UI design systems: keep a canonical spec in a file and tell the agent to follow it.
@@ -56,3 +62,5 @@ The wiki should preserve thinking, not just generated text. Source summaries and
 - [[sources/google-stitch-design-md-claude-code|Google Stitch design.md + Claude Code]]
 - [[sources/agent-skills-real-engineers|Agent Skills for Real Engineers]]
 - [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]]
+- [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
+- [[sources/claude-code-best-practices|Claude Code Best Practices]]

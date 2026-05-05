@@ -38,6 +38,26 @@ Agentic systems fit best where requirements are dynamic, input is messy, and out
 
 AI assistance raises the standard for technical communication. The useful artifact is not polished generic prose, but human distillation: the specific decision, rejected alternatives, constraints, and lived context. A generated design doc, PRD, code review, or runbook is weak if the author cannot explain and defend it.
 
+## Mechanical Change Review
+
+Codemods and AI-generated edits both reduce the cost of broad code changes, but they do not remove the need for review. Large migrations still need staged rollout, edge-case inspection, production verification, and rollback-aware sequencing.
+
+## AI Usage Ownership
+
+AI leverage has different cognitive costs depending on how it is used. Explanation, critique, tradeoff exploration, and assumption testing can expand engineering judgment. Blindly accepting generated solutions, delegating architecture too early, or outsourcing debugging without understanding the root cause can erode ownership. The durable skill is choosing the right mode for the task and being able to explain the result afterward.
+
+## Tool and Model Fit
+
+There is no single "best" LLM for all work. Model choice should follow the cognitive demand of the task, and some tasks should stay outside the trust boundary without heavy verification: visual counting, diagram interpretation, scanned multi-column documents, long-tail factual precision, and long reasoning chains with self-references. Compound workflows may need multiple tools or agents routed by step.
+
+## Agentic Engineering Practice
+
+Agentic coding works better when constraints live in project structure rather than repeated prompts: compact scoped instruction files, reusable commands, permission-bounded agents, skills with gotchas, isolated context for heavy analysis, hooks for formatting and verification, and worktrees for parallel work. The pattern is the same as ordinary engineering: make important behavior repeatable and enforceable.
+
+## Production AI Systems
+
+Once an AI feature ships, the hard work moves to grounding, retrieval quality, inference latency, memory design, tool reliability, prompt-injection defense, cost control, and evaluation. Production AI should be treated as a distributed system with traces, fallbacks, deterministic orchestration boundaries, and offline/online eval loops.
+
 ## Source Support
 
 - [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]]
@@ -48,3 +68,11 @@ AI assistance raises the standard for technical communication. The useful artifa
 - [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]]
 - [[sources/agent-skills-real-engineers|Agent Skills for Real Engineers]]
 - [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]]
+- [[sources/webpack-tree-shaking-performance|Improving Site Performance With Webpack Tree Shaking]]
+- [[sources/fastapi-0-115-migration|FastAPI 0.115 Migration Breakages]]
+- [[sources/production-ai-failure-modes|Beyond Shipped - Production AI Failure Modes]]
+- [[sources/claude-code-best-practices|Claude Code Best Practices]]
+- [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
+- [[sources/stop-using-wrong-llm|Stop Using the Wrong LLM]]
+- [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]
+- [[sources/frontend-skills-2026|Frontend Skills Beyond React in 2026]]

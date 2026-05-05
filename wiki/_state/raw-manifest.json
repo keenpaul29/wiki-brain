@@ -1,80 +1,170 @@
 ﻿[
     {
+        "path":  "raw/A FastAPI Update Broke My Production App. Here Is the Fix.  by inprogrammer  in Artificial Intelligence in Plain English.md",
+        "sha256":  "46c18ece61d0710eecde979bee03f9c3b575368513dec00f0df731539cab2ab3",
+        "length":  11486,
+        "last_write_time":  "2026-05-05T18:43:44.0564290+05:30"
+    },
+    {
         "path":  "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.  by Prakash Sharma.md",
-        "sha256":  "3488dc37100295d419cb9d3d9cbef5c941b1e62e4f381d582ccaacaa7c7a067f",
-        "length":  12140,
-        "last_write_time":  "2026-04-28T12:56:02.9553408+05:30"
+        "sha256":  "5251d9d8862ff35fe2a8bb4649539f780a6b4c312bb33379f5fd8accfec7c801",
+        "length":  12262,
+        "last_write_time":  "2026-04-28T17:38:08.8768995+05:30"
     },
     {
         "path":  "raw/Andrej Karpathy Stopped Using AI to Write Code. He\u0027s Using It to Build a Second Brain Instead  by Nikhil  in Neural Notions.md",
-        "sha256":  "ab2434021697eac0e87f305761688a54252e5d77e7c37f3db36232a36b199720",
-        "length":  19583,
-        "last_write_time":  "2026-04-28T12:08:15.8249075+05:30"
+        "sha256":  "cf54e853aac0b2d7ebcea733dd32971bff8cf183a397075b71ac43360de2b6d3",
+        "length":  19783,
+        "last_write_time":  "2026-04-28T17:38:08.8768995+05:30"
+    },
+    {
+        "path":  "raw/Beyond Shipped What Actually Breaks in Production AI.md",
+        "sha256":  "07476379c5e367d5550aaa9094b259926a7514aaa5a84de35e3e3a923e27265a",
+        "length":  7613,
+        "last_write_time":  "2026-05-05T18:45:37.8237497+05:30"
+    },
+    {
+        "path":  "raw/Claude Code Best Practices 12 Patterns Agentic Engineers Use  by huizhou92  in Level Up Coding.md",
+        "sha256":  "5ee15cf440749b981f177941fa1a665d3ac49dffbab9dca1cb15df9377f570a5",
+        "length":  15028,
+        "last_write_time":  "2026-05-05T18:34:42.5932576+05:30"
+    },
+    {
+        "path":  "raw/Create a tunnel (dashboard).md",
+        "sha256":  "073c854a9963674e6241051f47a6b1583a6b2645f6665dfdb32e7e55b3366e4c",
+        "length":  4461,
+        "last_write_time":  "2026-05-05T18:16:25.8915387+05:30"
+    },
+    {
+        "path":  "raw/Docker Was Slowing My Deploys. Podman Fixed It in 45 Seconds.  by inprogrammer.md",
+        "sha256":  "d7ec5ff7f24f7825dd0c3aa983c9f6987a06010aa967a333060057d8d1cc72b1",
+        "length":  12784,
+        "last_write_time":  "2026-05-05T18:35:39.7718755+05:30"
     },
     {
         "path":  "raw/GPT-5.5 Agents Replaced My Python Backend. 83% Cost Cut.  by inprogrammer.md",
-        "sha256":  "2c303dab9c56fe1829b058038cc51d5480fd738c092a6287157ff6acc1a6f1a0",
-        "length":  10463,
-        "last_write_time":  "2026-04-28T15:18:38.1515310+05:30"
+        "sha256":  "f0103609881e0fa0b74fc5326af5e6bcf8f7ae55ace22ea4fe7e92fa66c3ac79",
+        "length":  10645,
+        "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
+    },
+    {
+        "path":  "raw/How I Made a Desktop App Invisible to Screen Sharing (Electron + OS-Level Tricks).md",
+        "sha256":  "0529bc89f8af6be3897f141f6fe482045bfee964be7c814fe5f094ae17a470ef",
+        "length":  38492,
+        "last_write_time":  "2026-05-05T18:47:27.9425093+05:30"
     },
     {
         "path":  "raw/How to Learn from Course Content Without Paying for It.md",
-        "sha256":  "4dd906502901cdd667d27c0d445af4d033ff8c7dc5518a758f3a4e2cad43df21",
-        "length":  2744,
-        "last_write_time":  "2026-04-28T12:15:00.5552418+05:30"
+        "sha256":  "5769146992dd0f11b0baf8e73b13bbe8b9053636ca7bf8ec66147131b836826b",
+        "length":  2775,
+        "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
+    },
+    {
+        "path":  "raw/How to Secure and Optimize Docker images  Best Practices.md",
+        "sha256":  "ec578ce3ec5b5e42174ae642aa26d2cbd9dabbe694a0921b4db4ee405e6cfe8d",
+        "length":  7970,
+        "last_write_time":  "2026-05-05T18:54:06.7451385+05:30"
     },
     {
         "path":  "raw/How to Use Google Stitch\u0027s Design.md File with Claude Code for Consistent UI.md",
-        "sha256":  "2075554c87681b878d72dce978bd06315b65e33d9d26a115a5e1d96b24f0e328",
-        "length":  17067,
-        "last_write_time":  "2026-04-28T13:25:09.6358660+05:30"
+        "sha256":  "f6e58b0c3f993255adec22b3bc64e9d8bcb837f4b4e6ec77bc311eefd1437aa3",
+        "length":  17334,
+        "last_write_time":  "2026-04-28T17:38:08.8788943+05:30"
+    },
+    {
+        "path":  "raw/I Deployed Local LLMs in Production for a Year. Part 1 The Mental Model  by Mustafa Genc  in AI Advances.md",
+        "sha256":  "c83b64f56cb319f9e98c69fd07752e177b71bdfa8f069e73dd4536394c3cca4e",
+        "length":  29892,
+        "last_write_time":  "2026-05-05T18:24:59.6679645+05:30"
+    },
+    {
+        "path":  "raw/I Deployed Local LLMs in Production for a Year. Part 2 The Operational Playbook  by Mustafa Genc  in AI Advances.md",
+        "sha256":  "1fb56b60334497149bc98f05213264da7b5cfcdf2b66ae98df11bd2d563f83bf",
+        "length":  40690,
+        "last_write_time":  "2026-05-05T18:27:41.9566675+05:30"
+    },
+    {
+        "path":  "raw/Improving Site Performance With Webpack Tree Shaking.md",
+        "sha256":  "148ecf81c7b1e7847ac142a1d270d227b21b250d4b5695f4e5391846098b6a26",
+        "length":  9641,
+        "last_write_time":  "2026-05-05T18:19:28.5160178+05:30"
     },
     {
         "path":  "raw/Learn how to design systems at scale and prepare for system design interviews.md",
-        "sha256":  "b2161ea7aa35d69c04ac8ca2510f0d623013e142fd51a326c3115bd1d35a7ec8",
-        "length":  284952,
-        "last_write_time":  "2026-04-28T12:14:43.5955691+05:30"
+        "sha256":  "6723bfa1448b3035c0e433f99d631e57fde562ee0f9e46a83b878284f806f52d",
+        "length":  291580,
+        "last_write_time":  "2026-04-28T17:38:08.8808888+05:30"
     },
     {
         "path":  "raw/Microservices vs. Monoliths When to Choose What (and Why It Matters).md",
-        "sha256":  "1f585a532271f74286fefd699728ce45becfa542dff849b74a326e64a87efce5",
-        "length":  8105,
-        "last_write_time":  "2026-04-28T16:03:09.0463487+05:30"
+        "sha256":  "5022dbe5353820789332ededd41c235eb576a9b2e091c46f14ad74ef92afe017",
+        "length":  8194,
+        "last_write_time":  "2026-04-28T17:38:08.8808888+05:30"
     },
     {
         "path":  "raw/OpenMythos - a theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research literature.md",
-        "sha256":  "d5e6a1aa98636e9263aecc8002af1445e91f248298c43a6fee35c695b4f4ec1c",
-        "length":  22227,
-        "last_write_time":  "2026-04-28T12:12:51.5191013+05:30"
+        "sha256":  "8e5498b60be77e9359dff7ebfa964bb386a00c4dd0cc61e3d469293d4d65bac4",
+        "length":  22654,
+        "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
+    },
+    {
+        "path":  "raw/RAG, LLM Wiki, or Gbrain -  How Your Agent Remembers Changes Everything.md",
+        "sha256":  "21ef9e53b753d5018084c7491b86176695d200432d3182adac720b4c0ec79b0c",
+        "length":  26113,
+        "last_write_time":  "2026-05-05T18:33:01.9595059+05:30"
     },
     {
         "path":  "raw/Retaining Computer Science Knowledge.md",
-        "sha256":  "d10fa0838bd5b5aa4dceefdd1aa46098a145ccc5cb43b501f963c1bb2ae8ce1b",
-        "length":  3680,
-        "last_write_time":  "2026-04-28T12:10:51.8628885+05:30"
+        "sha256":  "a7caa1d8cc768bd6481b168916c036de06e56989657dca8a6081064e2f08395e",
+        "length":  3751,
+        "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
     },
     {
         "path":  "raw/Self-Evolving Hooks.md",
-        "sha256":  "5f8658fc68c56f1ec5df255908319320dcf6c33470b8703479e047759bff6ea0",
-        "length":  12499,
-        "last_write_time":  "2026-04-28T13:24:32.8360236+05:30"
+        "sha256":  "d3f6b5e24c9f63f7795fdb30a6887f575a18790b0154a0e29b14ce14e84d4aca",
+        "length":  12853,
+        "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
     },
     {
         "path":  "raw/Skills for Real Engineers. Straight from my .claude directory.md",
-        "sha256":  "fc654fcbe08d984af8bb25f13e54c53558eb34d87fe1f53d3440676ea2cafa97",
-        "length":  7471,
-        "last_write_time":  "2026-04-28T15:24:43.7585380+05:30"
+        "sha256":  "7109637a44c9d768520cedc10cbba6cc6a5f1489dd9f69e502d33fc3ea798f7b",
+        "length":  7582,
+        "last_write_time":  "2026-04-28T17:38:08.8828837+05:30"
     },
     {
         "path":  "raw/Stop Feeding Me AI Slop.md",
-        "sha256":  "84f9edb003d2e12b9cdbacd556369a55a547a3e5c08c561201179e4356361381",
-        "length":  10305,
-        "last_write_time":  "2026-04-28T15:39:36.2244557+05:30"
+        "sha256":  "b993dc33fa6425acf38f3b9b147fc5deace2277c05229061f9e4359dfb90f121",
+        "length":  10407,
+        "last_write_time":  "2026-04-28T17:38:08.8828837+05:30"
+    },
+    {
+        "path":  "raw/Stop Using the Wrong LLM  by Jose Crespo, PhD  in AI Advances.md",
+        "sha256":  "5f887ba8976c3848c9247c554fb22fd0e29ce9096cba290d4fd334f7df13c787",
+        "length":  19656,
+        "last_write_time":  "2026-05-05T18:28:31.3707897+05:30"
+    },
+    {
+        "path":  "raw/tech skills vs system design Unlock case study in Production.md",
+        "sha256":  "ef9c05fd2fbd25aef5eb4f95b160bf83ffd231d370cf400b002d4d0ae0883d8c",
+        "length":  6288,
+        "last_write_time":  "2026-05-05T19:07:36.8332322+05:30"
+    },
+    {
+        "path":  "raw/The 4 Cognitive Archetypes of Developers Using AI.md",
+        "sha256":  "cb6d0692d14af4226b8c15cf3955cc2b3b1ac52d00526c382ab5d98267f0448f",
+        "length":  5778,
+        "last_write_time":  "2026-05-05T19:07:36.8657658+05:30"
     },
     {
         "path":  "raw/The technology behind Amazon’s GenAI-powered shopping assistant, Rufus.md",
-        "sha256":  "af3b692ffcc9f4e84673fe520395f0f6092cd55c598958bbd5c1f4006af275ee",
-        "length":  7951,
-        "last_write_time":  "2026-04-28T14:51:01.0157556+05:30"
+        "sha256":  "27c04c6773763ba1a098cdd0ce8cd36f1bf2a8e811b8892fb9f7965fed2b28e1",
+        "length":  8018,
+        "last_write_time":  "2026-04-28T17:38:08.8838812+05:30"
+    },
+    {
+        "path":  "raw/Top Skills Frontend Developers Need in 2026 (Beyond React)  by Kevin - MERN Stack Developer.md",
+        "sha256":  "ea47935c19a6151e5edb781ee977715163dea433468a3fa178320a7dee421580",
+        "length":  6551,
+        "last_write_time":  "2026-05-05T18:24:16.9725330+05:30"
     }
 ]

@@ -39,7 +39,12 @@ Important primitives from the source include IP, OSI layers, TCP/UDP, DNS, load 
 
 The [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]] source argues that architecture and distributed debugging are exactly where AI tools struggle. That makes system design practice a priority skill for working well with code-generation agents.
 
+## Production Balance
+
+Implementation skill and system design are complementary. The Unlock case study shows how a team can ship quickly with strong coding ability while still carrying hidden architecture risk: one instance, one database, no caching, no rate limits, no circuit breakers, and no observability. System design turns feature velocity into production durability by making scaling paths, failure modes, and operational controls explicit before traffic proves the gap.
+
 ## Source Support
 
 - [[sources/system-design-course|System Design Course]]
 - [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]]
+- [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]

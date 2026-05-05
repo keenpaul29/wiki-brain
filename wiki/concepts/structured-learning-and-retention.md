@@ -25,9 +25,12 @@ Structured learning combines a roadmap, active practice, and spaced review. The 
 
 For technical growth, use [[sources/system-design-course|System Design Course]] as a roadmap, [[sources/retaining-cs-knowledge|Retaining Computer Science Knowledge]] as the retention mechanic, and [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]] as the long-term memory layer.
 
+AI-assisted learning should preserve ownership. Supportive AI use explains, critiques, explores tradeoffs, and tests assumptions. Risky AI use bypasses effort, accepts generated work blindly, or delegates debugging without understanding. Reflection before, during, and after AI use helps keep leverage from becoming dependency.
+
 ## Source Support
 
 - [[sources/learn-from-course-content|How to Learn from Course Content Without Paying for It]]
 - [[sources/retaining-cs-knowledge|Retaining Computer Science Knowledge]]
 - [[sources/karpathy-second-brain-article|Karpathy Second Brain Article]]
+- [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]
 

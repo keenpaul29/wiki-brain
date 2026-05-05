@@ -46,6 +46,14 @@ AI reduces the cost of producing code and summaries. That makes structure, verif
 
 [[sources/agent-skills-real-engineers|Agent Skills for Real Engineers]] and [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]] add the collaboration layer. Effective AI work depends on alignment questions, shared language, durable decisions, and human distillation rather than generic generated prose.
 
+[[sources/webpack-tree-shaking-performance|Improving Site Performance With Webpack Tree Shaking]] adds a concrete modernization case study: mechanical migrations and build-tool optimizations can produce large performance gains, but only when paired with staged rollout, reviewable changes, and production verification.
+
+The 2026-05-05 ingest adds a stronger production operations thread. [[sources/fastapi-0-115-migration|FastAPI 0.115 Migration Breakages]] shows framework upgrades as reliability work, not routine dependency churn. [[sources/production-ai-failure-modes|Beyond Shipped - Production AI Failure Modes]], [[sources/local-llm-serving-mental-model|Local LLM Serving Mental Model]], and [[sources/local-llm-serving-operational-playbook|Local LLM Serving Operational Playbook]] turn AI deployment into concrete system design: grounding, evals, KV cache, context length, model residency, queueing, and p99 latency.
+
+The same ingest expands the agent-learning loop. [[sources/claude-code-best-practices|Claude Code Best Practices]] and [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]] argue for persistent configuration, scoped context, skills, hooks, and memory architectures that retrieve, compile, or act depending on the job.
+
+Finally, [[sources/unlock-system-design-production|Unlock Production System Design Case Study]], [[sources/docker-image-security-optimization|Docker Image Security and Optimization]], [[sources/podman-python-deploys|Podman for Faster Python Deploys]], [[sources/frontend-skills-2026|Frontend Skills Beyond React in 2026]], and [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]] add a practical reminder: AI-era growth still depends on conventional engineering fundamentals, deliberate tool choice, and understanding that keeps pace with output.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:
@@ -56,6 +64,8 @@ Use the expanded system design notes as a study spine:
 4. [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] for component interaction.
 5. [[concepts/reliability-and-operations|Reliability and Operations]] for production survival.
 6. [[concepts/system-design-case-studies|System Design Case Studies]] for applying the patterns.
+7. [[concepts/frontend-build-performance|Frontend Build Performance]] for client-side bundle and build-tool optimization.
+8. [[concepts/local-llm-serving|Local LLM Serving]] for inference latency, context, KV cache, and serving operations.
 
 ## Everyday Workflow
 

@@ -34,7 +34,13 @@ Self-improving agent workflows capture feedback from human-agent sessions and co
 
 This wiki uses the same basic pattern at the knowledge-base level. Raw sources are captured in `raw/`; the maintained lessons live in `wiki/`; [[automation]] and [[maintenance]] define how future runs keep the system current. The daily auto-update job is a simpler cousin of the hook workflow: scan for new signal, integrate it into durable markdown, and preserve the result for future sessions.
 
+## Skills and Hooks
+
+Agent workflows become more reliable when recurring behavior is encoded as commands, skills, hooks, and permission-bounded agents. Hooks can run formatting, guard risky actions, and verify completion. Skills are most useful when they capture tested gotchas and operational protocol rather than generic explanations. Fat-skill systems go further by letting workflows run on triggers or schedules and file the results back into persistent memory.
+
 ## Source Support
 
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]]
+- [[sources/claude-code-best-practices|Claude Code Best Practices]]
+- [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
 
