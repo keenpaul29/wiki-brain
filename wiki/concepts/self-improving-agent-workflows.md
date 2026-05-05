@@ -38,9 +38,14 @@ This wiki uses the same basic pattern at the knowledge-base level. Raw sources a
 
 Agent workflows become more reliable when recurring behavior is encoded as commands, skills, hooks, and permission-bounded agents. Hooks can run formatting, guard risky actions, and verify completion. Skills are most useful when they capture tested gotchas and operational protocol rather than generic explanations. Fat-skill systems go further by letting workflows run on triggers or schedules and file the results back into persistent memory.
 
+## Project Operating Layer
+
+A maintainable agent setup needs a clear filesystem shape. Keep global project context in a compact root instruction file, keep operational controls in obvious settings files, and move specialized guidance into modular rule files. Commands, hooks, skills, and agents should each have a distinct home so reusable behavior can grow without turning the main instruction file into an overloaded prompt dump.
+
 ## Source Support
 
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]]
 - [[sources/claude-code-best-practices|Claude Code Best Practices]]
+- [[sources/claude-folder-structure|How to Structure .claude Folder]]
 - [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
 

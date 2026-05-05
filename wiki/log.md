@@ -131,3 +131,12 @@ Processed new raw sources:
 Added source summaries for FastAPI migration risk, production AI failure modes, Claude Code practices, Podman deploys, Electron screen-capture protection, Docker image security, local LLM serving mental model and operations, RAG/wiki/GBrain memory architectures, LLM task-fit selection, the Unlock system-design case study, AI developer cognitive archetypes, and frontend skills beyond React.
 
 Created [[concepts/local-llm-serving|Local LLM Serving]]. Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/system-design|System Design]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/frontend-build-performance|Frontend Build Performance]], [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]], [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
+## [2026-05-05] ingest | Claude folder structure and Unlock refresh
+
+Processed new/changed raw sources:
+
+- `raw/How to Structure .claude Folder for Maximum Efficiency.md`
+- `raw/tech skills vs system design Unlock case study in Production.md`
+
+Added [[sources/claude-folder-structure|How to Structure .claude Folder]] for Claude Code project structure: root instructions, `.claude/settings.json`, modular rules, hooks, commands, skills, agents, and local overrides. Refreshed [[sources/unlock-system-design-production|Unlock Production System Design Case Study]] with source publication metadata and a sharper note on the false dichotomy between implementation skill and system design. Updated [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].

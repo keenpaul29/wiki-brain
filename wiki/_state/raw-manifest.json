@@ -66,6 +66,12 @@
         "last_write_time":  "2026-05-05T18:54:06.7451385+05:30"
     },
     {
+        "path":  "raw/How to Structure .claude Folder for Maximum Efficiency.md",
+        "sha256":  "c352dcd77d44e70bbf87b56da561f91285d87c66fd42eb5095af478e1f6255e4",
+        "length":  15455,
+        "last_write_time":  "2026-05-05T19:26:19.1929978+05:30"
+    },
+    {
         "path":  "raw/How to Use Google Stitch\u0027s Design.md File with Claude Code for Consistent UI.md",
         "sha256":  "f6e58b0c3f993255adec22b3bc64e9d8bcb837f4b4e6ec77bc311eefd1437aa3",
         "length":  17334,
@@ -145,9 +151,9 @@
     },
     {
         "path":  "raw/tech skills vs system design Unlock case study in Production.md",
-        "sha256":  "ef9c05fd2fbd25aef5eb4f95b160bf83ffd231d370cf400b002d4d0ae0883d8c",
-        "length":  6288,
-        "last_write_time":  "2026-05-05T19:07:36.8332322+05:30"
+        "sha256":  "9af5318203f0cdb607f3d473c2f80977c7112a475cc7832fe1aef4f905d314df",
+        "length":  6235,
+        "last_write_time":  "2026-05-05T19:20:22.6753834+05:30"
     },
     {
         "path":  "raw/The 4 Cognitive Archetypes of Developers Using AI.md",

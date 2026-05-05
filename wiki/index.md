@@ -51,6 +51,7 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/fastapi-0-115-migration|FastAPI 0.115 Migration Breakages]] - A production upgrade case covering stricter dependencies, response validation, CORS, WebSockets, background tasks, and rollout.
 - [[sources/production-ai-failure-modes|Beyond Shipped - Production AI Failure Modes]] - Production AI risks around grounding, retrieval, latency, memory, agents, tools, security, cost, and evaluation.
 - [[sources/claude-code-best-practices|Claude Code Best Practices]] - Agentic engineering patterns for scoped instructions, commands, agents, skills, hooks, context, worktrees, and verification.
+- [[sources/claude-folder-structure|How to Structure .claude Folder]] - Organizing Claude Code instructions, settings, rules, hooks, commands, skills, agents, and local overrides.
 - [[sources/podman-python-deploys|Podman for Faster Python Deploys]] - A Python deployment case study focused on container build speed, rootless operation, and systemd integration.
 - [[sources/electron-screen-capture-protection|Electron Screen Capture Protection]] - OS-level and Electron window-management patterns for content-protected overlays and capture testing.
 - [[sources/docker-image-security-optimization|Docker Image Security and Optimization]] - Multi-stage builds, lightweight bases, cacheable Dockerfiles, rootless mode, daemon protection, and image scanning.

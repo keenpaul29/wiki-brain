@@ -52,7 +52,7 @@ There is no single "best" LLM for all work. Model choice should follow the cogni
 
 ## Agentic Engineering Practice
 
-Agentic coding works better when constraints live in project structure rather than repeated prompts: compact scoped instruction files, reusable commands, permission-bounded agents, skills with gotchas, isolated context for heavy analysis, hooks for formatting and verification, and worktrees for parallel work. The pattern is the same as ordinary engineering: make important behavior repeatable and enforceable.
+Agentic coding works better when constraints live in project structure rather than repeated prompts: compact scoped instruction files, modular rules, reusable commands, permission-bounded agents, skills with gotchas, isolated context for heavy analysis, hooks for formatting and verification, and worktrees for parallel work. The pattern is the same as ordinary engineering: make important behavior repeatable and enforceable.
 
 ## Production AI Systems
 
@@ -72,6 +72,7 @@ Once an AI feature ships, the hard work moves to grounding, retrieval quality, i
 - [[sources/fastapi-0-115-migration|FastAPI 0.115 Migration Breakages]]
 - [[sources/production-ai-failure-modes|Beyond Shipped - Production AI Failure Modes]]
 - [[sources/claude-code-best-practices|Claude Code Best Practices]]
+- [[sources/claude-folder-structure|How to Structure .claude Folder]]
 - [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
 - [[sources/stop-using-wrong-llm|Stop Using the Wrong LLM]]
 - [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]

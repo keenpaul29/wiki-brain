@@ -185,6 +185,7 @@
   },
   "active": "100cb724e755975f",
   "lastOpenFiles": [
+    "wiki/sources/claude-folder-structure.md",
     "raw/How to Structure .claude Folder for Maximum Efficiency.md",
     "wiki/log.md",
     "wiki/concepts/infrastructure-primitives.md",
@@ -211,7 +212,6 @@
     "wiki/sources/stop-feeding-me-ai-slop.md",
     "wiki/sources/self-evolving-hooks.md",
     "wiki/sources/retaining-cs-knowledge.md",
-    "wiki/sources/openmythos.md",
     "wiki/_state",
     "wiki/synthesis",
     "wiki/sources",
