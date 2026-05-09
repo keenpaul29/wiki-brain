@@ -22,6 +22,10 @@ An LLM-maintained wiki is a persistent markdown knowledge base compiled from raw
 
 The human and LLM have separate jobs. The human curates sources, asks questions, checks emphasis, and decides what matters. The LLM handles the maintenance labor: summarizing, filing, cross-linking, revising old pages, and keeping navigation current.
 
+## Control Files and Cadence
+
+A wiki stops being an ad hoc notes folder when it has control files. An active cache, a pending queue, and an audit log separate current context, unprocessed source material, and maintenance history. Cadence also matters: mechanical daily scans can run with low risk, weekly compilation can do interpretation, and monthly linting can diagnose stale or orphaned pages without silently rewriting the corpus.
+
 ## Why It Matters
 
 The wiki turns reading into a compounding process. The current source set suggests this is especially useful for learning technical material: [[sources/system-design-course|System Design Course]] supplies a curriculum, [[sources/retaining-cs-knowledge|Retaining Computer Science Knowledge]] supplies review mechanics, and this wiki pattern supplies durable organization.
@@ -64,3 +68,4 @@ The wiki should preserve thinking, not just generated text. Source summaries and
 - [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]]
 - [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
 - [[sources/claude-code-best-practices|Claude Code Best Practices]]
+- [[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]]

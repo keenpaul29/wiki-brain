@@ -43,8 +43,13 @@ The [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]] source a
 
 Implementation skill and system design are complementary. The Unlock case study shows how a team can ship quickly with strong coding ability while still carrying hidden architecture risk: one instance, one database, no caching, no rate limits, no circuit breakers, and no observability. System design turns feature velocity into production durability by making scaling paths, failure modes, and operational controls explicit before traffic proves the gap.
 
+## Access Pattern First
+
+Even small data-structure choices follow system-design logic: start from access patterns. Pure membership checks point toward hash sets; mostly static ordered data can use sorted arrays and binary search; ordered range queries need tree-like structures; memory-constrained membership may justify probabilistic structures.
+
 ## Source Support
 
 - [[sources/system-design-course|System Design Course]]
 - [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]]
 - [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]
+- [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]]

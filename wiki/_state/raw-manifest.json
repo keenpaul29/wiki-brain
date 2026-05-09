@@ -42,16 +42,34 @@
         "last_write_time":  "2026-05-05T18:35:39.7718755+05:30"
     },
     {
+        "path":  "raw/Enhance productivity with AI + Remote Dev.md",
+        "sha256":  "a193c5e4920616b875c8ba518e434f342ca0ed4263b45c3bf2ade841d1e6434d",
+        "length":  12521,
+        "last_write_time":  "2026-05-08T12:46:07.5082614+05:30"
+    },
+    {
         "path":  "raw/GPT-5.5 Agents Replaced My Python Backend. 83% Cost Cut.  by inprogrammer.md",
         "sha256":  "f0103609881e0fa0b74fc5326af5e6bcf8f7ae55ace22ea4fe7e92fa66c3ac79",
         "length":  10645,
         "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
     },
     {
+        "path":  "raw/How I Get 100% Out of AI When Coding — The Workflow Nobody Taught Me  by Udara Abeythilake  in Level Up Coding.md",
+        "sha256":  "c274e862d581506e69dc5057930ffad296e4e9da3544fb9bfe91df9730881c3f",
+        "length":  14313,
+        "last_write_time":  "2026-05-09T14:45:30.0219252+05:30"
+    },
+    {
         "path":  "raw/How I Made a Desktop App Invisible to Screen Sharing (Electron + OS-Level Tricks).md",
         "sha256":  "0529bc89f8af6be3897f141f6fe482045bfee964be7c814fe5f094ae17a470ef",
         "length":  38492,
         "last_write_time":  "2026-05-05T18:47:27.9425093+05:30"
+    },
+    {
+        "path":  "raw/How To Build An AI Brain That Never Forgets.md",
+        "sha256":  "ee47b4efe22c6be8d2cf975236bc72db765f33376b40cf044cb0e5d7890742db",
+        "length":  17157,
+        "last_write_time":  "2026-05-08T12:37:44.8073175+05:30"
     },
     {
         "path":  "raw/How to Learn from Course Content Without Paying for It.md",
@@ -70,6 +88,12 @@
         "sha256":  "c352dcd77d44e70bbf87b56da561f91285d87c66fd42eb5095af478e1f6255e4",
         "length":  15455,
         "last_write_time":  "2026-05-05T19:26:19.1929978+05:30"
+    },
+    {
+        "path":  "raw/How to Use AI at Work Without Breaking Your Systems.md",
+        "sha256":  "6165ab322385b7c5ded3c5f409a0787de2425cc98bf6d2ecae7250fd6668457d",
+        "length":  7033,
+        "last_write_time":  "2026-05-08T12:16:26.2792384+05:30"
     },
     {
         "path":  "raw/How to Use Google Stitch\u0027s Design.md File with Claude Code for Consistent UI.md",
@@ -94,6 +118,12 @@
         "sha256":  "148ecf81c7b1e7847ac142a1d270d227b21b250d4b5695f4e5391846098b6a26",
         "length":  9641,
         "last_write_time":  "2026-05-05T18:19:28.5160178+05:30"
+    },
+    {
+        "path":  "raw/Junior Devs Use try-catch Everywhere. Senior Devs Use These 4 Exception Handling Patterns.md",
+        "sha256":  "154725a0eb41e2086d54e3635cc9dda1b8ea6d8e089342d387948037d2846360",
+        "length":  12063,
+        "last_write_time":  "2026-05-09T10:49:06.3834743+05:30"
     },
     {
         "path":  "raw/Learn how to design systems at scale and prepare for system design interviews.md",
@@ -144,6 +174,12 @@
         "last_write_time":  "2026-04-28T17:38:08.8828837+05:30"
     },
     {
+        "path":  "raw/Stop Memorizing Design Patterns Use This Decision Tree Instead  by Alina Kovtun✨  in Women in Technology.md",
+        "sha256":  "947d256832beae802057a15226b1ebfec28d61d1e9b89048ee37e1f073071df3",
+        "length":  14554,
+        "last_write_time":  "2026-05-09T10:48:37.5294045+05:30"
+    },
+    {
         "path":  "raw/Stop Using the Wrong LLM  by Jose Crespo, PhD  in AI Advances.md",
         "sha256":  "5f887ba8976c3848c9247c554fb22fd0e29ce9096cba290d4fd334f7df13c787",
         "length":  19656,
@@ -160,6 +196,12 @@
         "sha256":  "cb6d0692d14af4226b8c15cf3955cc2b3b1ac52d00526c382ab5d98267f0448f",
         "length":  5778,
         "last_write_time":  "2026-05-05T19:07:36.8657658+05:30"
+    },
+    {
+        "path":  "raw/The Dictionary Problem Fast Lookups in Large Collections.md",
+        "sha256":  "6e18c241c40141be9c77e745ed25bd479b812f2e3cc19731f811a7334135ddd3",
+        "length":  15509,
+        "last_write_time":  "2026-05-08T11:48:38.5877648+05:30"
     },
     {
         "path":  "raw/The technology behind Amazon’s GenAI-powered shopping assistant, Rufus.md",

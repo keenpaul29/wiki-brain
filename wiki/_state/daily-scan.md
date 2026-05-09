@@ -1,28 +1,28 @@
 ﻿---
 title: Daily Wiki Scan
 type: state
-updated: 2026-05-05
+updated: 2026-05-09
 ---
 
 # Daily Wiki Scan
 
-Generated: 2026-05-05 19:37:21 +05:30
+Generated: 2026-05-09 14.49.43 +05:30
 
 ## Summary
 
-- Raw files: 29
-- New files: 1
-- Changed files: 1
+- Raw files: 36
+- New files: 0
+- Changed files: 0
 - Deleted files: 0
 - State committed: True
 
 ## New Files
 
-- `raw/How to Structure .claude Folder for Maximum Efficiency.md`
+- None
 
 ## Changed Files
 
-- `raw/tech skills vs system design Unlock case study in Production.md`
+- None
 
 ## Deleted Files
 

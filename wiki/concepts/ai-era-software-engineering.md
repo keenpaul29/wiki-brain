@@ -54,6 +54,22 @@ There is no single "best" LLM for all work. Model choice should follow the cogni
 
 Agentic coding works better when constraints live in project structure rather than repeated prompts: compact scoped instruction files, modular rules, reusable commands, permission-bounded agents, skills with gotchas, isolated context for heavy analysis, hooks for formatting and verification, and worktrees for parallel work. The pattern is the same as ordinary engineering: make important behavior repeatable and enforceable.
 
+## Context-First Delivery Workflow
+
+AI coding quality improves when teams formalize a context-first workflow: provide full requirement artifacts, force an implementation plan before code, challenge plan assumptions with domain context, execute in small reviewable steps, and keep test generation inside the same review loop. This keeps AI as a multiplier for judgment rather than a shortcut around it.
+
+## Remote and Sandboxed Context
+
+Remote development makes agent context and permissions explicit. SSH hosts, dev containers, WSL environments, tunnels, and Codespaces may each have different toolchains, credentials, and blast radius. Environment-specific instructions help AI reason correctly, while scoped approvals and sandboxed targets keep agentic execution from touching sensitive local or production systems by default.
+
+## AI Safety Boundary
+
+AI coding assistants should propose changes, commands, and infrastructure edits; humans and controlled delivery systems should verify and execute them. Critical paths need scoped credentials, command review, backups, staging, CI/CD gates, and pull requests. This is the operational version of AI-era accountability: speed is useful only when the human remains responsible for consequences.
+
+## Design Judgment
+
+Generated code can make over-abstraction cheaper, which raises the importance of design discipline. Patterns such as Builder, Adapter, Facade, Strategy, and Chain of Responsibility should be chosen from observed code pain: creation complexity, boundary leakage, or changing behavior. The pattern is not the goal; localizing a recurring cost is.
+
 ## Production AI Systems
 
 Once an AI feature ships, the hard work moves to grounding, retrieval quality, inference latency, memory design, tool reliability, prompt-injection defense, cost control, and evaluation. Production AI should be treated as a distributed system with traces, fallbacks, deterministic orchestration boundaries, and offline/online eval loops.
@@ -77,3 +93,8 @@ Once an AI feature ships, the hard work moves to grounding, retrieval quality, i
 - [[sources/stop-using-wrong-llm|Stop Using the Wrong LLM]]
 - [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]
 - [[sources/frontend-skills-2026|Frontend Skills Beyond React in 2026]]
+- [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]]
+- [[sources/ai-work-safety|How to Use AI at Work Without Breaking Your Systems]]
+- [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]]
+- [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]]
+- [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]

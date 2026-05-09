@@ -42,10 +42,15 @@ Agent workflows become more reliable when recurring behavior is encoded as comma
 
 A maintainable agent setup needs a clear filesystem shape. Keep global project context in a compact root instruction file, keep operational controls in obvious settings files, and move specialized guidance into modular rule files. Commands, hooks, skills, and agents should each have a distinct home so reusable behavior can grow without turning the main instruction file into an overloaded prompt dump.
 
+## Environment-Aware Automation
+
+Remote and containerized development environments can carry their own agent instructions. This lets an assistant know which toolchains are installed, which commands are safe, and what kind of machine it is operating in. The same principle applies to wiki automation: preserve durable rules near the workspace and use logs or queues so scheduled jobs coordinate instead of re-discovering state each run.
+
 ## Source Support
 
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]]
 - [[sources/claude-code-best-practices|Claude Code Best Practices]]
 - [[sources/claude-folder-structure|How to Structure .claude Folder]]
 - [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
-
+- [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]]
+- [[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]]

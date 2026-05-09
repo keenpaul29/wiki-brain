@@ -46,9 +46,13 @@ Data choices determine much of a system's scalability, correctness, and operatio
 - Indexes speed reads but add write cost and storage overhead.
 - Normalization reduces redundancy; denormalization can improve read performance.
 
+## Lookup Structures
+
+Dictionary-style lookups are a basic form of data-system design. Unsorted arrays optimize simplicity and appends but make membership checks O(n). Sorted arrays support binary-search lookups with low memory overhead but make inserts and deletes expensive. Hash tables are the default for unordered membership and key-value access because average lookup, insert, and delete are O(1), while balanced binary search trees preserve ordering for range queries and predecessor/successor operations.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
 - Related: [[concepts/system-design-case-studies|System Design Case Studies]]
 - Source: [[sources/system-design-course|System Design Course]]
-
+- Source: [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]]

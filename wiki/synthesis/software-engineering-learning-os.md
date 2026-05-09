@@ -54,6 +54,10 @@ The same ingest expands the agent-learning loop. [[sources/claude-code-best-prac
 
 Finally, [[sources/unlock-system-design-production|Unlock Production System Design Case Study]], [[sources/docker-image-security-optimization|Docker Image Security and Optimization]], [[sources/podman-python-deploys|Podman for Faster Python Deploys]], [[sources/frontend-skills-2026|Frontend Skills Beyond React in 2026]], and [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]] add a practical reminder: AI-era growth still depends on conventional engineering fundamentals, deliberate tool choice, and understanding that keeps pace with output.
 
+The 2026-05-08 ingest tightens the operating layer. [[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]] reinforces the raw/wiki split, schema files, queues, logs, and cadenced automation. [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]] and [[sources/ai-work-safety|How to Use AI at Work Without Breaking Your Systems]] add environment-aware instructions and safety boundaries for agentic execution. [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]] and [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]] add conventional engineering judgment: choose abstractions and data structures from concrete pain and access patterns.
+
+The 2026-05-09 ingest reinforces execution discipline. [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] emphasizes requirement fidelity, plan-first implementation, clarification loops, and stepwise review gates. [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]] sharpens reliability practice by separating expected outcomes from exceptional failures and centralizing operational error handling.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:
@@ -66,6 +70,7 @@ Use the expanded system design notes as a study spine:
 6. [[concepts/system-design-case-studies|System Design Case Studies]] for applying the patterns.
 7. [[concepts/frontend-build-performance|Frontend Build Performance]] for client-side bundle and build-tool optimization.
 8. [[concepts/local-llm-serving|Local LLM Serving]] for inference latency, context, KV cache, and serving operations.
+9. [[concepts/software-design-patterns|Software Design Patterns]] for choosing abstractions from code pain rather than memorized names.
 
 ## Everyday Workflow
 

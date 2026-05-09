@@ -42,6 +42,8 @@ Agent-backed production paths need reliability controls that ordinary request ha
 
 Production AI systems add specific failure modes: weak retrieval, hallucinated answers, agent loops, tool-call failures, prompt injection, runaway inference cost, inconsistent output format, and missing evaluation gates. Mature systems separate probabilistic decisions from deterministic execution, enforce step limits, validate tool inputs and outputs, replay traces, and run both offline regression evals and online drift checks.
 
+AI-assisted engineering also needs operational guardrails before code reaches production. Destructive commands, database resets, infrastructure deletion, and deployment changes should require human review, scoped credentials, backups, staging, CI/CD gates, and auditable approval steps. Remote or containerized agent environments reduce blast radius only when their credentials and mounts are also bounded.
+
 Local LLM serving needs its own operational telemetry. Prefill duration, decode duration, token counts, queue depth, GPU memory, loaded models, truncation checks, and p50/p95/p99 latency by request type are required to distinguish prefill, decode, queuing, eviction, and memory pressure problems.
 
 ## Security and Identity
@@ -58,6 +60,10 @@ Local LLM serving needs its own operational telemetry. Prefill duration, decode 
 
 Framework upgrades can make systems safer while still breaking production behavior. FastAPI `0.115` examples include stricter dependency signatures, response validation, CORS enforcement, WebSocket disconnect handling, optional query typing, and serializer changes. The safe pattern is to categorize failures, fix critical paths first, test with real frontend/configuration behavior, and roll out gradually with monitoring.
 
+## Exception Taxonomy and Error Surfacing
+
+Operational reliability depends on classifying failures correctly. Expected business outcomes should remain explicit control flow, while exceptional failures should propagate into centralized handlers, structured logs, and alerting paths. Blanket `try-catch` blocks that swallow context reduce observability and delay incident detection.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -73,3 +79,6 @@ Framework upgrades can make systems safer while still breaking production behavi
 - Source: [[sources/docker-image-security-optimization|Docker Image Security and Optimization]]
 - Source: [[sources/podman-python-deploys|Podman for Faster Python Deploys]]
 - Source: [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]
+- Source: [[sources/ai-work-safety|How to Use AI at Work Without Breaking Your Systems]]
+- Source: [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]]
+- Source: [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]

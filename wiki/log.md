@@ -140,3 +140,27 @@ Processed new/changed raw sources:
 - `raw/tech skills vs system design Unlock case study in Production.md`
 
 Added [[sources/claude-folder-structure|How to Structure .claude Folder]] for Claude Code project structure: root instructions, `.claude/settings.json`, modular rules, hooks, commands, skills, agents, and local overrides. Refreshed [[sources/unlock-system-design-production|Unlock Production System Design Case Study]] with source publication metadata and a sharper note on the false dichotomy between implementation skill and system design. Updated [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
+## [2026-05-08] ingest | Remote AI, AI safety, wiki cadence, patterns, and lookup structures
+
+Processed new raw sources:
+
+- `raw/Enhance productivity with AI + Remote Dev.md`
+- `raw/How To Build An AI Brain That Never Forgets.md`
+- `raw/How to Use AI at Work Without Breaking Your Systems.md`
+- `raw/Stop Memorizing Design Patterns Use This Decision Tree Instead  by Alina Kovtun✨  in Women in Technology.md`
+- `raw/The Dictionary Problem Fast Lookups in Large Collections.md`
+
+Added source summaries for AI-aware remote development, local AI brain architecture, workplace AI safety guardrails, design-pattern selection, and dictionary lookup data structures. Created [[concepts/software-design-patterns|Software Design Patterns]]. Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]], [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/data-storage-and-consistency|Data Storage and Consistency]], [[concepts/system-design|System Design]], [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
+## [2026-05-09] ingest | Context-first AI coding and exception handling patterns
+
+Processed new/changed raw sources:
+
+- `raw/How I Get 100% Out of AI When Coding — The Workflow Nobody Taught Me  by Udara Abeythilake  in Level Up Coding.md`
+- `raw/Junior Devs Use try-catch Everywhere. Senior Devs Use These 4 Exception Handling Patterns.md`
+- `raw/Stop Memorizing Design Patterns Use This Decision Tree Instead  by Alina Kovtun✨  in Women in Technology.md` (changed)
+
+Added new source summaries: [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] and [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]. Refreshed [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]] with stronger decision-tree framing and applied scenarios.
+
+Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/reliability-and-operations|Reliability and Operations]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]] to integrate planning-first AI execution and explicit expected-vs-exceptional failure handling.

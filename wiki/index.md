@@ -29,6 +29,7 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/recurrent-depth-transformers|Recurrent-Depth Transformers]] - Looped transformer architectures, latent reasoning, stability, MoE breadth, and inference-time depth.
 - [[concepts/frontend-build-performance|Frontend Build Performance]] - Tree shaking, module-system migration, bundle footprint, and rollout strategy for frontend optimization.
 - [[concepts/local-llm-serving|Local LLM Serving]] - Prefill/decode, KV cache, context length, scheduler, and observability patterns for local model serving.
+- [[concepts/software-design-patterns|Software Design Patterns]] - Choosing design patterns from concrete creation, structure, or behavior pain.
 
 ## Sources
 
@@ -62,6 +63,13 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/unlock-system-design-production|Unlock Production System Design Case Study]] - A rewards-platform outage and recovery showing why implementation skill and system design must reinforce each other.
 - [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]] - A reflection framework for supportive, mixed, and risky AI use in developer workflows.
 - [[sources/frontend-skills-2026|Frontend Skills Beyond React in 2026]] - TypeScript, App Router, Tailwind, AI UX, and performance skills beyond baseline React knowledge.
+- [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]] - VS Code remote development workflows with AI context, chat participants, and tool approvals.
+- [[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]] - A local markdown AI brain built from raw files, wiki pages, schema files, queues, logs, and cadenced automation.
+- [[sources/ai-work-safety|How to Use AI at Work Without Breaking Your Systems]] - AI coding assistant guardrails for production access, destructive commands, backups, and deployment gates.
+- [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]] - Selecting OO design patterns by identifying creation, structure, or behavior pain.
+- [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]] - Data-structure tradeoffs for membership and key-value lookup workloads.
+- [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] - A plan-first, context-rich AI coding workflow with review gates and clarification loops.
+- [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]] - Validation-first error handling, typed exceptions, centralized handlers, and expected-failure result types.
 
 ## Maintenance Notes
 

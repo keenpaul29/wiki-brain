@@ -44,9 +44,13 @@ Microservices are not a default upgrade. The source explicitly warns about distr
 
 The microservices-vs-monoliths source reinforces the same rule from a team-and-operations angle: start simple when the system and organization are still small, then extract services only when independent scaling, deployment, ownership, or technology choices justify the added failure modes.
 
+Object-oriented design patterns follow the same caution. Adapter, Facade, Strategy, Chain of Responsibility, and related patterns are useful when they respond to a named friction such as boundary mismatch, unsafe subsystem access, or changing behavior. Used without that pain, they add indirection without improving the architecture.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
 - Related: [[concepts/infrastructure-primitives|Infrastructure Primitives]]
+- Related: [[concepts/software-design-patterns|Software Design Patterns]]
 - Source: [[sources/system-design-course|System Design Course]]
 - Source: [[sources/microservices-vs-monoliths|Microservices vs. Monoliths]]
+- Source: [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]]
