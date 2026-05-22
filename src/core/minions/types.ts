@@ -449,6 +449,8 @@ export interface SubagentHandlerData {
    * and direct CLI submitters set it.
    */
   allowed_slug_prefixes?: string[];
+  /** Resolved source id (v0.18.0). Scopes repository within a brain. */
+  source_id?: string;
 }
 
 /**

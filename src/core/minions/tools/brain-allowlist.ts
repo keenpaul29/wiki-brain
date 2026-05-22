@@ -163,6 +163,8 @@ export interface BuildBrainToolsOpts {
    * SubagentHandlerData.allowed_slug_prefixes via the handler.
    */
   allowedSlugPrefixes?: readonly string[];
+  /** Resolved source id (v0.18.0). */
+  sourceId?: string;
 }
 
 interface OpContextDeps {
@@ -173,6 +175,7 @@ interface OpContextDeps {
   signal?: AbortSignal;
   brainId?: string;
   allowedSlugPrefixes?: readonly string[];
+  sourceId?: string;
 }
 
 function buildOpContext(deps: OpContextDeps): OperationContext {
@@ -193,6 +196,7 @@ function buildOpContext(deps: OpContextDeps): OperationContext {
     allowedSlugPrefixes: deps.allowedSlugPrefixes
       ? [...deps.allowedSlugPrefixes]
       : undefined,
+    sourceId: deps.sourceId,
   };
 }
 
@@ -235,6 +239,7 @@ export function buildBrainTools(opts: BuildBrainToolsOpts): ToolDef[] {
           signal: ctx.signal,
           brainId: opts.brainId,
           allowedSlugPrefixes: opts.allowedSlugPrefixes,
+          sourceId: opts.sourceId,
         });
         const params = (input && typeof input === 'object') ? input as Record<string, unknown> : {};
         return op.handler(opCtx, params);

@@ -131,6 +131,7 @@ export interface PostFusionOpts {
   recency: 'off' | 'on' | 'strong';
   decayMap?: import('./recency-decay.ts').RecencyDecayMap;
   fallback?: import('./recency-decay.ts').RecencyDecayConfig;
+  sourceId?: string;
 }
 
 export async function runPostFusionStages(
@@ -144,7 +145,7 @@ export async function runPostFusionStages(
   if (opts.applyBacklinks) {
     try {
       const slugs = Array.from(new Set(results.map(r => r.slug)));
-      const counts = await engine.getBacklinkCounts(slugs);
+      const counts = await engine.getBacklinkCounts(slugs, { sourceId: opts.sourceId });
       applyBacklinkBoost(results, counts);
     } catch {
       // Non-fatal; preserves the existing pre-v0.29.1 contract.
@@ -269,10 +270,11 @@ export async function hybridSearch(
     undefined;
   const salienceMode: 'off' | 'on' | 'strong' = opts?.salience ?? suggestions.suggestedSalience;
   const recencyMode: 'off' | 'on' | 'strong' = opts?.recency ?? legacyRecency ?? suggestions.suggestedRecency;
-  const postFusionOpts = {
+  const postFusionOpts: PostFusionOpts = {
     applyBacklinks: true,
     salience: salienceMode,
     recency: recencyMode,
+    sourceId: opts?.sourceId,
   };
 
   // Skip vector search entirely if the gateway has no embedding provider configured (Codex C3).

@@ -58,6 +58,8 @@ The 2026-05-08 ingest tightens the operating layer. [[sources/ai-brain-never-for
 
 The 2026-05-09 ingest reinforces execution discipline. [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] emphasizes requirement fidelity, plan-first implementation, clarification loops, and stepwise review gates. [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]] sharpens reliability practice by separating expected outcomes from exceptional failures and centralizing operational error handling.
 
+The 2026-05-19 ingest adds a sharper learning guardrail. [[sources/dont-outsource-learning|Don't Outsource the Learning]] argues that AI coding workflows need two explicit metrics: what shipped and what the engineer learned. The practical operating rule is to form a hypothesis before prompting, ask for explanation and tradeoffs before generated code in unfamiliar areas, and treat model output as reviewable work rather than a substitute for comprehension.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:
@@ -80,6 +82,7 @@ Use the expanded system design notes as a study spine:
 4. Turn important concepts into flash cards or practice prompts.
 5. Ask a question against the wiki and file strong answers back as synthesis pages.
 6. Periodically lint for contradictions, stale claims, missing links, and orphan pages.
+7. Promote recurring terms and lightweight decisions into [[concepts/shared-engineering-language|Shared Engineering Language]] so future sessions share the same vocabulary.
 
 ## Automation Layer
 
@@ -90,4 +93,3 @@ The daily workflow is now documented in [[automation]]. A helper script scans `r
 - Which technical topics should get dedicated practice plans first: distributed systems, databases, networking, or LLM architecture?
 - Should the wiki include flash-card export pages for spaced repetition?
 - Should future ingests create one page per system design primitive, or keep primitives grouped until the wiki grows?
-- Should the wiki maintain a shared engineering language page, similar to a `CONTEXT.md`, for recurring project terms and decisions?

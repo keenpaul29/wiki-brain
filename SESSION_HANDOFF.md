@@ -2,7 +2,7 @@
 title: Session Handoff
 type: state
 created: 2026-05-09
-updated: 2026-05-09
+updated: 2026-05-14
 ---
 
 # Session Handoff
@@ -14,9 +14,9 @@ GBrain is initialized locally and attached to this project.
 - Local brain: `C:\Users\giftlaya\.gbrain\brain.pglite`
 - Project source: `brain`
 - Attached by: `.gbrain-source`
-- Last source sync: 2026-05-09
-- Imported pages: 280
-- Imported chunks: 2427
+- Last source sync: 2026-05-14 architecture pass
+- Imported pages: 282+
+- Imported chunks: 2429+
 - Embedded chunks: 0
 
 ## Work Completed
@@ -26,6 +26,9 @@ GBrain is initialized locally and attached to this project.
 - Ran a text-only full sync for the project.
 - Corrected imported page routing so synced pages belong to source `brain`.
 - Added `GBRAIN_DEV_WORKFLOW.md` so future sessions have exact commands.
+- Added `docs/architecture/project-operating-architecture.md` and `wiki/concepts/project-operating-architecture.md`.
+- Made source-scoped sync/import carry `sourceId` into page, version, tag, and chunk writes.
+- Added a regression test proving `performSync(..., sourceId)` writes pages into the requested source instead of `default`.
 
 ## Open Items
 
@@ -47,4 +50,3 @@ For GBrain project sync, run:
 ```powershell
 bun run src/cli.ts sync --source brain --no-embed --no-pull
 ```
-

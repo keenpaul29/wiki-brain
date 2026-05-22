@@ -189,6 +189,12 @@ export const SECTIONS: DocSection[] = [
         path: "docs/architecture/infra-layer.md",
         includeInFull: false,
       },
+      {
+        title: "docs/architecture/project-operating-architecture.md",
+        description: "Local project operating architecture for GBrain source sync, wiki maintenance, and agent handoff.",
+        path: "docs/architecture/project-operating-architecture.md",
+        includeInFull: false,
+      },
     ],
   },
 ];

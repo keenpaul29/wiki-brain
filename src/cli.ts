@@ -1,18 +1,27 @@
 #!/usr/bin/env bun
 
-import { installSigchldHandler } from './core/zombie-reap.ts';
+import { installSigchldHandler } from "./core/zombie-reap.ts";
 installSigchldHandler();
 
-import { readFileSync } from 'fs';
-import { loadConfig, loadConfigWithEngine, toEngineConfig, isThinClient } from './core/config.ts';
-import type { GBrainConfig } from './core/config.ts';
-import type { AIGatewayConfig } from './core/ai/types.ts';
-import type { BrainEngine } from './core/engine.ts';
-import { operations, OperationError } from './core/operations.ts';
-import type { Operation, OperationContext } from './core/operations.ts';
-import { serializeMarkdown } from './core/markdown.ts';
-import { parseGlobalFlags, setCliOptions, getCliOptions } from './core/cli-options.ts';
-import { VERSION } from './version.ts';
+import { readFileSync } from "fs";
+import {
+  loadConfig,
+  loadConfigWithEngine,
+  toEngineConfig,
+  isThinClient,
+} from "./core/config.ts";
+import type { GBrainConfig } from "./core/config.ts";
+import type { AIGatewayConfig } from "./core/ai/types.ts";
+import type { BrainEngine } from "./core/engine.ts";
+import { operations, OperationError } from "./core/operations.ts";
+import type { Operation, OperationContext } from "./core/operations.ts";
+import { serializeMarkdown } from "./core/markdown.ts";
+import {
+  parseGlobalFlags,
+  setCliOptions,
+  getCliOptions,
+} from "./core/cli-options.ts";
+import { VERSION } from "./version.ts";
 
 // Build CLI name -> operation lookup
 const cliOps = new Map<string, Operation>();
@@ -24,7 +33,68 @@ for (const op of operations) {
 }
 
 // CLI-only commands that bypass the operation layer
-const CLI_ONLY = new Set(['init', 'upgrade', 'post-upgrade', 'check-update', 'integrations', 'publish', 'check-backlinks', 'lint', 'report', 'import', 'export', 'files', 'embed', 'serve', 'call', 'config', 'doctor', 'migrate', 'eval', 'sync', 'extract', 'features', 'autopilot', 'graph-query', 'jobs', 'agent', 'apply-migrations', 'skillpack-check', 'skillpack', 'resolvers', 'integrity', 'repair-jsonb', 'orphans', 'sources', 'mounts', 'dream', 'check-resolvable', 'routing-eval', 'skillify', 'smoke-test', 'providers', 'storage', 'repos', 'code-def', 'code-refs', 'reindex-code', 'reindex-frontmatter', 'code-callers', 'code-callees', 'frontmatter', 'auth', 'friction', 'claw-test', 'book-mirror', 'takes', 'think', 'salience', 'anomalies', 'transcripts', 'remote']);
+const CLI_ONLY = new Set([
+  "init",
+  "upgrade",
+  "post-upgrade",
+  "check-update",
+  "integrations",
+  "publish",
+  "check-backlinks",
+  "lint",
+  "report",
+  "import",
+  "export",
+  "files",
+  "embed",
+  "serve",
+  "call",
+  "config",
+  "doctor",
+  "migrate",
+  "eval",
+  "sync",
+  "extract",
+  "features",
+  "autopilot",
+  "graph-query",
+  "jobs",
+  "agent",
+  "apply-migrations",
+  "skillpack-check",
+  "skillpack",
+  "resolvers",
+  "integrity",
+  "repair-jsonb",
+  "orphans",
+  "sources",
+  "mounts",
+  "dream",
+  "check-resolvable",
+  "routing-eval",
+  "skillify",
+  "smoke-test",
+  "providers",
+  "storage",
+  "repos",
+  "code-def",
+  "code-refs",
+  "reindex-code",
+  "reindex-frontmatter",
+  "code-callers",
+  "code-callees",
+  "frontmatter",
+  "auth",
+  "friction",
+  "claw-test",
+  "book-mirror",
+  "takes",
+  "think",
+  "salience",
+  "anomalies",
+  "transcripts",
+  "remote",
+]);
 
 async function main() {
   // Parse global flags (--quiet / --progress-json / --progress-interval)
@@ -36,18 +106,18 @@ async function main() {
 
   let command = args[0];
 
-  if (!command || command === '--help' || command === '-h') {
+  if (!command || command === "--help" || command === "-h") {
     printHelp();
     return;
   }
 
-  if (command === '--version' || command === 'version') {
+  if (command === "--version" || command === "version") {
     console.log(`gbrain ${VERSION}`);
     return;
   }
 
-  if (command === '--tools-json') {
-    const { printToolsJson } = await import('./commands/tools-json.ts');
+  if (command === "--tools-json") {
+    const { printToolsJson } = await import("./commands/tools-json.ts");
     printToolsJson();
     return;
   }
@@ -55,12 +125,12 @@ async function main() {
   const subArgs = args.slice(1);
 
   // DX alias: `ask` is a natural-language alias for `query`
-  if (command === 'ask') {
-    command = 'query';
+  if (command === "ask") {
+    command = "query";
   }
 
   // Per-command --help
-  if (subArgs.includes('--help') || subArgs.includes('-h')) {
+  if (subArgs.includes("--help") || subArgs.includes("-h")) {
     const op = cliOps.get(command);
     if (op) {
       printOpHelp(op);
@@ -78,7 +148,7 @@ async function main() {
   const op = cliOps.get(command);
   if (!op) {
     console.error(`Unknown command: ${command}`);
-    console.error('Run gbrain --help for available commands.');
+    console.error("Run gbrain --help for available commands.");
     process.exit(1);
   }
 
@@ -90,7 +160,11 @@ async function main() {
     // a filesystem path into base64 bytes + mime. The op accepts base64; the
     // CLI accepts a path. Helper is exported so tests can exercise the
     // transform without spawning a subprocess.
-    if (op.name === 'query' && typeof params.image === 'string' && params.image.length > 0) {
+    if (
+      op.name === "query" &&
+      typeof params.image === "string" &&
+      params.image.length > 0
+    ) {
       try {
         const { path, base64, mime } = resolveQueryImage(
           params.image as string,
@@ -109,19 +183,22 @@ async function main() {
     // `query` op's positional `query` is required only when --image is
     // NOT supplied. The runtime altRequired check below overrides the
     // generic required-flag check for that op.
-    const queryHasAlt = op.name === 'query' && typeof params.image === 'string' && params.image.length > 0;
+    const queryHasAlt =
+      op.name === "query" &&
+      typeof params.image === "string" &&
+      params.image.length > 0;
     for (const [key, def] of Object.entries(op.params)) {
       if (def.required && params[key] === undefined) {
-        if (queryHasAlt && key === 'query') continue;
+        if (queryHasAlt && key === "query") continue;
         const cliName = op.cliHints?.name || op.name;
         const positional = op.cliHints?.positional || [];
-        const usage = positional.map(p => `<${p}>`).join(' ');
+        const usage = positional.map((p) => `<${p}>`).join(" ");
         console.error(`Usage: gbrain ${cliName} ${usage}`);
         process.exit(1);
       }
     }
 
-    const ctx = makeContext(engine, params);
+    const ctx = await makeContext(engine, params);
     const result = await op.handler(ctx, params);
     const output = formatResult(op.name, result);
     if (output) process.stdout.write(output);
@@ -153,22 +230,26 @@ export function resolveQueryImage(
 ): { path: string; base64: string; mime: string } {
   const bytes = readFileSync(imagePath);
   if (bytes.length > 20 * 1024 * 1024) {
-    throw new Error(`Error: image too large (${bytes.length} bytes, max 20MB).`);
+    throw new Error(
+      `Error: image too large (${bytes.length} bytes, max 20MB).`,
+    );
   }
-  const base64 = bytes.toString('base64');
+  const base64 = bytes.toString("base64");
   let mime = explicitMime;
   if (!mime) {
     const lower = imagePath.toLowerCase();
     const mimeFromExt: Record<string, string> = {
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
-      '.gif': 'image/gif',
-      '.webp': 'image/webp',
-      '.heic': 'image/heic', '.heif': 'image/heif',
-      '.avif': 'image/avif',
+      ".png": "image/png",
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".gif": "image/gif",
+      ".webp": "image/webp",
+      ".heic": "image/heic",
+      ".heif": "image/heif",
+      ".avif": "image/avif",
     };
-    const ext = Object.keys(mimeFromExt).find(e => lower.endsWith(e));
-    mime = ext ? mimeFromExt[ext] : 'image/jpeg';
+    const ext = Object.keys(mimeFromExt).find((e) => lower.endsWith(e));
+    mime = ext ? mimeFromExt[ext] : "image/jpeg";
   }
   return { path: imagePath, base64, mime };
 }
@@ -180,28 +261,34 @@ function parseOpArgs(op: Operation, args: string[]): Record<string, unknown> {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg.startsWith('--')) {
-      const key = arg.slice(2).replace(/-/g, '_');
+    if (arg.startsWith("--")) {
+      const key = arg.slice(2).replace(/-/g, "_");
       const paramDef = op.params[key];
-      if (paramDef?.type === 'boolean') {
+      if (paramDef?.type === "boolean") {
         params[key] = true;
       } else if (i + 1 < args.length) {
         params[key] = args[++i];
-        if (paramDef?.type === 'number') params[key] = Number(params[key]);
+        if (paramDef?.type === "number") params[key] = Number(params[key]);
       }
     } else if (posIdx < positional.length) {
       const key = positional[posIdx++];
       const paramDef = op.params[key];
-      params[key] = paramDef?.type === 'number' ? Number(arg) : arg;
+      params[key] = paramDef?.type === "number" ? Number(arg) : arg;
     }
   }
 
   // Read stdin for content params
-  if (op.cliHints?.stdin && !params[op.cliHints.stdin] && !process.stdin.isTTY) {
-    const stdinContent = readFileSync('/dev/stdin', 'utf-8');
+  if (
+    op.cliHints?.stdin &&
+    !params[op.cliHints.stdin] &&
+    !process.stdin.isTTY
+  ) {
+    const stdinContent = readFileSync("/dev/stdin", "utf-8");
     const MAX_STDIN = 5_000_000; // 5MB
-    if (Buffer.byteLength(stdinContent, 'utf-8') > MAX_STDIN) {
-      console.error(`Error: stdin content exceeds ${MAX_STDIN} bytes. Split into smaller inputs.`);
+    if (Buffer.byteLength(stdinContent, "utf-8") > MAX_STDIN) {
+      console.error(
+        `Error: stdin content exceeds ${MAX_STDIN} bytes. Split into smaller inputs.`,
+      );
       process.exit(1);
     }
     params[op.cliHints.stdin] = stdinContent;
@@ -210,50 +297,76 @@ function parseOpArgs(op: Operation, args: string[]): Record<string, unknown> {
   return params;
 }
 
-function makeContext(engine: BrainEngine, params: Record<string, unknown>): OperationContext {
+async function makeContext(
+  engine: BrainEngine,
+  params: Record<string, unknown>,
+): Promise<OperationContext> {
+  const { resolveSourceId } = await import("./core/source-resolver.ts");
+  const sourceId = await resolveSourceId(
+    engine,
+    (params.source as string) || null,
+  );
   return {
     engine,
-    config: loadConfig() || { engine: 'postgres' },
+    config: loadConfig() || { engine: "postgres" },
     logger: { info: console.log, warn: console.warn, error: console.error },
     dryRun: (params.dry_run as boolean) || false,
     // Local CLI invocation — the user owns the machine; do not apply remote-caller
     // confinement (e.g., cwd-locked file_upload).
     remote: false,
     cliOpts: getCliOptions(),
+    sourceId,
   };
 }
 
 function formatResult(opName: string, result: unknown): string {
   switch (opName) {
-    case 'get_page': {
+    case "get_page": {
       const r = result as any;
-      if (r.error === 'ambiguous_slug') {
-        return `Ambiguous slug. Did you mean:\n${r.candidates.map((c: string) => `  ${c}`).join('\n')}\n`;
+      if (r.error === "ambiguous_slug") {
+        return `Ambiguous slug. Did you mean:\n${r.candidates.map((c: string) => `  ${c}`).join("\n")}\n`;
       }
-      return serializeMarkdown(r.frontmatter || {}, r.compiled_truth || '', r.timeline || '', {
-        type: r.type, title: r.title, tags: r.tags || [],
-      });
+      return serializeMarkdown(
+        r.frontmatter || {},
+        r.compiled_truth || "",
+        r.timeline || "",
+        {
+          type: r.type,
+          title: r.title,
+          tags: r.tags || [],
+        },
+      );
     }
-    case 'list_pages': {
+    case "list_pages": {
       const pages = result as any[];
-      if (pages.length === 0) return 'No pages found.\n';
-      return pages.map(p =>
-        `${p.slug}\t${p.type}\t${p.updated_at?.toString().slice(0, 10) || '?'}\t${p.title}`,
-      ).join('\n') + '\n';
+      if (pages.length === 0) return "No pages found.\n";
+      return (
+        pages
+          .map(
+            (p) =>
+              `${p.slug}\t${p.type}\t${p.updated_at?.toString().slice(0, 10) || "?"}\t${p.title}`,
+          )
+          .join("\n") + "\n"
+      );
     }
-    case 'search':
-    case 'query': {
+    case "search":
+    case "query": {
       const results = result as any[];
-      if (results.length === 0) return 'No results.\n';
-      return results.map(r =>
-        `[${r.score?.toFixed(4) || '?'}] ${r.slug} -- ${r.chunk_text?.slice(0, 100) || ''}${r.stale ? ' (stale)' : ''}`,
-      ).join('\n') + '\n';
+      if (results.length === 0) return "No results.\n";
+      return (
+        results
+          .map(
+            (r) =>
+              `[${r.score?.toFixed(4) || "?"}] ${r.slug} -- ${r.chunk_text?.slice(0, 100) || ""}${r.stale ? " (stale)" : ""}`,
+          )
+          .join("\n") + "\n"
+      );
     }
-    case 'get_tags': {
+    case "get_tags": {
       const tags = result as string[];
-      return tags.length > 0 ? tags.join(', ') + '\n' : 'No tags.\n';
+      return tags.length > 0 ? tags.join(", ") + "\n" : "No tags.\n";
     }
-    case 'get_stats': {
+    case "get_stats": {
       const s = result as any;
       const lines = [
         `Pages:     ${s.page_count}`,
@@ -264,24 +377,27 @@ function formatResult(opName: string, result: unknown): string {
         `Timeline:  ${s.timeline_entry_count}`,
       ];
       if (s.pages_by_type) {
-        lines.push('', 'By type:');
+        lines.push("", "By type:");
         for (const [k, v] of Object.entries(s.pages_by_type)) {
           lines.push(`  ${k}: ${v}`);
         }
       }
-      return lines.join('\n') + '\n';
+      return lines.join("\n") + "\n";
     }
-    case 'get_health': {
+    case "get_health": {
       const h = result as any;
       // Health score weights: missing_embeddings is the heaviest (2 pts), other
       // graph quality issues are 1 pt each. link_coverage / timeline_coverage below
       // 50% on entity pages indicates the graph needs population.
-      const score = Math.max(0, 10
-        - (h.missing_embeddings > 0 ? 2 : 0)
-        - (h.stale_pages > 0 ? 1 : 0)
-        - (h.orphan_pages > 0 ? 1 : 0)
-        - ((h.link_coverage ?? 1) < 0.5 ? 1 : 0)
-        - ((h.timeline_coverage ?? 1) < 0.5 ? 1 : 0));
+      const score = Math.max(
+        0,
+        10 -
+          (h.missing_embeddings > 0 ? 2 : 0) -
+          (h.stale_pages > 0 ? 1 : 0) -
+          (h.orphan_pages > 0 ? 1 : 0) -
+          ((h.link_coverage ?? 1) < 0.5 ? 1 : 0) -
+          ((h.timeline_coverage ?? 1) < 0.5 ? 1 : 0),
+      );
       const lines = [
         `Health score: ${score}/10`,
         `Embed coverage: ${(h.embed_coverage * 100).toFixed(1)}%`,
@@ -290,35 +406,48 @@ function formatResult(opName: string, result: unknown): string {
         `Orphan pages: ${h.orphan_pages}`,
       ];
       if (h.link_coverage !== undefined) {
-        lines.push(`Link coverage (entities): ${(h.link_coverage * 100).toFixed(1)}%`);
+        lines.push(
+          `Link coverage (entities): ${(h.link_coverage * 100).toFixed(1)}%`,
+        );
       }
       if (h.timeline_coverage !== undefined) {
-        lines.push(`Timeline coverage (entities): ${(h.timeline_coverage * 100).toFixed(1)}%`);
+        lines.push(
+          `Timeline coverage (entities): ${(h.timeline_coverage * 100).toFixed(1)}%`,
+        );
       }
       if (Array.isArray(h.most_connected) && h.most_connected.length > 0) {
-        lines.push('Most connected entities:');
+        lines.push("Most connected entities:");
         for (const e of h.most_connected) {
           lines.push(`  ${e.slug}: ${e.link_count} links`);
         }
       }
-      return lines.join('\n') + '\n';
+      return lines.join("\n") + "\n";
     }
-    case 'get_timeline': {
+    case "get_timeline": {
       const entries = result as any[];
-      if (entries.length === 0) return 'No timeline entries.\n';
-      return entries.map(e =>
-        `${e.date}  ${e.summary}${e.source ? ` [${e.source}]` : ''}`,
-      ).join('\n') + '\n';
+      if (entries.length === 0) return "No timeline entries.\n";
+      return (
+        entries
+          .map(
+            (e) => `${e.date}  ${e.summary}${e.source ? ` [${e.source}]` : ""}`,
+          )
+          .join("\n") + "\n"
+      );
     }
-    case 'get_versions': {
+    case "get_versions": {
       const versions = result as any[];
-      if (versions.length === 0) return 'No versions.\n';
-      return versions.map(v =>
-        `#${v.id}  ${v.snapshot_at?.toString().slice(0, 19) || '?'}  ${v.compiled_truth?.slice(0, 60) || ''}...`,
-      ).join('\n') + '\n';
+      if (versions.length === 0) return "No versions.\n";
+      return (
+        versions
+          .map(
+            (v) =>
+              `#${v.id}  ${v.snapshot_at?.toString().slice(0, 19) || "?"}  ${v.compiled_truth?.slice(0, 60) || ""}...`,
+          )
+          .join("\n") + "\n"
+      );
     }
     default:
-      return JSON.stringify(result, null, 2) + '\n';
+      return JSON.stringify(result, null, 2) + "\n";
   }
 }
 
@@ -335,8 +464,15 @@ function formatResult(opName: string, result: unknown): string {
  * `runRemoteDoctor` for thin-client installs.
  */
 const THIN_CLIENT_REFUSED_COMMANDS = new Set([
-  'sync', 'embed', 'extract', 'migrate', 'apply-migrations',
-  'repair-jsonb', 'orphans', 'integrity', 'serve',
+  "sync",
+  "embed",
+  "extract",
+  "migrate",
+  "apply-migrations",
+  "repair-jsonb",
+  "orphans",
+  "integrity",
+  "serve",
 ]);
 
 async function handleCliOnly(command: string, args: string[]) {
@@ -349,172 +485,174 @@ async function handleCliOnly(command: string, args: string[]) {
       const url = cfg!.remote_mcp!.mcp_url;
       console.error(
         `\`gbrain ${command}\` requires a local engine. This install is a thin client of ${url}.\n` +
-        `Run \`${command}\` on the remote host, or use the corresponding MCP tool from your agent.`,
+          `Run \`${command}\` on the remote host, or use the corresponding MCP tool from your agent.`,
       );
       process.exit(1);
     }
   }
 
   // Commands that don't need a database connection
-  if (command === 'init') {
-    const { runInit } = await import('./commands/init.ts');
+  if (command === "init") {
+    const { runInit } = await import("./commands/init.ts");
     await runInit(args);
     return;
   }
-  if (command === 'auth') {
-    const { runAuth } = await import('./commands/auth.ts');
+  if (command === "auth") {
+    const { runAuth } = await import("./commands/auth.ts");
     await runAuth(args);
     return;
   }
-  if (command === 'remote') {
+  if (command === "remote") {
     // Multi-topology v1 (Tier B): thin-client-only convenience commands.
     // `runRemote` self-checks for remote_mcp config and exits 1 if local-only.
-    const { runRemote } = await import('./commands/remote.ts');
+    const { runRemote } = await import("./commands/remote.ts");
     await runRemote(args);
     return;
   }
-  if (command === 'upgrade') {
-    const { runUpgrade } = await import('./commands/upgrade.ts');
+  if (command === "upgrade") {
+    const { runUpgrade } = await import("./commands/upgrade.ts");
     await runUpgrade(args);
     return;
   }
-  if (command === 'post-upgrade') {
-    const { runPostUpgrade } = await import('./commands/upgrade.ts');
+  if (command === "post-upgrade") {
+    const { runPostUpgrade } = await import("./commands/upgrade.ts");
     await runPostUpgrade(args);
     return;
   }
-  if (command === 'check-update') {
-    const { runCheckUpdate } = await import('./commands/check-update.ts');
+  if (command === "check-update") {
+    const { runCheckUpdate } = await import("./commands/check-update.ts");
     await runCheckUpdate(args);
     return;
   }
-  if (command === 'integrations') {
-    const { runIntegrations } = await import('./commands/integrations.ts');
+  if (command === "integrations") {
+    const { runIntegrations } = await import("./commands/integrations.ts");
     await runIntegrations(args);
     return;
   }
-  if (command === 'providers') {
-    const { runProviders } = await import('./commands/providers.ts');
+  if (command === "providers") {
+    const { runProviders } = await import("./commands/providers.ts");
     const [sub, ...rest] = args;
     await runProviders(sub, rest);
     return;
   }
-  if (command === 'auth') {
-    const { runAuth } = await import('./commands/auth.ts');
+  if (command === "auth") {
+    const { runAuth } = await import("./commands/auth.ts");
     await runAuth(args);
     return;
   }
-  if (command === 'resolvers') {
-    const { runResolvers } = await import('./commands/resolvers.ts');
+  if (command === "resolvers") {
+    const { runResolvers } = await import("./commands/resolvers.ts");
     await runResolvers(args);
     return;
   }
-  if (command === 'integrity') {
-    const { runIntegrity } = await import('./commands/integrity.ts');
+  if (command === "integrity") {
+    const { runIntegrity } = await import("./commands/integrity.ts");
     await runIntegrity(args);
     return;
   }
-  if (command === 'publish') {
-    const { runPublish } = await import('./commands/publish.ts');
+  if (command === "publish") {
+    const { runPublish } = await import("./commands/publish.ts");
     await runPublish(args);
     return;
   }
-  if (command === 'check-backlinks') {
-    const { runBacklinks } = await import('./commands/backlinks.ts');
+  if (command === "check-backlinks") {
+    const { runBacklinks } = await import("./commands/backlinks.ts");
     await runBacklinks(args);
     return;
   }
-  if (command === 'frontmatter') {
-    const { runFrontmatter } = await import('./commands/frontmatter.ts');
+  if (command === "frontmatter") {
+    const { runFrontmatter } = await import("./commands/frontmatter.ts");
     await runFrontmatter(args);
     return;
   }
-  if (command === 'lint') {
-    const { runLint } = await import('./commands/lint.ts');
+  if (command === "lint") {
+    const { runLint } = await import("./commands/lint.ts");
     await runLint(args);
     return;
   }
-  if (command === 'check-resolvable') {
-    const { runCheckResolvable } = await import('./commands/check-resolvable.ts');
+  if (command === "check-resolvable") {
+    const { runCheckResolvable } =
+      await import("./commands/check-resolvable.ts");
     await runCheckResolvable(args);
     return;
   }
-  if (command === 'mounts') {
+  if (command === "mounts") {
     // No DB needed: mounts.json is a local config file. Registry will
     // connect mount engines lazily on first use by op dispatch.
-    const { runMounts } = await import('./commands/mounts.ts');
+    const { runMounts } = await import("./commands/mounts.ts");
     await runMounts(args);
     return;
   }
-  if (command === 'routing-eval') {
-    const { runRoutingEvalCli } = await import('./commands/routing-eval.ts');
+  if (command === "routing-eval") {
+    const { runRoutingEvalCli } = await import("./commands/routing-eval.ts");
     await runRoutingEvalCli(args);
     return;
   }
-  if (command === 'skillify') {
-    const { runSkillify } = await import('./commands/skillify.ts');
+  if (command === "skillify") {
+    const { runSkillify } = await import("./commands/skillify.ts");
     // `args` here is subArgs (command already stripped by caller), so
     // args[0] is the subcommand (scaffold|check).
     await runSkillify(args);
     return;
   }
-  if (command === 'skillpack') {
-    const { runSkillpack } = await import('./commands/skillpack.ts');
+  if (command === "skillpack") {
+    const { runSkillpack } = await import("./commands/skillpack.ts");
     // subArgs already has `skillpack` stripped; args[0] is the subcommand.
     await runSkillpack(args);
     return;
   }
-  if (command === 'friction') {
-    const { runFriction } = await import('./commands/friction.ts');
+  if (command === "friction") {
+    const { runFriction } = await import("./commands/friction.ts");
     process.exit(runFriction(args));
   }
-  if (command === 'claw-test') {
-    const { runClawTest } = await import('./commands/claw-test.ts');
+  if (command === "claw-test") {
+    const { runClawTest } = await import("./commands/claw-test.ts");
     process.exit(await runClawTest(args));
   }
-  if (command === 'report') {
-    const { runReport } = await import('./commands/report.ts');
+  if (command === "report") {
+    const { runReport } = await import("./commands/report.ts");
     await runReport(args);
     return;
   }
-  if (command === 'apply-migrations') {
+  if (command === "apply-migrations") {
     // Does not need connectEngine — each phase (schema, smoke, host-rewrite)
     // manages its own subprocess or file-layer access directly. Avoids
     // connecting a second time when the orchestrator shells out to
     // `gbrain init --migrate-only` and `gbrain jobs smoke`.
-    const { runApplyMigrations } = await import('./commands/apply-migrations.ts');
+    const { runApplyMigrations } =
+      await import("./commands/apply-migrations.ts");
     await runApplyMigrations(args);
     return;
   }
-  if (command === 'repair-jsonb') {
-    const { runRepairJsonbCli } = await import('./commands/repair-jsonb.ts');
+  if (command === "repair-jsonb") {
+    const { runRepairJsonbCli } = await import("./commands/repair-jsonb.ts");
     await runRepairJsonbCli(args);
     return;
   }
-  if (command === 'skillpack-check') {
+  if (command === "skillpack-check") {
     // Agent-readable health report. Shells out to doctor + apply-migrations
     // internally; does not need its own DB connection.
-    const { runSkillpackCheck } = await import('./commands/skillpack-check.ts');
+    const { runSkillpackCheck } = await import("./commands/skillpack-check.ts");
     await runSkillpackCheck(args);
     return;
   }
-  if (command === 'doctor') {
+  if (command === "doctor") {
     // Multi-topology v1: thin-client doctor. When `~/.gbrain/config.json`
     // has remote_mcp set, every DB-bound check is irrelevant. Route to the
     // outbound-HTTP probe set in `src/core/doctor-remote.ts` and return
     // before any local-engine work.
     const cfgForDoctor = loadConfig();
     if (isThinClient(cfgForDoctor)) {
-      const { runRemoteDoctor } = await import('./core/doctor-remote.ts');
+      const { runRemoteDoctor } = await import("./core/doctor-remote.ts");
       await runRemoteDoctor(cfgForDoctor!, args);
       return;
     }
 
     // Doctor runs filesystem checks first (no DB needed), then DB checks.
     // --fast skips DB checks entirely.
-    const { runDoctor } = await import('./commands/doctor.ts');
-    const { getDbUrlSource } = await import('./core/config.ts');
-    if (args.includes('--fast')) {
+    const { runDoctor } = await import("./commands/doctor.ts");
+    const { getDbUrlSource } = await import("./core/config.ts");
+    if (args.includes("--fast")) {
       // Pass the DB URL source so doctor can tell "no config at all" from
       // "user chose --fast while config is present".
       await runDoctor(null, args, getDbUrlSource());
@@ -531,15 +669,18 @@ async function handleCliOnly(command: string, args: string[]) {
     return;
   }
 
-  if (command === 'smoke-test') {
+  if (command === "smoke-test") {
     // Run smoke tests — no DB connection needed, the script handles its own checks
-    const { execSync } = await import('child_process');
-    const { resolve, dirname } = await import('path');
-    const { fileURLToPath } = await import('url');
+    const { execSync } = await import("child_process");
+    const { resolve, dirname } = await import("path");
+    const { fileURLToPath } = await import("url");
     const scriptDir = dirname(fileURLToPath(import.meta.url));
-    const scriptPath = resolve(scriptDir, '..', 'scripts', 'smoke-test.sh');
+    const scriptPath = resolve(scriptDir, "..", "scripts", "smoke-test.sh");
     try {
-      execSync(`bash "${scriptPath}"`, { stdio: 'inherit', env: { ...process.env } });
+      execSync(`bash "${scriptPath}"`, {
+        stdio: "inherit",
+        env: { ...process.env },
+      });
     } catch (e: any) {
       // Non-zero exit = some tests failed (exit code = failure count)
       process.exit(e.status ?? 1);
@@ -547,11 +688,11 @@ async function handleCliOnly(command: string, args: string[]) {
     return;
   }
 
-  if (command === 'dream') {
+  if (command === "dream") {
     // Dream mirrors doctor's pattern: filesystem phases run without a DB,
     // so an engine connection failure is non-fatal. runCycle honestly
     // reports DB phases as skipped when engine is null.
-    const { runDream } = await import('./commands/dream.ts');
+    const { runDream } = await import("./commands/dream.ts");
     let eng: BrainEngine | null = null;
     try {
       eng = await connectEngine();
@@ -571,16 +712,18 @@ async function handleCliOnly(command: string, args: string[]) {
   // run the quality gate. Mirrors the dream/doctor no-DB pattern but
   // doesn't even attempt the connect (T3=A in plans/radiant-napping-lerdorf.md).
   // The handler self-configures the AI gateway from loadConfig() + process.env.
-  if (command === 'eval' && args[0] === 'cross-modal') {
-    const { runEvalCrossModal } = await import('./commands/eval-cross-modal.ts');
+  if (command === "eval" && args[0] === "cross-modal") {
+    const { runEvalCrossModal } =
+      await import("./commands/eval-cross-modal.ts");
     process.exit(await runEvalCrossModal(args.slice(1)));
   }
 
   // v0.28.8: longmemeval brings its own in-memory PGLite. Bypassing
   // connectEngine here keeps `gbrain eval longmemeval --help` and benchmark
   // runs working on machines that have no `~/.gbrain/config.json` configured.
-  if (command === 'eval' && args[0] === 'longmemeval') {
-    const { runEvalLongMemEval } = await import('./commands/eval-longmemeval.ts');
+  if (command === "eval" && args[0] === "longmemeval") {
+    const { runEvalLongMemEval } =
+      await import("./commands/eval-longmemeval.ts");
     await runEvalLongMemEval(args.slice(1));
     return;
   }
@@ -589,167 +732,170 @@ async function handleCliOnly(command: string, args: string[]) {
   const engine = await connectEngine();
   try {
     switch (command) {
-      case 'import': {
-        const { runImport } = await import('./commands/import.ts');
+      case "import": {
+        const { runImport } = await import("./commands/import.ts");
         await runImport(engine, args);
         break;
       }
-      case 'export': {
-        const { runExport } = await import('./commands/export.ts');
+      case "export": {
+        const { runExport } = await import("./commands/export.ts");
         await runExport(engine, args);
         break;
       }
-      case 'files': {
-        const { runFiles } = await import('./commands/files.ts');
+      case "files": {
+        const { runFiles } = await import("./commands/files.ts");
         await runFiles(engine, args);
         break;
       }
-      case 'embed': {
-        const { runEmbed } = await import('./commands/embed.ts');
+      case "embed": {
+        const { runEmbed } = await import("./commands/embed.ts");
         await runEmbed(engine, args);
         break;
       }
-      case 'serve': {
-        const { runServe } = await import('./commands/serve.ts');
+      case "serve": {
+        const { runServe } = await import("./commands/serve.ts");
         await runServe(engine, args);
         return; // serve doesn't disconnect
       }
-      case 'call': {
-        const { runCall } = await import('./commands/call.ts');
+      case "call": {
+        const { runCall } = await import("./commands/call.ts");
         await runCall(engine, args);
         break;
       }
-      case 'config': {
-        const { runConfig } = await import('./commands/config.ts');
+      case "config": {
+        const { runConfig } = await import("./commands/config.ts");
         await runConfig(engine, args);
         break;
       }
       // doctor is handled before connectEngine() above
-      case 'migrate': {
-        const { runMigrateEngine } = await import('./commands/migrate-engine.ts');
+      case "migrate": {
+        const { runMigrateEngine } =
+          await import("./commands/migrate-engine.ts");
         await runMigrateEngine(engine, args);
         break;
       }
-      case 'eval': {
-        const { runEvalCommand } = await import('./commands/eval.ts');
+      case "eval": {
+        const { runEvalCommand } = await import("./commands/eval.ts");
         await runEvalCommand(engine, args);
         break;
       }
-      case 'jobs': {
-        const { runJobs } = await import('./commands/jobs.ts');
+      case "jobs": {
+        const { runJobs } = await import("./commands/jobs.ts");
         await runJobs(engine, args);
         break;
       }
-      case 'agent': {
-        const { runAgent } = await import('./commands/agent.ts');
+      case "agent": {
+        const { runAgent } = await import("./commands/agent.ts");
         await runAgent(engine, args);
         break;
       }
-      case 'book-mirror': {
-        const { runBookMirrorCmd } = await import('./commands/book-mirror.ts');
+      case "book-mirror": {
+        const { runBookMirrorCmd } = await import("./commands/book-mirror.ts");
         await runBookMirrorCmd(engine, args);
         break;
       }
-      case 'sync': {
-        const { runSync } = await import('./commands/sync.ts');
+      case "sync": {
+        const { runSync } = await import("./commands/sync.ts");
         await runSync(engine, args);
         break;
       }
-      case 'extract': {
-        const { runExtract } = await import('./commands/extract.ts');
+      case "extract": {
+        const { runExtract } = await import("./commands/extract.ts");
         await runExtract(engine, args);
         break;
       }
-      case 'features': {
-        const { runFeatures } = await import('./commands/features.ts');
+      case "features": {
+        const { runFeatures } = await import("./commands/features.ts");
         await runFeatures(engine, args);
         break;
       }
-      case 'autopilot': {
-        const { runAutopilot } = await import('./commands/autopilot.ts');
+      case "autopilot": {
+        const { runAutopilot } = await import("./commands/autopilot.ts");
         await runAutopilot(engine, args);
         return; // autopilot doesn't disconnect (long-running)
       }
-      case 'graph-query': {
-        const { runGraphQuery } = await import('./commands/graph-query.ts');
+      case "graph-query": {
+        const { runGraphQuery } = await import("./commands/graph-query.ts");
         await runGraphQuery(engine, args);
         break;
       }
-      case 'reconcile-links': {
+      case "reconcile-links": {
         // v0.20.0 Cathedral II Layer 8 D3: batch-recompute doc↔impl edges
         // for any markdown page that cites code files. Idempotent; safe to
         // re-run. Closes the v0.19.0 Layer 6 order-dependency bug where
         // guides imported before their code never got their edges written.
-        const { runReconcileLinksCli } = await import('./commands/reconcile-links.ts');
+        const { runReconcileLinksCli } =
+          await import("./commands/reconcile-links.ts");
         await runReconcileLinksCli(engine, args);
         break;
       }
-      case 'orphans': {
-        const { runOrphans } = await import('./commands/orphans.ts');
+      case "orphans": {
+        const { runOrphans } = await import("./commands/orphans.ts");
         await runOrphans(engine, args);
         break;
       }
       // v0.29 — Salience + Anomaly Detection
-      case 'salience': {
-        const { runSalience } = await import('./commands/salience.ts');
+      case "salience": {
+        const { runSalience } = await import("./commands/salience.ts");
         await runSalience(engine, args);
         break;
       }
-      case 'anomalies': {
-        const { runAnomalies } = await import('./commands/anomalies.ts');
+      case "anomalies": {
+        const { runAnomalies } = await import("./commands/anomalies.ts");
         await runAnomalies(engine, args);
         break;
       }
-      case 'transcripts': {
-        const { runTranscripts } = await import('./commands/transcripts.ts');
+      case "transcripts": {
+        const { runTranscripts } = await import("./commands/transcripts.ts");
         await runTranscripts(engine, args);
         break;
       }
-      case 'takes': {
-        const { runTakes } = await import('./commands/takes.ts');
+      case "takes": {
+        const { runTakes } = await import("./commands/takes.ts");
         await runTakes(engine, args);
         break;
       }
-      case 'think': {
-        const { runThinkCli } = await import('./commands/think.ts');
+      case "think": {
+        const { runThinkCli } = await import("./commands/think.ts");
         await runThinkCli(engine, args);
         break;
       }
-      case 'sources': {
-        const { runSources } = await import('./commands/sources.ts');
+      case "sources": {
+        const { runSources } = await import("./commands/sources.ts");
         await runSources(engine, args);
         break;
       }
-      case 'pages': {
+      case "pages": {
         // v0.26.5: page-level operator commands (purge-deleted escape hatch).
-        const { runPages } = await import('./commands/pages.ts');
+        const { runPages } = await import("./commands/pages.ts");
         await runPages(engine, args);
         break;
       }
-      case 'storage': {
-        const { runStorage } = await import('./commands/storage.ts');
+      case "storage": {
+        const { runStorage } = await import("./commands/storage.ts");
         await runStorage(engine, args);
         break;
       }
-      case 'code-def': {
-        const { runCodeDef } = await import('./commands/code-def.ts');
+      case "code-def": {
+        const { runCodeDef } = await import("./commands/code-def.ts");
         await runCodeDef(engine, args);
         break;
       }
-      case 'code-refs': {
-        const { runCodeRefs } = await import('./commands/code-refs.ts');
+      case "code-refs": {
+        const { runCodeRefs } = await import("./commands/code-refs.ts");
         await runCodeRefs(engine, args);
         break;
       }
-      case 'reindex-code': {
+      case "reindex-code": {
         // v0.20.0 Cathedral II Layer 13 (E2): explicit code-page reindex
         // for users upgrading from v0.19.0. Cost-preview gated; TTY prompt
         // or ConfirmationRequired envelope for non-TTY/JSON callers.
-        const { runReindexCodeCli } = await import('./commands/reindex-code.ts');
+        const { runReindexCodeCli } =
+          await import("./commands/reindex-code.ts");
         await runReindexCodeCli(engine, args);
         break;
       }
-      case 'reindex-frontmatter': {
+      case "reindex-frontmatter": {
         // v0.29.1: recovery / explicit-rebuild path for pages.effective_date.
         // Mirror of reindex-code shape. Wraps the shared library function in
         // src/core/backfill-effective-date.ts (same code path the v0.29.1
@@ -758,44 +904,47 @@ async function handleCliOnly(command: string, args: string[]) {
         //
         // v0.30.1: still works; canonical entrypoint is now `gbrain backfill
         // effective_date`. This command stays as a thin alias for back-compat.
-        const { reindexFrontmatterCli } = await import('./commands/reindex-frontmatter.ts');
+        const { reindexFrontmatterCli } =
+          await import("./commands/reindex-frontmatter.ts");
         await reindexFrontmatterCli(args);
         return; // reindexFrontmatterCli handles its own engine lifecycle
       }
-      case 'backfill': {
+      case "backfill": {
         // v0.30.1: first-class generic backfill command. Subcommand dispatch
         // is inside runBackfillCommand (kind | list | --help).
-        const { runBackfillCommand } = await import('./commands/backfill.ts');
+        const { runBackfillCommand } = await import("./commands/backfill.ts");
         await runBackfillCommand(args);
         return;
       }
-      case 'code-callers': {
+      case "code-callers": {
         // v0.20.0 Cathedral II Layer 10 (C4): "who calls <symbol>?"
-        const { runCodeCallers } = await import('./commands/code-callers.ts');
+        const { runCodeCallers } = await import("./commands/code-callers.ts");
         await runCodeCallers(engine, args);
         break;
       }
-      case 'code-callees': {
+      case "code-callees": {
         // v0.20.0 Cathedral II Layer 10 (C5): "what does <symbol> call?"
-        const { runCodeCallees } = await import('./commands/code-callees.ts');
+        const { runCodeCallees } = await import("./commands/code-callees.ts");
         await runCodeCallees(engine, args);
         break;
       }
-      case 'repos': {
+      case "repos": {
         // v0.19.0: `gbrain repos ...` is an alias into the v0.18.0 sources
         // subsystem. The repos abstraction (Garry's OpenClaw baseline) was
         // redundant with sources and carried per-user config state that
         // couldn't participate in federation / RLS / multi-tenancy. We
         // keep the alias so scripts like `gbrain repos add .` keep
         // working, with a nudge toward the canonical command.
-        console.error('[gbrain] Note: "repos" is an alias for "sources" as of v0.19.0. Prefer `gbrain sources <subcommand>`.');
-        const { runSources } = await import('./commands/sources.ts');
+        console.error(
+          '[gbrain] Note: "repos" is an alias for "sources" as of v0.19.0. Prefer `gbrain sources <subcommand>`.',
+        );
+        const { runSources } = await import("./commands/sources.ts");
         await runSources(engine, args);
         break;
       }
     }
   } finally {
-    if (command !== 'serve') await engine.disconnect();
+    if (command !== "serve") await engine.disconnect();
   }
 }
 
@@ -817,23 +966,26 @@ function buildGatewayConfig(c: GBrainConfig): AIGatewayConfig {
   };
 }
 
-async function connectEngine(opts?: { probeOnly?: boolean }): Promise<BrainEngine> {
+async function connectEngine(opts?: {
+  probeOnly?: boolean;
+}): Promise<BrainEngine> {
   const config = loadConfig();
   if (!config) {
-    console.error('No brain configured. Run: gbrain init');
+    console.error("No brain configured. Run: gbrain init");
     process.exit(1);
   }
 
   // Configure the AI gateway BEFORE engine connect — initSchema needs embedding dims.
   // Env is read once here; the gateway never reads process.env at call time (Codex C3).
-  const { configureGateway } = await import('./core/ai/gateway.ts');
+  const { configureGateway } = await import("./core/ai/gateway.ts");
   configureGateway(buildGatewayConfig(config));
 
-  const { createEngine } = await import('./core/engine-factory.ts');
+  const { createEngine } = await import("./core/engine-factory.ts");
   const engine = await createEngine(toEngineConfig(config));
-  const noRetry = process.argv.includes('--no-retry-connect') ||
-                  process.env.GBRAIN_NO_RETRY_CONNECT === '1';
-  const { connectWithRetry } = await import('./core/db.ts');
+  const noRetry =
+    process.argv.includes("--no-retry-connect") ||
+    process.env.GBRAIN_NO_RETRY_CONNECT === "1";
+  const { connectWithRetry } = await import("./core/db.ts");
   await connectWithRetry(engine, toEngineConfig(config), { noRetry });
 
   // v0.30.1 (Codex X1 / C2): probeOnly skips both hasPendingMigrations() probe
@@ -850,7 +1002,7 @@ async function connectEngine(opts?: { probeOnly?: boolean }): Promise<BrainEngin
   // This is the conditional version of #652 (oyi77's investigation):
   // same correctness, no perf regression on the hot path.
   try {
-    const { hasPendingMigrations } = await import('./core/migrate.ts');
+    const { hasPendingMigrations } = await import("./core/migrate.ts");
     if (await hasPendingMigrations(engine)) {
       await engine.initSchema();
     }
@@ -859,7 +1011,7 @@ async function connectEngine(opts?: { probeOnly?: boolean }): Promise<BrainEngin
     // with the connected engine. Subsequent operations will surface the
     // real schema error in context.
     console.warn(`  Schema probe/migrate failed: ${(err as Error).message}`);
-    console.warn('  Try: gbrain init --migrate-only');
+    console.warn("  Try: gbrain init --migrate-only");
   }
 
   // v0.27.1 (F3 fix): re-merge DB-plane config now that the engine is up.
@@ -875,13 +1027,18 @@ async function connectEngine(opts?: { probeOnly?: boolean }): Promise<BrainEngin
       // GBRAIN_EMBEDDING_IMAGE_OCR_*). The gateway itself doesn't read these
       // flags; this preserves the contract without changing the gateway shape.
       if (merged.embedding_multimodal !== undefined) {
-        process.env.GBRAIN_EMBEDDING_MULTIMODAL = String(merged.embedding_multimodal);
+        process.env.GBRAIN_EMBEDDING_MULTIMODAL = String(
+          merged.embedding_multimodal,
+        );
       }
       if (merged.embedding_image_ocr !== undefined) {
-        process.env.GBRAIN_EMBEDDING_IMAGE_OCR = String(merged.embedding_image_ocr);
+        process.env.GBRAIN_EMBEDDING_IMAGE_OCR = String(
+          merged.embedding_image_ocr,
+        );
       }
       if (merged.embedding_image_ocr_model !== undefined) {
-        process.env.GBRAIN_EMBEDDING_IMAGE_OCR_MODEL = merged.embedding_image_ocr_model;
+        process.env.GBRAIN_EMBEDDING_IMAGE_OCR_MODEL =
+          merged.embedding_image_ocr_model;
       }
       // Always re-configure with merged values when DB merge succeeded. The
       // trigger used to be field-name-gated (only when embedding_multimodal_model
@@ -898,26 +1055,30 @@ async function connectEngine(opts?: { probeOnly?: boolean }): Promise<BrainEngin
 }
 
 function printOpHelp(op: Operation) {
-  const positional = (op.cliHints?.positional || []).map(p => `<${p}>`).join(' ');
+  const positional = (op.cliHints?.positional || [])
+    .map((p) => `<${p}>`)
+    .join(" ");
   const name = op.cliHints?.name || op.name;
   console.log(`Usage: gbrain ${name} ${positional} [options]\n`);
-  console.log(op.description + '\n');
+  console.log(op.description + "\n");
   const entries = Object.entries(op.params);
   if (entries.length > 0) {
-    console.log('Options:');
+    console.log("Options:");
     for (const [key, def] of entries) {
       const isPos = op.cliHints?.positional?.includes(key);
-      const req = def.required ? ' (required)' : '';
-      const prefix = isPos ? `  <${key}>` : `  --${key.replace(/_/g, '-')}`;
-      console.log(`${prefix.padEnd(28)} ${def.description || ''}${req}`);
+      const req = def.required ? " (required)" : "";
+      const prefix = isPos ? `  <${key}>` : `  --${key.replace(/_/g, "-")}`;
+      console.log(`${prefix.padEnd(28)} ${def.description || ""}${req}`);
     }
   }
 }
 
 function printHelp() {
   // Gather shared operations grouped by category
-  const cliNames = Array.from(cliOps.entries())
-    .map(([name, op]) => ({ name, desc: op.description }));
+  const cliNames = Array.from(cliOps.entries()).map(([name, op]) => ({
+    name,
+    desc: op.description,
+  }));
 
   console.log(`gbrain ${VERSION} -- personal knowledge brain
 
@@ -1050,7 +1211,7 @@ Run gbrain <command> --help for command-specific help.
 `);
 }
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e.message || e);
   process.exit(1);
 });

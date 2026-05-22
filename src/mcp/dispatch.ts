@@ -6,13 +6,13 @@
  * + missing-context bugs; this module exists to prevent that recurring.
  */
 
-import type { BrainEngine } from '../core/engine.ts';
-import { operations, OperationError } from '../core/operations.ts';
-import type { Operation, OperationContext } from '../core/operations.ts';
-import { loadConfig } from '../core/config.ts';
+import type { BrainEngine } from "../core/engine.ts";
+import { operations, OperationError } from "../core/operations.ts";
+import type { Operation, OperationContext } from "../core/operations.ts";
+import { loadConfig } from "../core/config.ts";
 
 export interface ToolResult {
-  content: { type: 'text'; text: string }[];
+  content: { type: "text"; text: string }[];
   isError?: boolean;
 }
 
@@ -20,7 +20,7 @@ export interface DispatchOpts {
   /** Defaults to true (remote/untrusted). Local CLI callers (`gbrain call`) pass false. */
   remote?: boolean;
   /** Override the default stderr logger (e.g. CLI uses console.* directly). */
-  logger?: OperationContext['logger'];
+  logger?: OperationContext["logger"];
   /**
    * v0.28: per-token allow-list for the takes.holder field. Threaded by
    * the HTTP/stdio transport from `access_tokens.permissions.takes_holders`.
@@ -29,6 +29,8 @@ export interface DispatchOpts {
    * callers leave this unset (no filter — they own the brain).
    */
   takesHoldersAllowList?: string[];
+  /** Resolved source id (v0.18.0). */
+  sourceId?: string;
 }
 
 /**
@@ -58,7 +60,7 @@ export interface DispatchOpts {
  */
 export interface ParamSummary {
   redacted: true;
-  kind: 'array' | 'object' | string;
+  kind: "array" | "object" | string;
   declared_keys?: string[];
   unknown_key_count?: number;
   length?: number;
@@ -84,24 +86,31 @@ function bucketBytes(n: number | undefined): number | undefined {
   return Math.ceil(n / KB) * KB;
 }
 
-export function summarizeMcpParams(opName: string, params: unknown): ParamSummary | null {
+export function summarizeMcpParams(
+  opName: string,
+  params: unknown,
+): ParamSummary | null {
   if (params == null) return null;
 
   let approxBytes: number | undefined;
-  try { approxBytes = bucketBytes(JSON.stringify(params).length); } catch { approxBytes = undefined; }
+  try {
+    approxBytes = bucketBytes(JSON.stringify(params).length);
+  } catch {
+    approxBytes = undefined;
+  }
 
   if (Array.isArray(params)) {
     return {
       redacted: true,
-      kind: 'array',
+      kind: "array",
       length: params.length,
       ...(approxBytes !== undefined ? { approx_bytes: approxBytes } : {}),
     };
   }
 
-  if (typeof params === 'object') {
+  if (typeof params === "object") {
     const submittedKeys = Object.keys(params as Record<string, unknown>);
-    const op = operations.find(o => o.name === opName);
+    const op = operations.find((o) => o.name === opName);
     const allowList = op ? new Set(Object.keys(op.params)) : new Set<string>();
     const declared: string[] = [];
     let unknown = 0;
@@ -112,7 +121,7 @@ export function summarizeMcpParams(opName: string, params: unknown): ParamSummar
     declared.sort();
     return {
       redacted: true,
-      kind: 'object',
+      kind: "object",
       declared_keys: declared,
       unknown_key_count: unknown,
       ...(approxBytes !== undefined ? { approx_bytes: approxBytes } : {}),
@@ -127,7 +136,10 @@ export function summarizeMcpParams(opName: string, params: unknown): ParamSummar
 }
 
 /** Validate required params exist and have the expected type. Returns null on success, error message on failure. */
-export function validateParams(op: Operation, params: Record<string, unknown>): string | null {
+export function validateParams(
+  op: Operation,
+  params: Record<string, unknown>,
+): string | null {
   for (const [key, def] of Object.entries(op.params)) {
     if (def.required && (params[key] === undefined || params[key] === null)) {
       return `Missing required parameter: ${key}`;
@@ -135,17 +147,25 @@ export function validateParams(op: Operation, params: Record<string, unknown>): 
     if (params[key] !== undefined && params[key] !== null) {
       const val = params[key];
       const expected = def.type;
-      if (expected === 'string' && typeof val !== 'string') return `Parameter "${key}" must be a string`;
-      if (expected === 'number' && typeof val !== 'number') return `Parameter "${key}" must be a number`;
-      if (expected === 'boolean' && typeof val !== 'boolean') return `Parameter "${key}" must be a boolean`;
-      if (expected === 'object' && (typeof val !== 'object' || Array.isArray(val))) return `Parameter "${key}" must be an object`;
-      if (expected === 'array' && !Array.isArray(val)) return `Parameter "${key}" must be an array`;
+      if (expected === "string" && typeof val !== "string")
+        return `Parameter "${key}" must be a string`;
+      if (expected === "number" && typeof val !== "number")
+        return `Parameter "${key}" must be a number`;
+      if (expected === "boolean" && typeof val !== "boolean")
+        return `Parameter "${key}" must be a boolean`;
+      if (
+        expected === "object" &&
+        (typeof val !== "object" || Array.isArray(val))
+      )
+        return `Parameter "${key}" must be an object`;
+      if (expected === "array" && !Array.isArray(val))
+        return `Parameter "${key}" must be an array`;
     }
   }
   return null;
 }
 
-const stderrLogger: OperationContext['logger'] = {
+const stderrLogger: OperationContext["logger"] = {
   info: (msg: string) => process.stderr.write(`[info] ${msg}\n`),
   warn: (msg: string) => process.stderr.write(`[warn] ${msg}\n`),
   error: (msg: string) => process.stderr.write(`[error] ${msg}\n`),
@@ -158,11 +178,12 @@ export function buildOperationContext(
 ): OperationContext {
   return {
     engine,
-    config: loadConfig() || { engine: 'postgres' },
+    config: loadConfig() || { engine: "postgres" },
     logger: opts.logger || stderrLogger,
     dryRun: !!params.dry_run,
     remote: opts.remote ?? true,
     takesHoldersAllowList: opts.takesHoldersAllowList,
+    sourceId: opts.sourceId,
   };
 }
 
@@ -178,30 +199,54 @@ export async function dispatchToolCall(
   params: Record<string, unknown> | undefined,
   opts: DispatchOpts = {},
 ): Promise<ToolResult> {
-  const op = operations.find(o => o.name === name);
+  const op = operations.find((o) => o.name === name);
   if (!op) {
-    return { content: [{ type: 'text', text: `Error: Unknown tool: ${name}` }], isError: true };
+    return {
+      content: [{ type: "text", text: `Error: Unknown tool: ${name}` }],
+      isError: true,
+    };
   }
 
   const safeParams = params || {};
   const validationError = validateParams(op, safeParams);
   if (validationError) {
     return {
-      content: [{ type: 'text', text: JSON.stringify({ error: 'invalid_params', message: validationError }, null, 2) }],
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            { error: "invalid_params", message: validationError },
+            null,
+            2,
+          ),
+        },
+      ],
       isError: true,
     };
   }
 
-  const ctx = buildOperationContext(engine, safeParams, opts);
+  const { resolveSourceId } = await import("../core/source-resolver.ts");
+  const sourceId =
+    opts.sourceId ||
+    (await resolveSourceId(engine, (safeParams.source as string) || null));
+  const ctx = buildOperationContext(engine, safeParams, { ...opts, sourceId });
 
   try {
     const result = await op.handler(ctx, safeParams);
-    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    return {
+      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+    };
   } catch (e: unknown) {
     if (e instanceof OperationError) {
-      return { content: [{ type: 'text', text: JSON.stringify(e.toJSON(), null, 2) }], isError: true };
+      return {
+        content: [{ type: "text", text: JSON.stringify(e.toJSON(), null, 2) }],
+        isError: true,
+      };
     }
     const msg = e instanceof Error ? e.message : String(e);
-    return { content: [{ type: 'text', text: `Error: ${msg}` }], isError: true };
+    return {
+      content: [{ type: "text", text: `Error: ${msg}` }],
+      isError: true,
+    };
   }
 }

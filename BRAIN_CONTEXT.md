@@ -55,6 +55,7 @@ Record decisions that future sessions should treat as default unless explicitly 
 | YYYY-MM-DD | [fill] | [fill] | [fill] |
 | 2026-05-09 | Use local PGLite GBrain source `brain` for this project. | Keeps repo/wiki recall available without requiring external Postgres. | Local development, wiki maintenance, future agent sessions |
 | 2026-05-09 | Use `bun run src/cli.ts` for GBrain commands until a global `gbrain` binary is on PATH. | The source repo CLI works locally; global command is not currently installed. | Local command examples and automation |
+| 2026-05-14 | Treat source identity as part of the import architecture, not only sync bookkeeping. | Source-scoped full syncs must not leak pages into `default`. | `src/commands/sync.ts`, `src/commands/import.ts`, `src/core/import-file.ts`, engine implementations |
 
 ## 5) Current Priorities (Update Weekly)
 
@@ -74,6 +75,8 @@ Record decisions that future sessions should treat as default unless explicitly 
   - `AGENTS.md`
   - `SESSION_HANDOFF.md`
   - `GBRAIN_DEV_WORKFLOW.md`
+  - `docs/architecture/project-operating-architecture.md`
+  - `wiki/concepts/project-operating-architecture.md`
   - `wiki/automation.md`
   - `.gbrain-source`
 

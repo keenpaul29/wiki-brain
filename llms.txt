@@ -43,6 +43,7 @@ Repo: https://github.com/garrytan/gbrain
 
 - [docs/designs/](https://raw.githubusercontent.com/garrytan/gbrain/master/docs/designs/): Forward-looking designs.
 - [docs/architecture/infra-layer.md](https://raw.githubusercontent.com/garrytan/gbrain/master/docs/architecture/infra-layer.md): Shared infra patterns.
+- [docs/architecture/project-operating-architecture.md](https://raw.githubusercontent.com/garrytan/gbrain/master/docs/architecture/project-operating-architecture.md): Local project operating architecture for GBrain source sync, wiki maintenance, and agent handoff.
 
 ## Operational tips
 

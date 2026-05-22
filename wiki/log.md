@@ -7,6 +7,20 @@ updated: 2026-04-28
 
 # Wiki Log
 
+## [2026-05-19] decision | Shared engineering language page
+
+Decision: yes, the wiki should maintain a shared engineering language page, similar to a lightweight `CONTEXT.md`, for recurring project terms and durable engineering decisions.
+
+Added [[concepts/shared-engineering-language|Shared Engineering Language]] with initial definitions for raw sources, wiki pages, source summaries, concept pages, synthesis pages, project operating architecture, brain/source routing, ship-and-learn, and context-first workflow. Updated [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]] and [[index]].
+
+## [2026-05-19] ingest | AI coding learning ownership
+
+Processed new raw source:
+
+- `raw/Don't Outsource the Learning.md`
+
+Added [[sources/dont-outsource-learning|Don't Outsource the Learning]] for Addy Osmani's warning that AI coding workflows can trade present-day speed for future engineering capability when engineers skip hypothesis formation, explanation, review, and reconstruction. Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
 ## [2026-04-28] ingest | Initial raw source compilation
 
 Processed the initial source set:
@@ -164,3 +178,15 @@ Processed new/changed raw sources:
 Added new source summaries: [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] and [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]. Refreshed [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]] with stronger decision-tree framing and applied scenarios.
 
 Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/reliability-and-operations|Reliability and Operations]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]] to integrate planning-first AI execution and explicit expected-vs-exceptional failure handling.
+
+## [2026-05-14] architecture | Project, wiki, GBrain, and sync architecture pass
+
+Modified the project architecture across four layers:
+
+- Added `docs/architecture/project-operating-architecture.md` as the canonical local operating architecture.
+- Added [[concepts/project-operating-architecture|Project Operating Architecture]] to the wiki and linked it from [[index]].
+- Updated [[automation]] so wiki maintenance ends by syncing the attached GBrain source `brain`.
+- Updated `BRAIN_CONTEXT.md`, `SESSION_HANDOFF.md`, `GBRAIN_DEV_WORKFLOW.md`, and `AGENTS.md` with the new source-routing and handoff model.
+- Refactored source-scoped sync/import so `sourceId` is carried into page, version, tag, and chunk writes instead of only being used for sync bookmarks.
+
+Verification: `bun run typecheck` and `bun test --timeout 180000 test/sync.test.ts` passed.

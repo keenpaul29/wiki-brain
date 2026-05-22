@@ -3,20 +3,31 @@
  * Each operation defines its schema, handler, and optional CLI hints.
  */
 
-import { lstatSync, realpathSync } from 'fs';
-import { resolve, relative, sep } from 'path';
-import type { BrainEngine } from './engine.ts';
-import { clampSearchLimit } from './engine.ts';
-import type { GBrainConfig } from './config.ts';
-import type { PageType } from './types.ts';
-import { importFromContent } from './import-file.ts';
-import { hybridSearch } from './search/hybrid.ts';
-import { expandQuery } from './search/expansion.ts';
-import { dedupResults } from './search/dedup.ts';
-import { captureEvalCandidate, isEvalCaptureEnabled, isEvalScrubEnabled } from './eval-capture.ts';
-import type { HybridSearchMeta } from './types.ts';
-import { extractPageLinks, isAutoLinkEnabled, isAutoTimelineEnabled, parseTimelineEntries, makeResolver, type UnresolvedFrontmatterRef } from './link-extraction.ts';
-import * as db from './db.ts';
+import { lstatSync, realpathSync } from "fs";
+import { resolve, relative, sep } from "path";
+import type { BrainEngine } from "./engine.ts";
+import { clampSearchLimit } from "./engine.ts";
+import type { GBrainConfig } from "./config.ts";
+import type { PageType } from "./types.ts";
+import { importFromContent } from "./import-file.ts";
+import { hybridSearch } from "./search/hybrid.ts";
+import { expandQuery } from "./search/expansion.ts";
+import { dedupResults } from "./search/dedup.ts";
+import {
+  captureEvalCandidate,
+  isEvalCaptureEnabled,
+  isEvalScrubEnabled,
+} from "./eval-capture.ts";
+import type { HybridSearchMeta } from "./types.ts";
+import {
+  extractPageLinks,
+  isAutoLinkEnabled,
+  isAutoTimelineEnabled,
+  parseTimelineEntries,
+  makeResolver,
+  type UnresolvedFrontmatterRef,
+} from "./link-extraction.ts";
+import * as db from "./db.ts";
 import {
   GET_RECENT_SALIENCE_DESCRIPTION,
   FIND_ANOMALIES_DESCRIPTION,
@@ -24,19 +35,19 @@ import {
   LIST_PAGES_DESCRIPTION,
   QUERY_DESCRIPTION,
   SEARCH_DESCRIPTION,
-} from './operations-descriptions.ts';
+} from "./operations-descriptions.ts";
 
 // --- Types ---
 
 export type ErrorCode =
-  | 'page_not_found'
-  | 'invalid_params'
-  | 'embedding_failed'
-  | 'storage_error'
-  | 'bucket_not_found'
-  | 'database_error'
-  | 'permission_denied'
-  | 'unknown_transport'; // v0.28.1: whoami fail-closed for ambiguous transport
+  | "page_not_found"
+  | "invalid_params"
+  | "embedding_failed"
+  | "storage_error"
+  | "bucket_not_found"
+  | "database_error"
+  | "permission_denied"
+  | "unknown_transport"; // v0.28.1: whoami fail-closed for ambiguous transport
 
 export class OperationError extends Error {
   constructor(
@@ -46,7 +57,7 @@ export class OperationError extends Error {
     public docs?: string,
   ) {
     super(message);
-    this.name = 'OperationError';
+    this.name = "OperationError";
   }
 
   toJSON() {
@@ -77,21 +88,31 @@ export class OperationError extends Error {
  * @param strict true → enforce cwd confinement (B5 + H1). false → allow any accessible path.
  * @throws OperationError(invalid_params) on symlink escape, traversal, or missing file
  */
-export function validateUploadPath(filePath: string, root: string, strict = true): string {
+export function validateUploadPath(
+  filePath: string,
+  root: string,
+  strict = true,
+): string {
   let real: string;
   try {
     real = realpathSync(resolve(filePath));
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (msg.includes('ENOENT')) {
-      throw new OperationError('invalid_params', `File not found: ${filePath}`);
+    if (msg.includes("ENOENT")) {
+      throw new OperationError("invalid_params", `File not found: ${filePath}`);
     }
-    throw new OperationError('invalid_params', `Cannot resolve path: ${filePath}`);
+    throw new OperationError(
+      "invalid_params",
+      `Cannot resolve path: ${filePath}`,
+    );
   }
   // Always reject final-component symlinks (basic safety for both modes).
   try {
     if (lstatSync(resolve(filePath)).isSymbolicLink()) {
-      throw new OperationError('invalid_params', `Symlinks are not allowed for upload: ${filePath}`);
+      throw new OperationError(
+        "invalid_params",
+        `Symlinks are not allowed for upload: ${filePath}`,
+      );
     }
   } catch (e) {
     if (e instanceof OperationError) throw e;
@@ -105,11 +126,22 @@ export function validateUploadPath(filePath: string, root: string, strict = true
   try {
     realRoot = realpathSync(root);
   } catch {
-    throw new OperationError('invalid_params', `Confinement root not accessible: ${root}`);
+    throw new OperationError(
+      "invalid_params",
+      `Confinement root not accessible: ${root}`,
+    );
   }
   const rel = relative(realRoot, real);
-  if (rel === '' || rel.startsWith('..') || rel.startsWith(`..${sep}`) || resolve(realRoot, rel) !== real) {
-    throw new OperationError('invalid_params', `Upload path must be within the working directory: ${filePath}`);
+  if (
+    rel === "" ||
+    rel.startsWith("..") ||
+    rel.startsWith(`..${sep}`) ||
+    resolve(realRoot, rel) !== real
+  ) {
+    throw new OperationError(
+      "invalid_params",
+      `Upload path must be within the working directory: ${filePath}`,
+    );
   }
   return real;
 }
@@ -120,14 +152,23 @@ export function validateUploadPath(filePath: string, root: string, strict = true
  * Format: lowercase alphanumeric + hyphen segments separated by single forward slashes.
  */
 export function validatePageSlug(slug: string): void {
-  if (typeof slug !== 'string' || slug.length === 0) {
-    throw new OperationError('invalid_params', 'page_slug must be a non-empty string');
+  if (typeof slug !== "string" || slug.length === 0) {
+    throw new OperationError(
+      "invalid_params",
+      "page_slug must be a non-empty string",
+    );
   }
   if (slug.length > 255) {
-    throw new OperationError('invalid_params', 'page_slug exceeds 255 characters');
+    throw new OperationError(
+      "invalid_params",
+      "page_slug exceeds 255 characters",
+    );
   }
   if (!/^[a-z0-9][a-z0-9\-]*(\/[a-z0-9][a-z0-9\-]*)*$/i.test(slug)) {
-    throw new OperationError('invalid_params', `Invalid page_slug: ${slug} (allowed: alphanumeric, hyphens, forward-slash separated segments)`);
+    throw new OperationError(
+      "invalid_params",
+      `Invalid page_slug: ${slug} (allowed: alphanumeric, hyphens, forward-slash separated segments)`,
+    );
   }
 }
 
@@ -143,12 +184,15 @@ export function validatePageSlug(slug: string): void {
  * Used by the v0.23 dream-cycle trusted-workspace path. Order doesn't
  * matter; the first match wins (returns true on any match).
  */
-export function matchesSlugAllowList(slug: string, prefixes: readonly string[]): boolean {
+export function matchesSlugAllowList(
+  slug: string,
+  prefixes: readonly string[],
+): boolean {
   for (const p of prefixes) {
-    if (p.endsWith('/*')) {
+    if (p.endsWith("/*")) {
       const base = p.slice(0, -2);
       if (slug === base) continue;
-      if (slug.startsWith(base + '/')) return true;
+      if (slug.startsWith(base + "/")) return true;
     } else if (p === slug) {
       return true;
     }
@@ -162,19 +206,28 @@ export function matchesSlugAllowList(slug: string, prefixes: readonly string[]):
  * Allows extension dots and underscores. Max 255 chars.
  */
 export function validateFilename(name: string): void {
-  if (typeof name !== 'string' || name.length === 0) {
-    throw new OperationError('invalid_params', 'Filename must be a non-empty string');
+  if (typeof name !== "string" || name.length === 0) {
+    throw new OperationError(
+      "invalid_params",
+      "Filename must be a non-empty string",
+    );
   }
   if (name.length > 255) {
-    throw new OperationError('invalid_params', 'Filename exceeds 255 characters');
+    throw new OperationError(
+      "invalid_params",
+      "Filename exceeds 255 characters",
+    );
   }
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._\-]*$/.test(name)) {
-    throw new OperationError('invalid_params', `Invalid filename: ${name} (allowed: alphanumeric, dot, underscore, hyphen — no leading dot/dash, no control chars or backslash)`);
+    throw new OperationError(
+      "invalid_params",
+      `Invalid filename: ${name} (allowed: alphanumeric, dot, underscore, hyphen — no leading dot/dash, no control chars or backslash)`,
+    );
   }
 }
 
 export interface ParamDef {
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  type: "string" | "number" | "boolean" | "object" | "array";
   required?: boolean;
   description?: string;
   default?: unknown;
@@ -302,13 +355,22 @@ export interface OperationContext {
    * working without change).
    */
   brainId?: string;
+  /**
+   * Resolved source id (v0.18.0). Scopes a repository within a brain (e.g. 'wiki', 'gstack').
+   * Used by put_page and other ingest-facing operations to ensure data stays scoped
+   * and doesn't leak into the 'default' source.
+   */
+  sourceId?: string;
 }
 
 export interface Operation {
   name: string;
   description: string;
   params: Record<string, ParamDef>;
-  handler: (ctx: OperationContext, params: Record<string, unknown>) => Promise<unknown>;
+  handler: (
+    ctx: OperationContext,
+    params: Record<string, unknown>,
+  ) => Promise<unknown>;
   mutating?: boolean;
   /**
    * Capability scope required to invoke this op over an authenticated
@@ -320,7 +382,7 @@ export interface Operation {
    * Local CLI callers (ctx.remote === false) bypass scope enforcement
    * because the trust boundary there is the OS, not OAuth scopes.
    */
-  scope?: 'read' | 'write' | 'admin' | 'sources_admin' | 'users_admin';
+  scope?: "read" | "write" | "admin" | "sources_admin" | "users_admin";
   localOnly?: boolean;
   cliHints?: {
     name?: string;
@@ -333,51 +395,80 @@ export interface Operation {
 // --- Page CRUD ---
 
 const get_page: Operation = {
-  name: 'get_page',
-  description: 'Read a page by slug (supports optional fuzzy matching). Soft-deleted pages are hidden by default; pass include_deleted: true to surface them with deleted_at populated (see v0.26.5 recovery window).',
+  name: "get_page",
+  description:
+    "Read a page by slug (supports optional fuzzy matching). Soft-deleted pages are hidden by default; pass include_deleted: true to surface them with deleted_at populated (see v0.26.5 recovery window).",
   params: {
-    slug: { type: 'string', required: true, description: 'Page slug' },
-    fuzzy: { type: 'boolean', description: 'Enable fuzzy slug resolution (default: false)' },
-    include_deleted: { type: 'boolean', description: 'v0.26.5: surface soft-deleted pages with deleted_at populated (default: false). Used by restore workflows.' },
+    slug: { type: "string", required: true, description: "Page slug" },
+    fuzzy: {
+      type: "boolean",
+      description: "Enable fuzzy slug resolution (default: false)",
+    },
+    include_deleted: {
+      type: "boolean",
+      description:
+        "v0.26.5: surface soft-deleted pages with deleted_at populated (default: false). Used by restore workflows.",
+    },
   },
   handler: async (ctx, p) => {
     const slug = p.slug as string;
     const fuzzy = (p.fuzzy as boolean) || false;
     const includeDeleted = (p.include_deleted as boolean) === true;
 
-    let page = await ctx.engine.getPage(slug, { includeDeleted });
+    let page = await ctx.engine.getPage(slug, {
+      includeDeleted,
+      sourceId: ctx.sourceId,
+    });
     let resolved_slug: string | undefined;
 
     if (!page && fuzzy) {
-      const candidates = await ctx.engine.resolveSlugs(slug);
+      const candidates = await ctx.engine.resolveSlugs(slug, {
+        sourceId: ctx.sourceId,
+      });
       if (candidates.length === 1) {
-        page = await ctx.engine.getPage(candidates[0], { includeDeleted });
+        page = await ctx.engine.getPage(candidates[0], {
+          includeDeleted,
+          sourceId: ctx.sourceId,
+        });
         resolved_slug = candidates[0];
       } else if (candidates.length > 1) {
-        return { error: 'ambiguous_slug', candidates };
+        return { error: "ambiguous_slug", candidates };
       }
     }
 
     if (!page) {
-      throw new OperationError('page_not_found', `Page not found: ${slug}`, includeDeleted ? 'Check the slug or use fuzzy: true' : 'Page may be soft-deleted; pass include_deleted: true to verify');
+      throw new OperationError(
+        "page_not_found",
+        `Page not found: ${slug}`,
+        includeDeleted
+          ? "Check the slug or use fuzzy: true"
+          : "Page may be soft-deleted; pass include_deleted: true to verify",
+      );
     }
 
-    const tags = await ctx.engine.getTags(page.slug);
+    const tags = await ctx.engine.getTags(page.slug, {
+      sourceId: ctx.sourceId,
+    });
     return { ...page, tags, ...(resolved_slug ? { resolved_slug } : {}) };
   },
-  scope: 'read',
-  cliHints: { name: 'get', positional: ['slug'] },
+  scope: "read",
+  cliHints: { name: "get", positional: ["slug"] },
 };
 
 const put_page: Operation = {
-  name: 'put_page',
-  description: 'Write/update a page (markdown with frontmatter). Chunks, embeds, reconciles tags, and (when auto_link/auto_timeline are enabled) extracts + reconciles graph links and timeline entries.',
+  name: "put_page",
+  description:
+    "Write/update a page (markdown with frontmatter). Chunks, embeds, reconciles tags, and (when auto_link/auto_timeline are enabled) extracts + reconciles graph links and timeline entries.",
   params: {
-    slug: { type: 'string', required: true, description: 'Page slug' },
-    content: { type: 'string', required: true, description: 'Full markdown content with YAML frontmatter' },
+    slug: { type: "string", required: true, description: "Page slug" },
+    content: {
+      type: "string",
+      required: true,
+      description: "Full markdown content with YAML frontmatter",
+    },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
     const slug = p.slug as string;
 
@@ -391,8 +482,11 @@ const put_page: Operation = {
     // dispatcher forgot to populate `subagentId`. Agent-originated writes
     // without an owning subagent id are rejected outright.
     if (ctx.viaSubagent === true) {
-      if (typeof ctx.subagentId !== 'number' || Number.isNaN(ctx.subagentId)) {
-        throw new OperationError('permission_denied', 'put_page via subagent requires ctx.subagentId');
+      if (typeof ctx.subagentId !== "number" || Number.isNaN(ctx.subagentId)) {
+        throw new OperationError(
+          "permission_denied",
+          "put_page via subagent requires ctx.subagentId",
+        );
       }
       const allowList = ctx.allowedSlugPrefixes;
       if (allowList && allowList.length > 0) {
@@ -401,26 +495,37 @@ const put_page: Operation = {
         // jobs under PROTECTED_JOB_NAMES — MCP cannot reach this branch.
         if (!matchesSlugAllowList(slug, allowList)) {
           throw new OperationError(
-            'permission_denied',
-            `put_page slug '${slug}' is not within the trusted-workspace allow-list (${allowList.join(', ')})`
+            "permission_denied",
+            `put_page slug '${slug}' is not within the trusted-workspace allow-list (${allowList.join(", ")})`,
           );
         }
       } else {
         // Legacy default: agent-namespace confinement.
         const prefix = `wiki/agents/${ctx.subagentId}/`;
         if (!slug.startsWith(prefix) || slug.length === prefix.length) {
-          throw new OperationError('permission_denied', `put_page via subagent must write under '${prefix}...'`);
+          throw new OperationError(
+            "permission_denied",
+            `put_page via subagent must write under '${prefix}...'`,
+          );
         }
       }
     }
 
-    if (ctx.dryRun) return { dry_run: true, action: 'put_page', slug: p.slug };
+    if (ctx.dryRun) return { dry_run: true, action: "put_page", slug: p.slug };
     // Skip embedding when the AI gateway has no embedding provider configured.
     // Checks all auth env vars for the resolved provider, not just OPENAI_API_KEY,
     // so Gemini / Ollama / Voyage brains don't silently drop embeddings (Codex C2).
-    const { isAvailable } = await import('./ai/gateway.ts');
-    const noEmbed = !isAvailable('embedding');
-    const result = await importFromContent(ctx.engine, slug, p.content as string, { noEmbed });
+    const { isAvailable } = await import("./ai/gateway.ts");
+    const noEmbed = !isAvailable("embedding");
+    const result = await importFromContent(
+      ctx.engine,
+      slug,
+      p.content as string,
+      {
+        noEmbed,
+        sourceId: ctx.sourceId,
+      },
+    );
 
     // Auto-link post-hook: runs AFTER importFromContent (which is its own
     // transaction). Runs even on status='skipped' so reconciliation catches drift
@@ -434,28 +539,38 @@ const put_page: Operation = {
     // would surface higher in search. Local CLI users (ctx.remote=false) opt
     // into this behavior; MCP/remote writes do not.
     let autoLinks:
-      | { created: number; removed: number; errors: number; unresolved: UnresolvedFrontmatterRef[] }
+      | {
+          created: number;
+          removed: number;
+          errors: number;
+          unresolved: UnresolvedFrontmatterRef[];
+        }
       | { error: string }
-      | { skipped: 'remote' }
+      | { skipped: "remote" }
       | undefined;
-    let autoTimeline: { created: number } | { error: string } | { skipped: 'remote' } | undefined;
+    let autoTimeline:
+      | { created: number }
+      | { error: string }
+      | { skipped: "remote" }
+      | undefined;
     // Trusted-workspace path (v0.23 dream cycle) re-enables auto-link/timeline
     // even though ctx.remote=true, because the allow-list bounds the slug and
     // the synthesis prompt is itself the trusted dispatcher. Without this,
     // the cycle's `extract` phase would have to recompute every edge, and
     // patterns (which runs after extract) would still see the right graph
     // but auto_timeline would never fire on synth output.
-    const trustedWorkspace = ctx.viaSubagent === true
-      && Array.isArray(ctx.allowedSlugPrefixes)
-      && ctx.allowedSlugPrefixes.length > 0;
+    const trustedWorkspace =
+      ctx.viaSubagent === true &&
+      Array.isArray(ctx.allowedSlugPrefixes) &&
+      ctx.allowedSlugPrefixes.length > 0;
     if (ctx.remote !== false && !trustedWorkspace) {
-      autoLinks = { skipped: 'remote' };
-      autoTimeline = { skipped: 'remote' };
+      autoLinks = { skipped: "remote" };
+      autoTimeline = { skipped: "remote" };
     } else if (result.parsedPage) {
       try {
         const enabled = await isAutoLinkEnabled(ctx.engine);
         if (enabled) {
-          autoLinks = await runAutoLink(ctx.engine, slug, result.parsedPage);
+          autoLinks = await runAutoLink(ctx.engine, slug, result.parsedPage, { sourceId: ctx.sourceId });
         }
       } catch (e) {
         autoLinks = { error: e instanceof Error ? e.message : String(e) };
@@ -467,14 +582,17 @@ const put_page: Operation = {
       try {
         const enabled = await isAutoTimelineEnabled(ctx.engine);
         if (enabled) {
-          const fullContent = result.parsedPage.compiled_truth + '\n' + result.parsedPage.timeline;
+          const fullContent =
+            result.parsedPage.compiled_truth +
+            "\n" +
+            result.parsedPage.timeline;
           const entries = parseTimelineEntries(fullContent);
           if (entries.length > 0) {
-            const batch = entries.map(e => ({
+            const batch = entries.map((e) => ({
               slug,
               date: e.date,
               summary: e.summary,
-              detail: e.detail || '',
+              detail: e.detail || "",
             }));
             const created = await ctx.engine.addTimelineEntriesBatch(batch);
             autoTimeline = { created };
@@ -492,14 +610,19 @@ const put_page: Operation = {
     // validators on the freshly-written page and logs findings to
     // ingest_log + ~/.gbrain/validator-lint.jsonl. Does NOT reject the
     // write — that's the deferred strict-mode flip after the 7-day soak.
-    let writerLint: { error_count: number; warning_count: number } | { skipped: string } | undefined;
+    let writerLint:
+      | { error_count: number; warning_count: number }
+      | { skipped: string }
+      | undefined;
     try {
-      const { runPostWriteLint } = await import('./output/post-write.ts');
+      const { runPostWriteLint } = await import("./output/post-write.ts");
       const lint = await runPostWriteLint(ctx.engine, result.slug);
       if (lint.ran) {
         writerLint = {
-          error_count: lint.findings.filter(f => f.severity === 'error').length,
-          warning_count: lint.findings.filter(f => f.severity === 'warning').length,
+          error_count: lint.findings.filter((f) => f.severity === "error")
+            .length,
+          warning_count: lint.findings.filter((f) => f.severity === "warning")
+            .length,
         };
       } else if (lint.skippedReason) {
         writerLint = { skipped: lint.skippedReason };
@@ -510,14 +633,15 @@ const put_page: Operation = {
 
     return {
       slug: result.slug,
-      status: result.status === 'imported' ? 'created_or_updated' : result.status,
+      status:
+        result.status === "imported" ? "created_or_updated" : result.status,
       chunks: result.chunks,
       ...(autoLinks ? { auto_links: autoLinks } : {}),
       ...(autoTimeline ? { auto_timeline: autoTimeline } : {}),
       ...(writerLint ? { writer_lint: writerLint } : {}),
     };
   },
-  cliHints: { name: 'put', positional: ['slug'], stdin: 'content' },
+  cliHints: { name: "put", positional: ["slug"], stdin: "content" },
 };
 
 /**
@@ -533,20 +657,36 @@ const put_page: Operation = {
 async function runAutoLink(
   engine: BrainEngine,
   slug: string,
-  parsed: { type: PageType; compiled_truth: string; timeline: string; frontmatter: Record<string, unknown> },
-): Promise<{ created: number; removed: number; errors: number; unresolved: UnresolvedFrontmatterRef[] }> {
-  const fullContent = parsed.compiled_truth + '\n' + parsed.timeline;
+  parsed: {
+    type: PageType;
+    compiled_truth: string;
+    timeline: string;
+    frontmatter: Record<string, unknown>;
+  },
+  opts?: { sourceId?: string },
+): Promise<{
+  created: number;
+  removed: number;
+  errors: number;
+  unresolved: UnresolvedFrontmatterRef[];
+}> {
+  const fullContent = parsed.compiled_truth + "\n" + parsed.timeline;
   // Live-mode resolver: per-put throwaway cache, pg_trgm + optional search.
-  const resolver = makeResolver(engine, { mode: 'live' });
+  const resolver = makeResolver(engine, { mode: "live", sourceId: opts?.sourceId });
   const { candidates, unresolved } = await extractPageLinks(
-    slug, fullContent, parsed.frontmatter, parsed.type, resolver,
+    slug,
+    fullContent,
+    parsed.frontmatter,
+    parsed.type,
+    resolver,
   );
 
   // Resolve which targets exist (skip refs to non-existent pages to avoid FK
   // violation churn in addLink). One getAllSlugs call upfront, O(1) lookup.
   const allSlugs = await engine.getAllSlugs();
-  const valid = candidates.filter(c =>
-    allSlugs.has(c.targetSlug) && (!c.fromSlug || allSlugs.has(c.fromSlug))
+  const valid = candidates.filter(
+    (c) =>
+      allSlugs.has(c.targetSlug) && (!c.fromSlug || allSlugs.has(c.fromSlug)),
   );
 
   // Split candidates by direction. Outgoing (fromSlug === slug or unset) are
@@ -556,8 +696,8 @@ async function runAutoLink(
   // but SCOPED to the frontmatter edges this page authored via
   // (link_source='frontmatter' AND origin_slug = slug). We never touch
   // frontmatter edges authored by OTHER pages.
-  const out = valid.filter(c => !c.fromSlug || c.fromSlug === slug);
-  const inc = valid.filter(c => c.fromSlug && c.fromSlug !== slug);
+  const out = valid.filter((c) => !c.fromSlug || c.fromSlug === slug);
+  const inc = valid.filter((c) => c.fromSlug && c.fromSlug !== slug);
 
   // Run getLinks + addLink/removeLink loops inside a single transaction so that
   // concurrent put_page calls on the same slug can't race the reconciliation:
@@ -572,7 +712,10 @@ async function runAutoLink(
   // single-process so there's no cross-process concern there anyway).
   const result = await engine.transaction(async (tx) => {
     try {
-      await tx.executeRaw(`SELECT pg_advisory_xact_lock(hashtext($1)::bigint)`, [`auto_link:${slug}`]);
+      await tx.executeRaw(
+        `SELECT pg_advisory_xact_lock(hashtext($1)::bigint)`,
+        [`auto_link:${slug}`],
+      );
     } catch {
       // engine doesn't support advisory locks — fall through
     }
@@ -581,35 +724,47 @@ async function runAutoLink(
     // Non-frontmatter and other-page frontmatter edges survive untouched.
     const existingInRaw = await tx.getBacklinks(slug);
     const existingIn = existingInRaw.filter(
-      l => l.link_source === 'frontmatter' && l.origin_slug === slug,
+      (l) => l.link_source === "frontmatter" && l.origin_slug === slug,
     );
 
     // Reconcilable outgoing edges: markdown + our own frontmatter edges.
     // Manual edges (link_source='manual') are NEVER touched by reconciliation.
     const reconcilableOut = existingOut.filter(
-      l => l.link_source === 'markdown' || l.link_source == null ||
-           (l.link_source === 'frontmatter' && l.origin_slug === slug),
+      (l) =>
+        l.link_source === "markdown" ||
+        l.link_source == null ||
+        (l.link_source === "frontmatter" && l.origin_slug === slug),
     );
 
-    const outKeys = new Set(out.map(c =>
-      `${c.targetSlug}\u0000${c.linkType}\u0000${c.linkSource ?? 'markdown'}`
-    ));
-    const incKeys = new Set(inc.map(c =>
-      `${c.fromSlug}\u0000${c.linkType}`
-    ));
+    const outKeys = new Set(
+      out.map(
+        (c) =>
+          `${c.targetSlug}\u0000${c.linkType}\u0000${c.linkSource ?? "markdown"}`,
+      ),
+    );
+    const incKeys = new Set(inc.map((c) => `${c.fromSlug}\u0000${c.linkType}`));
 
-    let created = 0, removed = 0, errors = 0;
+    let created = 0,
+      removed = 0,
+      errors = 0;
 
     // Add outgoing edges.
     for (const c of out) {
       try {
         await tx.addLink(
-          slug, c.targetSlug, c.context, c.linkType,
-          c.linkSource, c.originSlug, c.originField,
+          slug,
+          c.targetSlug,
+          c.context,
+          c.linkType,
+          c.linkSource,
+          c.originSlug,
+          c.originField,
         );
-        const existKey = `${c.targetSlug}\u0000${c.linkType}\u0000${c.linkSource ?? 'markdown'}`;
-        const exists = reconcilableOut.some(l =>
-          `${l.to_slug}\u0000${l.link_type}\u0000${l.link_source ?? 'markdown'}` === existKey
+        const existKey = `${c.targetSlug}\u0000${c.linkType}\u0000${c.linkSource ?? "markdown"}`;
+        const exists = reconcilableOut.some(
+          (l) =>
+            `${l.to_slug}\u0000${l.link_type}\u0000${l.link_source ?? "markdown"}` ===
+            existKey,
         );
         if (!exists) created++;
       } catch {
@@ -621,12 +776,17 @@ async function runAutoLink(
     for (const c of inc) {
       try {
         await tx.addLink(
-          c.fromSlug!, c.targetSlug, c.context, c.linkType,
-          'frontmatter', c.originSlug, c.originField,
+          c.fromSlug!,
+          c.targetSlug,
+          c.context,
+          c.linkType,
+          "frontmatter",
+          c.originSlug,
+          c.originField,
         );
         const existKey = `${c.fromSlug}\u0000${c.linkType}`;
-        const exists = existingIn.some(l =>
-          `${l.from_slug}\u0000${l.link_type}` === existKey
+        const exists = existingIn.some(
+          (l) => `${l.from_slug}\u0000${l.link_type}` === existKey,
         );
         if (!exists) created++;
       } catch {
@@ -636,10 +796,15 @@ async function runAutoLink(
 
     // Remove stale outgoing (markdown or our-frontmatter, not in desired set).
     for (const l of reconcilableOut) {
-      const key = `${l.to_slug}\u0000${l.link_type}\u0000${l.link_source ?? 'markdown'}`;
+      const key = `${l.to_slug}\u0000${l.link_type}\u0000${l.link_source ?? "markdown"}`;
       if (!outKeys.has(key)) {
         try {
-          await tx.removeLink(slug, l.to_slug, l.link_type, l.link_source ?? undefined);
+          await tx.removeLink(
+            slug,
+            l.to_slug,
+            l.link_type,
+            l.link_source ?? undefined,
+          );
           removed++;
         } catch {
           errors++;
@@ -652,7 +817,7 @@ async function runAutoLink(
       const key = `${l.from_slug}\u0000${l.link_type}`;
       if (!incKeys.has(key)) {
         try {
-          await tx.removeLink(l.from_slug, slug, l.link_type, 'frontmatter');
+          await tx.removeLink(l.from_slug, slug, l.link_type, "frontmatter");
           removed++;
         } catch {
           errors++;
@@ -667,16 +832,17 @@ async function runAutoLink(
 }
 
 const delete_page: Operation = {
-  name: 'delete_page',
-  description: 'Soft-delete a page. The row is hidden from search and from get_page/list_pages, but is recoverable via restore_page within 72h. The autopilot purge phase hard-deletes after the recovery window. Pass include_deleted: true to get_page to verify the soft-delete landed.',
+  name: "delete_page",
+  description:
+    "Soft-delete a page. The row is hidden from search and from get_page/list_pages, but is recoverable via restore_page within 72h. The autopilot purge phase hard-deletes after the recovery window. Pass include_deleted: true to get_page to verify the soft-delete landed.",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
     const slug = p.slug as string;
-    if (ctx.dryRun) return { dry_run: true, action: 'soft_delete_page', slug };
+    if (ctx.dryRun) return { dry_run: true, action: "soft_delete_page", slug };
     // v0.26.5: rewired from hard-delete to soft-delete. The hard-delete primitive
     // (engine.deletePage) is now reserved for purgeDeletedPages and explicit
     // tests. softDeletePage returns null when the slug is unknown OR already
@@ -687,97 +853,137 @@ const delete_page: Operation = {
       // clear signal. Probe once with include_deleted to disambiguate.
       const existing = await ctx.engine.getPage(slug, { includeDeleted: true });
       if (!existing) {
-        throw new OperationError('page_not_found', `Page not found: ${slug}`, 'Check the slug.');
+        throw new OperationError(
+          "page_not_found",
+          `Page not found: ${slug}`,
+          "Check the slug.",
+        );
       }
-      return { status: 'already_soft_deleted', slug, deleted_at: existing.deleted_at };
+      return {
+        status: "already_soft_deleted",
+        slug,
+        deleted_at: existing.deleted_at,
+      };
     }
-    return { status: 'soft_deleted', slug, recoverable_until: 'now + 72h via restore_page' };
+    return {
+      status: "soft_deleted",
+      slug,
+      recoverable_until: "now + 72h via restore_page",
+    };
   },
-  cliHints: { name: 'delete', positional: ['slug'] },
+  cliHints: { name: "delete", positional: ["slug"] },
 };
 
 const restore_page: Operation = {
-  name: 'restore_page',
-  description: 'v0.26.5 — restore a soft-deleted page (clear deleted_at). Returns success only if the page was actually soft-deleted. After this op, the page reappears in search and in get_page/list_pages without the include_deleted flag.',
+  name: "restore_page",
+  description:
+    "v0.26.5 — restore a soft-deleted page (clear deleted_at). Returns success only if the page was actually soft-deleted. After this op, the page reappears in search and in get_page/list_pages without the include_deleted flag.",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
     const slug = p.slug as string;
-    if (ctx.dryRun) return { dry_run: true, action: 'restore_page', slug };
+    if (ctx.dryRun) return { dry_run: true, action: "restore_page", slug };
     const ok = await ctx.engine.restorePage(slug);
     if (!ok) {
       // Distinguish "not found" from "already active" (idempotent-as-false).
       const existing = await ctx.engine.getPage(slug, { includeDeleted: true });
       if (!existing) {
-        throw new OperationError('page_not_found', `Page not found: ${slug}`, 'Check the slug.');
+        throw new OperationError(
+          "page_not_found",
+          `Page not found: ${slug}`,
+          "Check the slug.",
+        );
       }
-      return { status: 'already_active', slug };
+      return { status: "already_active", slug };
     }
-    return { status: 'restored', slug };
+    return { status: "restored", slug };
   },
-  cliHints: { name: 'restore', positional: ['slug'] },
+  cliHints: { name: "restore", positional: ["slug"] },
 };
 
 const purge_deleted_pages: Operation = {
-  name: 'purge_deleted_pages',
-  description: 'v0.26.5 — admin-only. Hard-deletes pages whose deleted_at is older than older_than_hours (default 72). Cascades through content_chunks, page_links, chunk_relations. Local CLI only (not exposed over HTTP MCP). Manual escape hatch alongside the autopilot purge phase.',
+  name: "purge_deleted_pages",
+  description:
+    "v0.26.5 — admin-only. Hard-deletes pages whose deleted_at is older than older_than_hours (default 72). Cascades through content_chunks, page_links, chunk_relations. Local CLI only (not exposed over HTTP MCP). Manual escape hatch alongside the autopilot purge phase.",
   params: {
-    older_than_hours: { type: 'number', description: 'Age cutoff in hours. Default 72.' },
+    older_than_hours: {
+      type: "number",
+      description: "Age cutoff in hours. Default 72.",
+    },
   },
   mutating: true,
-  scope: 'admin',
+  scope: "admin",
   localOnly: true,
   handler: async (ctx, p) => {
     const olderThanHours = (p.older_than_hours as number | undefined) ?? 72;
-    if (ctx.dryRun) return { dry_run: true, action: 'purge_deleted_pages', older_than_hours: olderThanHours };
+    if (ctx.dryRun)
+      return {
+        dry_run: true,
+        action: "purge_deleted_pages",
+        older_than_hours: olderThanHours,
+      };
     const result = await ctx.engine.purgeDeletedPages(olderThanHours);
-    return { status: 'purged', count: result.count, slugs: result.slugs };
+    return { status: "purged", count: result.count, slugs: result.slugs };
   },
-  cliHints: { name: 'purge-deleted' },
+  cliHints: { name: "purge-deleted" },
 };
 
-const LIST_PAGES_SORT_VALUES = ['updated_desc', 'updated_asc', 'created_desc', 'slug'] as const;
-type ListPagesSort = typeof LIST_PAGES_SORT_VALUES[number];
+const LIST_PAGES_SORT_VALUES = [
+  "updated_desc",
+  "updated_asc",
+  "created_desc",
+  "slug",
+] as const;
+type ListPagesSort = (typeof LIST_PAGES_SORT_VALUES)[number];
 
 const list_pages: Operation = {
-  name: 'list_pages',
+  name: "list_pages",
   description: LIST_PAGES_DESCRIPTION,
   params: {
-    type: { type: 'string', description: 'Filter by page type' },
-    tag: { type: 'string', description: 'Filter by tag' },
-    limit: { type: 'number', description: 'Max results (default 50)' },
+    type: { type: "string", description: "Filter by page type" },
+    tag: { type: "string", description: "Filter by tag" },
+    limit: { type: "number", description: "Max results (default 50)" },
     // v0.29 — surface filter that already exists on PageFilters.
     updated_after: {
-      type: 'string',
-      description: 'ISO date (YYYY-MM-DD) or full timestamp. Returns pages with updated_at > value.',
+      type: "string",
+      description:
+        "ISO date (YYYY-MM-DD) or full timestamp. Returns pages with updated_at > value.",
     },
     sort: {
-      type: 'string',
+      type: "string",
       enum: [...LIST_PAGES_SORT_VALUES],
-      description: 'Sort order. Default updated_desc (matches pre-v0.29). Options: updated_desc, updated_asc, created_desc, slug.',
+      description:
+        "Sort order. Default updated_desc (matches pre-v0.29). Options: updated_desc, updated_asc, created_desc, slug.",
     },
-    include_deleted: { type: 'boolean', description: 'v0.26.5: include soft-deleted pages (default: false). Used by restore workflows and operator diagnostics.' },
+    include_deleted: {
+      type: "boolean",
+      description:
+        "v0.26.5: include soft-deleted pages (default: false). Used by restore workflows and operator diagnostics.",
+    },
   },
   handler: async (ctx, p) => {
     // Whitelist the sort enum at the handler before passing to the engine.
     // Engines also whitelist via PAGE_SORT_SQL but defending here keeps
     // unsupported strings from reaching the SQL layer.
     const rawSort = p.sort as string | undefined;
-    const sort = rawSort && (LIST_PAGES_SORT_VALUES as readonly string[]).includes(rawSort)
-      ? (rawSort as ListPagesSort)
-      : undefined;
+    const sort =
+      rawSort && (LIST_PAGES_SORT_VALUES as readonly string[]).includes(rawSort)
+        ? (rawSort as ListPagesSort)
+        : undefined;
     const pages = await ctx.engine.listPages({
       type: p.type as any,
       tag: p.tag as string,
       limit: clampSearchLimit(p.limit as number | undefined, 50, 100),
       includeDeleted: (p.include_deleted as boolean) === true,
-      updated_after: typeof p.updated_after === 'string' ? p.updated_after : undefined,
+      updated_after:
+        typeof p.updated_after === "string" ? p.updated_after : undefined,
       sort,
+      sourceId: ctx.sourceId,
     });
-    return pages.map(pg => ({
+    return pages.map((pg) => ({
       slug: pg.slug,
       type: pg.type,
       title: pg.title,
@@ -785,19 +991,22 @@ const list_pages: Operation = {
       ...(pg.deleted_at ? { deleted_at: pg.deleted_at } : {}),
     }));
   },
-  scope: 'read',
-  cliHints: { name: 'list' },
+  scope: "read",
+  cliHints: { name: "list" },
 };
 
 // --- Search ---
 
 const search: Operation = {
-  name: 'search',
+  name: "search",
   description: SEARCH_DESCRIPTION,
   params: {
-    query: { type: 'string', required: true },
-    limit: { type: 'number', description: 'Max results (default 20)' },
-    offset: { type: 'number', description: 'Skip first N results (for pagination)' },
+    query: { type: "string", required: true },
+    limit: { type: "number", description: "Max results (default 20)" },
+    offset: {
+      type: "number",
+      description: "Skip first N results (for pagination)",
+    },
   },
   handler: async (ctx, p) => {
     const startedAt = Date.now();
@@ -805,6 +1014,7 @@ const search: Operation = {
     const raw = await ctx.engine.searchKeyword(queryText, {
       limit: (p.limit as number) || 20,
       offset: (p.offset as number) || 0,
+      sourceId: ctx.sourceId,
     });
     const results = dedupResults(raw);
     const latency_ms = Date.now() - startedAt;
@@ -816,10 +1026,14 @@ const search: Operation = {
       void captureEvalCandidate(
         ctx.engine,
         {
-          tool_name: 'search',
+          tool_name: "search",
           query: queryText,
           results,
-          meta: { vector_enabled: false, detail_resolved: null, expansion_applied: false },
+          meta: {
+            vector_enabled: false,
+            detail_resolved: null,
+            expansion_applied: false,
+          },
           latency_ms,
           remote: ctx.remote ?? false,
           expand_enabled: null,
@@ -833,12 +1047,12 @@ const search: Operation = {
 
     return results;
   },
-  scope: 'read',
-  cliHints: { name: 'search', positional: ['query'] },
+  scope: "read",
+  cliHints: { name: "search", positional: ["query"] },
 };
 
 const query: Operation = {
-  name: 'query',
+  name: "query",
   description: QUERY_DESCRIPTION,
   params: {
     // v0.27.1: `query` is no longer strictly required — `--image <path>`
@@ -846,26 +1060,60 @@ const query: Operation = {
     // validator at src/cli.ts honors `cliHints.altRequired` and admits the
     // image-only invocation. MCP / programmatic callers must still pass
     // `query` OR `image` (handler refuses if both are absent).
-    query: { type: 'string', required: false },
+    query: { type: "string", required: false },
     /** v0.27.1: image-similarity search. Path resolved on the CLI side
      *  before the op fires (the op receives raw bytes neither side; the
      *  CLI loads the file, base64-encodes, and passes through `image`). */
-    image: { type: 'string', description: 'Base64-encoded image bytes for image-similarity search (CLI: --image <path>).' },
-    image_mime: { type: 'string', description: 'MIME type for the image bytes (auto-derived from path on CLI; required when calling op directly).' },
-    limit: { type: 'number', description: 'Max results (default 20)' },
-    offset: { type: 'number', description: 'Skip first N results (for pagination)' },
-    expand: { type: 'boolean', description: 'Enable multi-query expansion (default: true)' },
-    detail: { type: 'string', description: 'Result detail level: low (compiled truth only), medium (default, all with dedup), high (all chunks)' },
+    image: {
+      type: "string",
+      description:
+        "Base64-encoded image bytes for image-similarity search (CLI: --image <path>).",
+    },
+    image_mime: {
+      type: "string",
+      description:
+        "MIME type for the image bytes (auto-derived from path on CLI; required when calling op directly).",
+    },
+    limit: { type: "number", description: "Max results (default 20)" },
+    offset: {
+      type: "number",
+      description: "Skip first N results (for pagination)",
+    },
+    expand: {
+      type: "boolean",
+      description: "Enable multi-query expansion (default: true)",
+    },
+    detail: {
+      type: "string",
+      description:
+        "Result detail level: low (compiled truth only), medium (default, all with dedup), high (all chunks)",
+    },
     // v0.20.0 Cathedral II Layer 10 C1/C2: language + symbol-kind filters.
-    lang: { type: 'string', description: 'Filter to chunks where content_chunks.language matches (e.g., typescript, python, ruby)' },
-    symbol_kind: { type: 'string', description: 'Filter to chunks where content_chunks.symbol_type matches (e.g., function, class, method, type, interface)' },
+    lang: {
+      type: "string",
+      description:
+        "Filter to chunks where content_chunks.language matches (e.g., typescript, python, ruby)",
+    },
+    symbol_kind: {
+      type: "string",
+      description:
+        "Filter to chunks where content_chunks.symbol_type matches (e.g., function, class, method, type, interface)",
+    },
     // v0.20.0 Cathedral II Layer 7 (A2) / Layer 10 C3: two-pass structural expansion.
-    near_symbol: { type: 'string', description: 'Anchor retrieval at this qualified symbol name (e.g., BrainEngine.searchKeyword). Enables A2 two-pass.' },
-    walk_depth: { type: 'number', description: 'Structural walk depth 1-2. Default 0 (off). Expands anchors through code_edges with 1/(1+hop) decay.' },
+    near_symbol: {
+      type: "string",
+      description:
+        "Anchor retrieval at this qualified symbol name (e.g., BrainEngine.searchKeyword). Enables A2 two-pass.",
+    },
+    walk_depth: {
+      type: "number",
+      description:
+        "Structural walk depth 1-2. Default 0 (off). Expands anchors through code_edges with 1/(1+hop) decay.",
+    },
     // v0.29.1 — orthogonal recency + salience axes. YOU (the agent) decide.
     salience: {
-      type: 'string',
-      enum: ['off', 'on', 'strong'],
+      type: "string",
+      enum: ["off", "on", "strong"],
       description:
         "v0.29.1 salience boost — emotional_weight + take_count, NO time component.\n" +
         "  'off' — default for entity / canonical / definitional queries\n" +
@@ -874,8 +1122,8 @@ const query: Operation = {
         "Omit and gbrain auto-detects from query text. Independent of `recency`.",
     },
     recency: {
-      type: 'string',
-      enum: ['off', 'on', 'strong'],
+      type: "string",
+      enum: ["off", "on", "strong"],
       description:
         "v0.29.1 recency boost — per-prefix age decay, NO mattering signal.\n" +
         "  'off' — default for canonical truth\n" +
@@ -884,12 +1132,12 @@ const query: Operation = {
         "Omit and gbrain auto-detects. Independent of `salience` (orthogonal axes).",
     },
     since: {
-      type: 'string',
+      type: "string",
       description:
         "v0.29.1 — filter to pages whose effective_date is >= this. ISO-8601 (YYYY-MM-DD or full timestamp) OR relative ('7d', '2w', '1y'). Replaces deprecated `afterDate`.",
     },
     until: {
-      type: 'string',
+      type: "string",
       description:
         "v0.29.1 — filter to effective_date <= this. Same format as `since`. Replaces deprecated `beforeDate`. YYYY-MM-DD lands at end-of-day.",
     },
@@ -897,29 +1145,32 @@ const query: Operation = {
   handler: async (ctx, p) => {
     const startedAt = Date.now();
     const expand = p.expand !== false;
-    const detail = (p.detail as 'low' | 'medium' | 'high') || undefined;
+    const detail = (p.detail as "low" | "medium" | "high") || undefined;
     const queryText = p.query as string | undefined;
     const imageData = p.image as string | undefined;
-    const imageMime = (p.image_mime as string) || 'image/jpeg';
+    const imageMime = (p.image_mime as string) || "image/jpeg";
 
     // v0.27.1: image-similarity branch. Bypasses hybridSearch (which is
     // text-only); embeds the image via embedMultimodal and runs a direct
     // vector search against the embedding_image column.
     if (imageData) {
-      const { embedMultimodal } = await import('./ai/gateway.ts');
+      const { embedMultimodal } = await import("./ai/gateway.ts");
       const [vec] = await embedMultimodal([
-        { kind: 'image_base64', data: imageData, mime: imageMime },
+        { kind: "image_base64", data: imageData, mime: imageMime },
       ]);
       const results = await ctx.engine.searchVector(vec, {
         limit: (p.limit as number) || 20,
         offset: (p.offset as number) || 0,
-        embeddingColumn: 'embedding_image',
+        embeddingColumn: "embedding_image",
+        sourceId: ctx.sourceId,
       });
       return results;
     }
 
     if (!queryText) {
-      throw new Error('query requires either `query` (text) or `image` (base64 bytes).');
+      throw new Error(
+        "query requires either `query` (text) or `image` (base64 bytes).",
+      );
     }
 
     // v0.25.0 — capture meta side-channel. hybridSearch's return contract
@@ -935,13 +1186,17 @@ const query: Operation = {
       language: (p.lang as string) || undefined,
       symbolKind: (p.symbol_kind as string) || undefined,
       nearSymbol: (p.near_symbol as string) || undefined,
-      walkDepth: typeof p.walk_depth === 'number' ? (p.walk_depth as number) : undefined,
+      walkDepth:
+        typeof p.walk_depth === "number" ? (p.walk_depth as number) : undefined,
       // v0.29.1 — agent-explicit recency + salience. Omitted = heuristic defaults.
-      salience: p.salience as 'off' | 'on' | 'strong' | undefined,
-      recency: p.recency as 'off' | 'on' | 'strong' | undefined,
-      since: typeof p.since === 'string' ? p.since : undefined,
-      until: typeof p.until === 'string' ? p.until : undefined,
-      onMeta: (m) => { capturedMeta = m; },
+      salience: p.salience as "off" | "on" | "strong" | undefined,
+      recency: p.recency as "off" | "on" | "strong" | undefined,
+      since: typeof p.since === "string" ? p.since : undefined,
+      until: typeof p.until === "string" ? p.until : undefined,
+      sourceId: ctx.sourceId,
+      onMeta: (m) => {
+        capturedMeta = m;
+      },
     });
     const latency_ms = Date.now() - startedAt;
 
@@ -951,12 +1206,14 @@ const query: Operation = {
     // "expansion requested + silently fell back."
     if (isEvalCaptureEnabled(ctx.config)) {
       const meta: HybridSearchMeta = capturedMeta ?? {
-        vector_enabled: false, detail_resolved: detail ?? null, expansion_applied: false,
+        vector_enabled: false,
+        detail_resolved: detail ?? null,
+        expansion_applied: false,
       };
       void captureEvalCandidate(
         ctx.engine,
         {
-          tool_name: 'query',
+          tool_name: "query",
           query: queryText,
           results,
           meta,
@@ -973,25 +1230,38 @@ const query: Operation = {
 
     return results;
   },
-  scope: 'read',
-  cliHints: { name: 'query', positional: ['query'] },
+  scope: "read",
+  cliHints: { name: "query", positional: ["query"] },
 };
 
 // --- v0.28: Takes ---
 
 const takes_list: Operation = {
-  name: 'takes_list',
-  description: 'List takes (typed/weighted/attributed claims) filtered by holder/kind/active/etc.',
-  scope: 'read',
+  name: "takes_list",
+  description:
+    "List takes (typed/weighted/attributed claims) filtered by holder/kind/active/etc.",
+  scope: "read",
   params: {
-    page_slug: { type: 'string', description: 'Filter to this page' },
-    holder: { type: 'string', description: 'Filter to this holder (world|garry|brain|<slug>)' },
-    kind: { type: 'string', description: 'Filter to this kind (fact|take|bet|hunch)' },
-    active: { type: 'boolean', description: 'Active rows only (default true)' },
-    resolved: { type: 'boolean', description: 'true → only resolved bets; false → only unresolved' },
-    sort_by: { type: 'string', description: 'weight | since_date | created_at (default created_at)' },
-    limit: { type: 'number', description: 'Max rows (default 100, cap 500)' },
-    offset: { type: 'number', description: 'Skip first N rows' },
+    page_slug: { type: "string", description: "Filter to this page" },
+    holder: {
+      type: "string",
+      description: "Filter to this holder (world|garry|brain|<slug>)",
+    },
+    kind: {
+      type: "string",
+      description: "Filter to this kind (fact|take|bet|hunch)",
+    },
+    active: { type: "boolean", description: "Active rows only (default true)" },
+    resolved: {
+      type: "boolean",
+      description: "true → only resolved bets; false → only unresolved",
+    },
+    sort_by: {
+      type: "string",
+      description: "weight | since_date | created_at (default created_at)",
+    },
+    limit: { type: "number", description: "Max rows (default 100, cap 500)" },
+    offset: { type: "number", description: "Skip first N rows" },
   },
   handler: async (ctx, p) => {
     return ctx.engine.listTakes({
@@ -1003,21 +1273,23 @@ const takes_list: Operation = {
       sortBy: p.sort_by as never,
       limit: p.limit as number | undefined,
       offset: p.offset as number | undefined,
+      sourceId: ctx.sourceId,
       // Per-token allow-list — server-side filter for MCP-bound calls.
       // Local CLI callers leave takesHoldersAllowList unset and see all holders.
       takesHoldersAllowList: ctx.takesHoldersAllowList,
     });
   },
-  cliHints: { name: 'takes-list' },
+  cliHints: { name: "takes-list" },
 };
 
 const takes_search: Operation = {
-  name: 'takes_search',
-  description: 'Keyword search across takes (pg_trgm similarity over claim text)',
-  scope: 'read',
+  name: "takes_search",
+  description:
+    "Keyword search across takes (pg_trgm similarity over claim text)",
+  scope: "read",
   params: {
-    query: { type: 'string', required: true },
-    limit: { type: 'number', description: 'Max results (default 30, cap 100)' },
+    query: { type: "string", required: true },
+    limit: { type: "number", description: "Max results (default 30, cap 100)" },
   },
   handler: async (ctx, p) => {
     return ctx.engine.searchTakes(p.query as string, {
@@ -1025,7 +1297,7 @@ const takes_search: Operation = {
       takesHoldersAllowList: ctx.takesHoldersAllowList,
     });
   },
-  cliHints: { name: 'takes-search', positional: ['query'] },
+  cliHints: { name: "takes-search", positional: ["query"] },
 };
 
 /**
@@ -1037,14 +1309,21 @@ const takes_search: Operation = {
  * (ctx.takesHoldersAllowList=undefined) get the full scorecard.
  */
 const takes_scorecard: Operation = {
-  name: 'takes_scorecard',
-  description: 'Calibration scorecard for resolved bets: counts, accuracy, Brier (correct ∨ incorrect only), partial_rate.',
-  scope: 'read',
+  name: "takes_scorecard",
+  description:
+    "Calibration scorecard for resolved bets: counts, accuracy, Brier (correct ∨ incorrect only), partial_rate.",
+  scope: "read",
   params: {
-    holder: { type: 'string', description: 'Filter to this holder (world|garry|brain|<slug>)' },
-    domain_prefix: { type: 'string', description: 'Slug prefix (e.g. companies/) to scope the scorecard' },
-    since: { type: 'string', description: 'Window start (YYYY-MM-DD)' },
-    until: { type: 'string', description: 'Window end (YYYY-MM-DD)' },
+    holder: {
+      type: "string",
+      description: "Filter to this holder (world|garry|brain|<slug>)",
+    },
+    domain_prefix: {
+      type: "string",
+      description: "Slug prefix (e.g. companies/) to scope the scorecard",
+    },
+    since: { type: "string", description: "Window start (YYYY-MM-DD)" },
+    until: { type: "string", description: "Window end (YYYY-MM-DD)" },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getScorecard(
@@ -1057,7 +1336,7 @@ const takes_scorecard: Operation = {
       ctx.takesHoldersAllowList,
     );
   },
-  cliHints: { name: 'takes-scorecard' },
+  cliHints: { name: "takes-scorecard" },
 };
 
 /**
@@ -1065,12 +1344,16 @@ const takes_scorecard: Operation = {
  * Same allow-list contract as takes_scorecard.
  */
 const takes_calibration: Operation = {
-  name: 'takes_calibration',
-  description: 'Calibration curve: resolved correct/incorrect bets binned by stated weight; observed vs predicted per bucket.',
-  scope: 'read',
+  name: "takes_calibration",
+  description:
+    "Calibration curve: resolved correct/incorrect bets binned by stated weight; observed vs predicted per bucket.",
+  scope: "read",
   params: {
-    holder: { type: 'string', description: 'Filter to this holder' },
-    bucket_size: { type: 'number', description: 'Bucket width in (0,1]; default 0.1' },
+    holder: { type: "string", description: "Filter to this holder" },
+    bucket_size: {
+      type: "number",
+      description: "Bucket width in (0,1]; default 0.1",
+    },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getCalibrationCurve(
@@ -1081,22 +1364,47 @@ const takes_calibration: Operation = {
       ctx.takesHoldersAllowList,
     );
   },
-  cliHints: { name: 'takes-calibration' },
+  cliHints: { name: "takes-calibration" },
 };
 
 const think: Operation = {
-  name: 'think',
-  description: 'Multi-hop synthesis across pages + takes + graph. Pulls relevant evidence and produces a cited answer with conflict + gap analysis.',
-  scope: 'write',
+  name: "think",
+  description:
+    "Multi-hop synthesis across pages + takes + graph. Pulls relevant evidence and produces a cited answer with conflict + gap analysis.",
+  scope: "write",
   params: {
-    question: { type: 'string', required: true, description: 'The question to think about' },
-    anchor: { type: 'string', description: 'Pull the entity subgraph around this slug' },
-    rounds: { type: 'number', description: 'Multi-pass: 1 (default). Round-loop scaffolding is in place; gap-driven retrieval ships in v0.29.' },
-    save: { type: 'boolean', description: 'Persist a synthesis page (local-CLI only; ignored for MCP)' },
-    take: { type: 'boolean', description: 'Append a take row to the anchor page (requires anchor)' },
-    model: { type: 'string', description: 'Model override (alias or full id). Falls through models.think → models.default → GBRAIN_MODEL → opus.' },
-    since: { type: 'string', description: 'Start of temporal window (YYYY-MM-DD or YYYY-MM)' },
-    until: { type: 'string', description: 'End of temporal window' },
+    question: {
+      type: "string",
+      required: true,
+      description: "The question to think about",
+    },
+    anchor: {
+      type: "string",
+      description: "Pull the entity subgraph around this slug",
+    },
+    rounds: {
+      type: "number",
+      description:
+        "Multi-pass: 1 (default). Round-loop scaffolding is in place; gap-driven retrieval ships in v0.29.",
+    },
+    save: {
+      type: "boolean",
+      description: "Persist a synthesis page (local-CLI only; ignored for MCP)",
+    },
+    take: {
+      type: "boolean",
+      description: "Append a take row to the anchor page (requires anchor)",
+    },
+    model: {
+      type: "string",
+      description:
+        "Model override (alias or full id). Falls through models.think → models.default → GBRAIN_MODEL → opus.",
+    },
+    since: {
+      type: "string",
+      description: "Start of temporal window (YYYY-MM-DD or YYYY-MM)",
+    },
+    until: { type: "string", description: "End of temporal window" },
   },
   mutating: true,
   handler: async (ctx, p) => {
@@ -1104,11 +1412,11 @@ const think: Operation = {
     // Codex P1 #7 + privacy: remote callers cannot persist via MCP.
     const safeSave = remote ? false : Boolean(p.save);
     const safeTake = remote ? false : Boolean(p.take);
-    const { runThink, persistSynthesis } = await import('./think/index.ts');
+    const { runThink, persistSynthesis } = await import("./think/index.ts");
     const result = await runThink(ctx.engine, {
       question: String(p.question),
       anchor: p.anchor ? String(p.anchor) : undefined,
-      rounds: typeof p.rounds === 'number' ? (p.rounds as number) : undefined,
+      rounds: typeof p.rounds === "number" ? (p.rounds as number) : undefined,
       save: safeSave,
       take: safeTake,
       model: p.model ? String(p.model) : undefined,
@@ -1121,7 +1429,9 @@ const think: Operation = {
     let savedSlug: string | undefined;
     let evidenceInserted = 0;
     if (safeSave) {
-      const persisted = await persistSynthesis(ctx.engine, result);
+      const persisted = await persistSynthesis(ctx.engine, result, {
+        sourceId: ctx.sourceId,
+      });
       savedSlug = persisted.slug;
       evidenceInserted = persisted.evidenceInserted;
       for (const w of persisted.warnings) result.warnings.push(w);
@@ -1134,122 +1444,135 @@ const think: Operation = {
       remote_persisted_blocked: remote && (Boolean(p.save) || Boolean(p.take)),
     };
   },
-  cliHints: { name: 'think', positional: ['question'] },
+  cliHints: { name: "think", positional: ["question"] },
 };
 
 // --- Tags ---
 
 const add_tag: Operation = {
-  name: 'add_tag',
-  description: 'Add tag to page',
+  name: "add_tag",
+  description: "Add tag to page",
   params: {
-    slug: { type: 'string', required: true },
-    tag: { type: 'string', required: true },
+    slug: { type: "string", required: true },
+    tag: { type: "string", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'add_tag', slug: p.slug, tag: p.tag };
-    await ctx.engine.addTag(p.slug as string, p.tag as string);
-    return { status: 'ok' };
+    if (ctx.dryRun)
+      return { dry_run: true, action: "add_tag", slug: p.slug, tag: p.tag };
+    await ctx.engine.addTag(p.slug as string, p.tag as string, {
+      sourceId: ctx.sourceId,
+    });
+    return { status: "ok" };
   },
-  cliHints: { name: 'tag', positional: ['slug', 'tag'] },
+  cliHints: { name: "tag", positional: ["slug", "tag"] },
 };
 
 const remove_tag: Operation = {
-  name: 'remove_tag',
-  description: 'Remove tag from page',
+  name: "remove_tag",
+  description: "Remove tag from page",
   params: {
-    slug: { type: 'string', required: true },
-    tag: { type: 'string', required: true },
+    slug: { type: "string", required: true },
+    tag: { type: "string", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'remove_tag', slug: p.slug, tag: p.tag };
-    await ctx.engine.removeTag(p.slug as string, p.tag as string);
-    return { status: 'ok' };
+    if (ctx.dryRun)
+      return { dry_run: true, action: "remove_tag", slug: p.slug, tag: p.tag };
+    await ctx.engine.removeTag(p.slug as string, p.tag as string, {
+      sourceId: ctx.sourceId,
+    });
+    return { status: "ok" };
   },
-  cliHints: { name: 'untag', positional: ['slug', 'tag'] },
+  cliHints: { name: "untag", positional: ["slug", "tag"] },
 };
 
 const get_tags: Operation = {
-  name: 'get_tags',
-  description: 'List tags for a page',
+  name: "get_tags",
+  description: "List tags for a page",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getTags(p.slug as string);
   },
-  scope: 'read',
-  cliHints: { name: 'tags', positional: ['slug'] },
+  scope: "read",
+  cliHints: { name: "tags", positional: ["slug"] },
 };
 
 // --- Links ---
 
 const add_link: Operation = {
-  name: 'add_link',
-  description: 'Create link between pages',
+  name: "add_link",
+  description: "Create link between pages",
   params: {
-    from: { type: 'string', required: true },
-    to: { type: 'string', required: true },
-    link_type: { type: 'string', description: 'Link type (e.g., invested_in, works_at)' },
-    context: { type: 'string', description: 'Context for the link' },
+    from: { type: "string", required: true },
+    to: { type: "string", required: true },
+    link_type: {
+      type: "string",
+      description: "Link type (e.g., invested_in, works_at)",
+    },
+    context: { type: "string", description: "Context for the link" },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'add_link', from: p.from, to: p.to };
+    if (ctx.dryRun)
+      return { dry_run: true, action: "add_link", from: p.from, to: p.to };
     await ctx.engine.addLink(
-      p.from as string, p.to as string,
-      (p.context as string) || '', (p.link_type as string) || '',
+      p.from as string,
+      p.to as string,
+      (p.context as string) || "",
+      (p.link_type as string) || "",
     );
-    return { status: 'ok' };
+    return { status: "ok" };
   },
-  cliHints: { name: 'link', positional: ['from', 'to'] },
+  cliHints: { name: "link", positional: ["from", "to"] },
 };
 
 const remove_link: Operation = {
-  name: 'remove_link',
-  description: 'Remove link between pages',
+  name: "remove_link",
+  description: "Remove link between pages",
   params: {
-    from: { type: 'string', required: true },
-    to: { type: 'string', required: true },
+    from: { type: "string", required: true },
+    to: { type: "string", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'remove_link', from: p.from, to: p.to };
+    if (ctx.dryRun)
+      return { dry_run: true, action: "remove_link", from: p.from, to: p.to };
     await ctx.engine.removeLink(p.from as string, p.to as string);
-    return { status: 'ok' };
+    return { status: "ok" };
   },
-  cliHints: { name: 'unlink', positional: ['from', 'to'] },
+  cliHints: { name: "unlink", positional: ["from", "to"] },
 };
 
 const get_links: Operation = {
-  name: 'get_links',
-  description: 'List outgoing links from a page',
+  name: "get_links",
+  description: "List outgoing links from a page",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getLinks(p.slug as string);
   },
-  scope: 'read',
+  scope: "read",
 };
 
 const get_backlinks: Operation = {
-  name: 'get_backlinks',
-  description: 'List incoming links to a page',
+  name: "get_backlinks",
+  description: "List incoming links to a page",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getBacklinks(p.slug as string);
   },
-  scope: 'read',
-  cliHints: { name: 'backlinks', positional: ['slug'] },
+  scope: "read",
+  cliHints: { name: "backlinks", positional: ["slug"] },
 };
 
 /**
@@ -1263,23 +1586,37 @@ const get_backlinks: Operation = {
 const TRAVERSE_DEPTH_CAP = 10;
 
 const traverse_graph: Operation = {
-  name: 'traverse_graph',
-  description: 'Traverse link graph from a page. With link_type/direction, returns edges (GraphPath[]) instead of nodes.',
+  name: "traverse_graph",
+  description:
+    "Traverse link graph from a page. With link_type/direction, returns edges (GraphPath[]) instead of nodes.",
   params: {
-    slug: { type: 'string', required: true },
-    depth: { type: 'number', description: `Max traversal depth (default 5, capped at ${TRAVERSE_DEPTH_CAP})` },
-    link_type: { type: 'string', description: 'Filter to one link type (per-edge filter, traversal only follows matching edges)' },
-    direction: { type: 'string', enum: ['in', 'out', 'both'], description: 'Traversal direction (default out)' },
+    slug: { type: "string", required: true },
+    depth: {
+      type: "number",
+      description: `Max traversal depth (default 5, capped at ${TRAVERSE_DEPTH_CAP})`,
+    },
+    link_type: {
+      type: "string",
+      description:
+        "Filter to one link type (per-edge filter, traversal only follows matching edges)",
+    },
+    direction: {
+      type: "string",
+      enum: ["in", "out", "both"],
+      description: "Traversal direction (default out)",
+    },
   },
   handler: async (ctx, p) => {
     const slug = p.slug as string;
     const requestedDepth = (p.depth as number) || 5;
     if (requestedDepth > TRAVERSE_DEPTH_CAP) {
-      ctx.logger.warn(`[gbrain] traverse_graph depth clamped from ${requestedDepth} to ${TRAVERSE_DEPTH_CAP}`);
+      ctx.logger.warn(
+        `[gbrain] traverse_graph depth clamped from ${requestedDepth} to ${TRAVERSE_DEPTH_CAP}`,
+      );
     }
     const depth = Math.max(1, Math.min(requestedDepth, TRAVERSE_DEPTH_CAP));
     const linkType = p.link_type as string | undefined;
-    const direction = p.direction as 'in' | 'out' | 'both' | undefined;
+    const direction = p.direction as "in" | "out" | "both" | undefined;
     // Backward compat: when neither link_type nor direction is provided, return
     // the legacy GraphNode[] shape. Once either is set, switch to GraphPath[].
     if (linkType === undefined && direction === undefined) {
@@ -1287,26 +1624,27 @@ const traverse_graph: Operation = {
     }
     return ctx.engine.traversePaths(slug, { depth, linkType, direction });
   },
-  scope: 'read',
-  cliHints: { name: 'graph', positional: ['slug'] },
+  scope: "read",
+  cliHints: { name: "graph", positional: ["slug"] },
 };
 
 // --- Timeline ---
 
 const add_timeline_entry: Operation = {
-  name: 'add_timeline_entry',
-  description: 'Add timeline entry to a page',
+  name: "add_timeline_entry",
+  description: "Add timeline entry to a page",
   params: {
-    slug: { type: 'string', required: true },
-    date: { type: 'string', required: true },
-    summary: { type: 'string', required: true },
-    detail: { type: 'string' },
-    source: { type: 'string' },
+    slug: { type: "string", required: true },
+    date: { type: "string", required: true },
+    summary: { type: "string", required: true },
+    detail: { type: "string" },
+    source: { type: "string" },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'add_timeline_entry', slug: p.slug };
+    if (ctx.dryRun)
+      return { dry_run: true, action: "add_timeline_entry", slug: p.slug };
     const date = p.date as string;
     // Reject anything that isn't a strict YYYY-MM-DD with year 1900-2199 and
     // a real calendar day. PG DATE accepts year 5874897 silently — that's a
@@ -1314,61 +1652,66 @@ const add_timeline_entry: Operation = {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       throw new Error(`Invalid date format "${date}" (expected YYYY-MM-DD)`);
     }
-    const [y, m, d] = date.split('-').map(Number);
+    const [y, m, d] = date.split("-").map(Number);
     if (y < 1900 || y > 2199 || m < 1 || m > 12 || d < 1 || d > 31) {
-      throw new Error(`Invalid date "${date}" (year 1900-2199, month 1-12, day 1-31)`);
+      throw new Error(
+        `Invalid date "${date}" (year 1900-2199, month 1-12, day 1-31)`,
+      );
     }
     // Round-trip through Date to catch e.g. Feb 30.
     const parsed = new Date(date);
-    if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) {
+    if (
+      Number.isNaN(parsed.getTime()) ||
+      parsed.toISOString().slice(0, 10) !== date
+    ) {
       throw new Error(`Invalid calendar date "${date}"`);
     }
     await ctx.engine.addTimelineEntry(p.slug as string, {
       date,
-      source: (p.source as string) || '',
+      source: (p.source as string) || "",
       summary: p.summary as string,
-      detail: (p.detail as string) || '',
+      detail: (p.detail as string) || "",
     });
-    return { status: 'ok' };
+    return { status: "ok" };
   },
-  cliHints: { name: 'timeline-add', positional: ['slug', 'date', 'summary'] },
+  cliHints: { name: "timeline-add", positional: ["slug", "date", "summary"] },
 };
 
 const get_timeline: Operation = {
-  name: 'get_timeline',
-  description: 'Get timeline entries for a page',
+  name: "get_timeline",
+  description: "Get timeline entries for a page",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getTimeline(p.slug as string);
   },
-  scope: 'read',
-  cliHints: { name: 'timeline', positional: ['slug'] },
+  scope: "read",
+  cliHints: { name: "timeline", positional: ["slug"] },
 };
 
 // --- Admin ---
 
 const get_stats: Operation = {
-  name: 'get_stats',
-  description: 'Brain statistics (page count, chunk count, etc.)',
+  name: "get_stats",
+  description: "Brain statistics (page count, chunk count, etc.)",
   params: {},
   handler: async (ctx) => {
     return ctx.engine.getStats();
   },
-  scope: 'admin',
-  cliHints: { name: 'stats' },
+  scope: "admin",
+  cliHints: { name: "stats" },
 };
 
 const get_health: Operation = {
-  name: 'get_health',
-  description: 'Brain health dashboard (embed coverage, stale pages, orphans)',
+  name: "get_health",
+  description: "Brain health dashboard (embed coverage, stale pages, orphans)",
   params: {},
   handler: async (ctx) => {
     return ctx.engine.getHealth();
   },
-  scope: 'admin',
-  cliHints: { name: 'health' },
+  scope: "admin",
+  cliHints: { name: "health" },
 };
 
 /**
@@ -1389,65 +1732,78 @@ const get_health: Operation = {
  * follow-up work pending demand.
  */
 const run_doctor: Operation = {
-  name: 'run_doctor',
-  description: 'Run brain health checks and return a structured DoctorReport (thin-client doctor surface).',
+  name: "run_doctor",
+  description:
+    "Run brain health checks and return a structured DoctorReport (thin-client doctor surface).",
   params: {},
   handler: async (ctx) => {
-    const { doctorReportRemote } = await import('../commands/doctor.ts');
+    const { doctorReportRemote } = await import("../commands/doctor.ts");
     return doctorReportRemote(ctx.engine);
   },
-  scope: 'admin',
+  scope: "admin",
   localOnly: false,
 };
 
 const get_versions: Operation = {
-  name: 'get_versions',
-  description: 'Page version history',
+  name: "get_versions",
+  description: "Page version history",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getVersions(p.slug as string);
   },
-  scope: 'read',
-  cliHints: { name: 'history', positional: ['slug'] },
+  scope: "read",
+  cliHints: { name: "history", positional: ["slug"] },
 };
 
 const revert_version: Operation = {
-  name: 'revert_version',
-  description: 'Revert page to a previous version',
+  name: "revert_version",
+  description: "Revert page to a previous version",
   params: {
-    slug: { type: 'string', required: true },
-    version_id: { type: 'number', required: true },
+    slug: { type: "string", required: true },
+    version_id: { type: "number", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'revert_version', slug: p.slug, version_id: p.version_id };
+    if (ctx.dryRun)
+      return {
+        dry_run: true,
+        action: "revert_version",
+        slug: p.slug,
+        version_id: p.version_id,
+      };
     await ctx.engine.createVersion(p.slug as string);
     await ctx.engine.revertToVersion(p.slug as string, p.version_id as number);
-    return { status: 'reverted' };
+    return { status: "reverted" };
   },
-  cliHints: { name: 'revert', positional: ['slug', 'version_id'] },
+  cliHints: { name: "revert", positional: ["slug", "version_id"] },
 };
 
 // --- Sync ---
 
 const sync_brain: Operation = {
-  name: 'sync_brain',
-  description: 'Sync git repo to brain (incremental)',
+  name: "sync_brain",
+  description: "Sync git repo to brain (incremental)",
   params: {
-    repo: { type: 'string', description: 'Path to git repo (optional if configured)' },
-    dry_run: { type: 'boolean', description: 'Preview changes without applying' },
-    full: { type: 'boolean', description: 'Full re-sync (ignore checkpoint)' },
-    no_pull: { type: 'boolean', description: 'Skip git pull' },
-    no_embed: { type: 'boolean', description: 'Skip embedding generation' },
+    repo: {
+      type: "string",
+      description: "Path to git repo (optional if configured)",
+    },
+    dry_run: {
+      type: "boolean",
+      description: "Preview changes without applying",
+    },
+    full: { type: "boolean", description: "Full re-sync (ignore checkpoint)" },
+    no_pull: { type: "boolean", description: "Skip git pull" },
+    no_embed: { type: "boolean", description: "Skip embedding generation" },
   },
   mutating: true,
-  scope: 'admin',
+  scope: "admin",
   localOnly: true,
   handler: async (ctx, p) => {
-    const { performSync } = await import('../commands/sync.ts');
+    const { performSync } = await import("../commands/sync.ts");
     return performSync(ctx.engine, {
       repoPath: p.repo as string | undefined,
       dryRun: ctx.dryRun || (p.dry_run as boolean) || false,
@@ -1456,102 +1812,121 @@ const sync_brain: Operation = {
       full: (p.full as boolean) || false,
     });
   },
-  cliHints: { name: 'sync', hidden: true },
+  cliHints: { name: "sync", hidden: true },
 };
 
 // --- Raw Data ---
 
 const put_raw_data: Operation = {
-  name: 'put_raw_data',
-  description: 'Store raw API response data for a page',
+  name: "put_raw_data",
+  description: "Store raw API response data for a page",
   params: {
-    slug: { type: 'string', required: true },
-    source: { type: 'string', required: true, description: 'Data source (e.g., crustdata, happenstance)' },
-    data: { type: 'object', required: true, description: 'Raw data object' },
+    slug: { type: "string", required: true },
+    source: {
+      type: "string",
+      required: true,
+      description: "Data source (e.g., crustdata, happenstance)",
+    },
+    data: { type: "object", required: true, description: "Raw data object" },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'put_raw_data', slug: p.slug, source: p.source };
-    await ctx.engine.putRawData(p.slug as string, p.source as string, p.data as object);
-    return { status: 'ok' };
+    if (ctx.dryRun)
+      return {
+        dry_run: true,
+        action: "put_raw_data",
+        slug: p.slug,
+        source: p.source,
+      };
+    await ctx.engine.putRawData(
+      p.slug as string,
+      p.source as string,
+      p.data as object,
+    );
+    return { status: "ok" };
   },
 };
 
 const get_raw_data: Operation = {
-  name: 'get_raw_data',
-  description: 'Retrieve raw data for a page',
+  name: "get_raw_data",
+  description: "Retrieve raw data for a page",
   params: {
-    slug: { type: 'string', required: true },
-    source: { type: 'string', description: 'Filter by source' },
+    slug: { type: "string", required: true },
+    source: { type: "string", description: "Filter by source" },
   },
   handler: async (ctx, p) => {
-    return ctx.engine.getRawData(p.slug as string, p.source as string | undefined);
+    return ctx.engine.getRawData(
+      p.slug as string,
+      p.source as string | undefined,
+    );
   },
-  scope: 'read',
+  scope: "read",
 };
 
 // --- Resolution & Chunks ---
 
 const resolve_slugs: Operation = {
-  name: 'resolve_slugs',
-  description: 'Fuzzy-resolve a partial slug to matching page slugs',
+  name: "resolve_slugs",
+  description: "Fuzzy-resolve a partial slug to matching page slugs",
   params: {
-    partial: { type: 'string', required: true },
+    partial: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.resolveSlugs(p.partial as string);
   },
-  scope: 'read',
+  scope: "read",
 };
 
 const get_chunks: Operation = {
-  name: 'get_chunks',
-  description: 'Get content chunks for a page',
+  name: "get_chunks",
+  description: "Get content chunks for a page",
   params: {
-    slug: { type: 'string', required: true },
+    slug: { type: "string", required: true },
   },
   handler: async (ctx, p) => {
     return ctx.engine.getChunks(p.slug as string);
   },
-  scope: 'read',
+  scope: "read",
 };
 
 // --- Ingest Log ---
 
 const log_ingest: Operation = {
-  name: 'log_ingest',
-  description: 'Log an ingestion event',
+  name: "log_ingest",
+  description: "Log an ingestion event",
   params: {
-    source_type: { type: 'string', required: true },
-    source_ref: { type: 'string', required: true },
-    pages_updated: { type: 'array', required: true, items: { type: 'string' } },
-    summary: { type: 'string', required: true },
+    source_type: { type: "string", required: true },
+    source_ref: { type: "string", required: true },
+    pages_updated: { type: "array", required: true, items: { type: "string" } },
+    summary: { type: "string", required: true },
   },
   mutating: true,
-  scope: 'write',
+  scope: "write",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'log_ingest' };
+    if (ctx.dryRun) return { dry_run: true, action: "log_ingest" };
     await ctx.engine.logIngest({
       source_type: p.source_type as string,
       source_ref: p.source_ref as string,
       pages_updated: p.pages_updated as string[],
       summary: p.summary as string,
     });
-    return { status: 'ok' };
+    return { status: "ok" };
   },
 };
 
 const get_ingest_log: Operation = {
-  name: 'get_ingest_log',
-  description: 'Get recent ingestion log entries',
+  name: "get_ingest_log",
+  description: "Get recent ingestion log entries",
   params: {
-    limit: { type: 'number', description: 'Max entries (default 20)' },
+    limit: { type: "number", description: "Max entries (default 20)" },
   },
   handler: async (ctx, p) => {
-    return ctx.engine.getIngestLog({ limit: clampSearchLimit(p.limit as number | undefined, 20, 50) });
+    return ctx.engine.getIngestLog({
+      limit: clampSearchLimit(p.limit as number | undefined, 20, 50),
+    });
   },
-  scope: 'read',
+  scope: "read",
 };
 
 // --- File Operations ---
@@ -1562,12 +1937,12 @@ const get_ingest_log: Operation = {
 const FILE_LIST_LIMIT = 100;
 
 const file_list: Operation = {
-  name: 'file_list',
-  description: 'List stored files',
+  name: "file_list",
+  description: "List stored files",
   params: {
-    slug: { type: 'string', description: 'Filter by page slug' },
+    slug: { type: "string", description: "Filter by page slug" },
   },
-  scope: 'admin',
+  scope: "admin",
   localOnly: true,
   handler: async (_ctx, p) => {
     const sql = db.getConnection();
@@ -1580,21 +1955,22 @@ const file_list: Operation = {
 };
 
 const file_upload: Operation = {
-  name: 'file_upload',
-  description: 'Upload a file to storage',
+  name: "file_upload",
+  description: "Upload a file to storage",
   params: {
-    path: { type: 'string', required: true, description: 'Local file path' },
-    page_slug: { type: 'string', description: 'Associate with page' },
+    path: { type: "string", required: true, description: "Local file path" },
+    page_slug: { type: "string", description: "Associate with page" },
   },
   mutating: true,
-  scope: 'admin',
+  scope: "admin",
   localOnly: true,
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'file_upload', path: p.path };
+    if (ctx.dryRun)
+      return { dry_run: true, action: "file_upload", path: p.path };
 
-    const { readFileSync, statSync } = await import('fs');
-    const { basename, extname } = await import('path');
-    const { createHash } = await import('crypto');
+    const { readFileSync, statSync } = await import("fs");
+    const { basename, extname } = await import("path");
+    const { createHash } = await import("crypto");
 
     const filePath = p.path as string;
     const pageSlug = (p.page_slug as string) || null;
@@ -1611,37 +1987,49 @@ const file_upload: Operation = {
 
     const stat = statSync(filePath);
     const content = readFileSync(filePath);
-    const hash = createHash('sha256').update(content).digest('hex');
-    const storagePath = pageSlug ? `${pageSlug}/${filename}` : `unsorted/${hash.slice(0, 8)}-${filename}`;
+    const hash = createHash("sha256").update(content).digest("hex");
+    const storagePath = pageSlug
+      ? `${pageSlug}/${filename}`
+      : `unsorted/${hash.slice(0, 8)}-${filename}`;
 
     const MIME_TYPES: Record<string, string> = {
-      '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
-      '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml',
-      '.pdf': 'application/pdf', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg',
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".png": "image/png",
+      ".gif": "image/gif",
+      ".webp": "image/webp",
+      ".svg": "image/svg+xml",
+      ".pdf": "application/pdf",
+      ".mp4": "video/mp4",
+      ".mp3": "audio/mpeg",
     };
     const mimeType = MIME_TYPES[extname(filePath).toLowerCase()] || null;
 
     const sql = db.getConnection();
-    const existing = await sql`SELECT id FROM files WHERE content_hash = ${hash} AND storage_path = ${storagePath}`;
+    const existing =
+      await sql`SELECT id FROM files WHERE content_hash = ${hash} AND storage_path = ${storagePath}`;
     if (existing.length > 0) {
-      return { status: 'already_exists', storage_path: storagePath };
+      return { status: "already_exists", storage_path: storagePath };
     }
 
     // Upload to storage backend if configured
     if (ctx.config.storage) {
-      const { createStorage } = await import('./storage.ts');
+      const { createStorage } = await import("./storage.ts");
       const storage = await createStorage(ctx.config.storage as any);
       try {
         await storage.upload(storagePath, content, mimeType || undefined);
       } catch (uploadErr) {
-        throw new OperationError('storage_error', `Upload failed: ${uploadErr instanceof Error ? uploadErr.message : String(uploadErr)}`);
+        throw new OperationError(
+          "storage_error",
+          `Upload failed: ${uploadErr instanceof Error ? uploadErr.message : String(uploadErr)}`,
+        );
       }
     }
 
     try {
       await sql`
         INSERT INTO files (page_slug, filename, storage_path, mime_type, size_bytes, content_hash, metadata)
-        VALUES (${pageSlug}, ${filename}, ${storagePath}, ${mimeType}, ${stat.size}, ${hash}, ${'{}'}::jsonb)
+        VALUES (${pageSlug}, ${filename}, ${storagePath}, ${mimeType}, ${stat.size}, ${hash}, ${"{}"}::jsonb)
         ON CONFLICT (storage_path) DO UPDATE SET
           content_hash = EXCLUDED.content_hash,
           size_bytes = EXCLUDED.size_bytes,
@@ -1651,114 +2039,158 @@ const file_upload: Operation = {
       // Rollback: clean up storage if DB write failed
       if (ctx.config.storage) {
         try {
-          const { createStorage } = await import('./storage.ts');
+          const { createStorage } = await import("./storage.ts");
           const storage = await createStorage(ctx.config.storage as any);
           await storage.delete(storagePath);
-        } catch { /* best effort cleanup */ }
+        } catch {
+          /* best effort cleanup */
+        }
       }
       throw dbErr;
     }
 
-    return { status: 'uploaded', storage_path: storagePath, size_bytes: stat.size };
+    return {
+      status: "uploaded",
+      storage_path: storagePath,
+      size_bytes: stat.size,
+    };
   },
 };
 
 const file_url: Operation = {
-  name: 'file_url',
-  description: 'Get a URL for a stored file',
+  name: "file_url",
+  description: "Get a URL for a stored file",
   params: {
-    storage_path: { type: 'string', required: true },
+    storage_path: { type: "string", required: true },
   },
-  scope: 'admin',
+  scope: "admin",
   localOnly: true,
   handler: async (_ctx, p) => {
     const sql = db.getConnection();
-    const rows = await sql`SELECT storage_path, mime_type, size_bytes FROM files WHERE storage_path = ${p.storage_path as string}`;
+    const rows =
+      await sql`SELECT storage_path, mime_type, size_bytes FROM files WHERE storage_path = ${p.storage_path as string}`;
     if (rows.length === 0) {
-      throw new OperationError('storage_error', `File not found: ${p.storage_path}`);
+      throw new OperationError(
+        "storage_error",
+        `File not found: ${p.storage_path}`,
+      );
     }
     // TODO: generate signed URL from Supabase Storage
-    return { storage_path: rows[0].storage_path, url: `gbrain:files/${rows[0].storage_path}` };
+    return {
+      storage_path: rows[0].storage_path,
+      url: `gbrain:files/${rows[0].storage_path}`,
+    };
   },
 };
 
 // --- Jobs (Minions) ---
 
 const submit_job: Operation = {
-  name: 'submit_job',
-  description: 'Submit a background job to the Minions queue. Built-in types: sync, embed, lint, import, extract, backlinks, autopilot-cycle. The `shell` type is CLI-only and rejected over MCP.',
+  name: "submit_job",
+  description:
+    "Submit a background job to the Minions queue. Built-in types: sync, embed, lint, import, extract, backlinks, autopilot-cycle. The `shell` type is CLI-only and rejected over MCP.",
   params: {
-    name: { type: 'string', required: true, description: 'Job type (sync, embed, lint, import, extract, backlinks, autopilot-cycle; shell is CLI-only)' },
-    data: { type: 'object', description: 'Job payload (JSON)' },
-    queue: { type: 'string', description: 'Queue name (default: "default")' },
-    priority: { type: 'number', description: 'Priority (0 = highest, default: 0)' },
-    max_attempts: { type: 'number', description: 'Max retry attempts (default: 3)' },
-    delay: { type: 'number', description: 'Delay in ms before eligible' },
-    timeout_ms: { type: 'number', description: 'Per-job wall-clock timeout in ms; aborted job goes to dead' },
+    name: {
+      type: "string",
+      required: true,
+      description:
+        "Job type (sync, embed, lint, import, extract, backlinks, autopilot-cycle; shell is CLI-only)",
+    },
+    data: { type: "object", description: "Job payload (JSON)" },
+    queue: { type: "string", description: 'Queue name (default: "default")' },
+    priority: {
+      type: "number",
+      description: "Priority (0 = highest, default: 0)",
+    },
+    max_attempts: {
+      type: "number",
+      description: "Max retry attempts (default: 3)",
+    },
+    delay: { type: "number", description: "Delay in ms before eligible" },
+    timeout_ms: {
+      type: "number",
+      description: "Per-job wall-clock timeout in ms; aborted job goes to dead",
+    },
   },
   mutating: true,
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    const name = typeof p.name === 'string' ? p.name.trim() : '';
-    if (ctx.dryRun) return { dry_run: true, action: 'submit_job', name };
+    const name = typeof p.name === "string" ? p.name.trim() : "";
+    if (ctx.dryRun) return { dry_run: true, action: "submit_job", name };
 
     // Submit-side MCP guard: reject protected job names from untrusted callers
     // BEFORE we touch the DB. This is the first of the two security layers
     // (the second is MinionQueue.add's check). Independent of the worker-side
     // GBRAIN_ALLOW_SHELL_JOBS env flag — even if that flag is on, MCP callers
     // cannot submit protected-type jobs.
-    const { isProtectedJobName } = await import('./minions/protected-names.ts');
+    const { isProtectedJobName } = await import("./minions/protected-names.ts");
     // F7b fail-closed: anything that is not strictly false (i.e., remote=true OR
     // the field somehow leaks in undefined despite the required type) rejects
     // protected job submissions. Closes the HTTP MCP shell-job RCE that surfaced
     // when the HTTP transport's OperationContext literal forgot to set remote.
     if (ctx.remote !== false && isProtectedJobName(name)) {
-      throw new OperationError('permission_denied', `'${name}' jobs cannot be submitted over MCP (CLI-only for security)`);
+      throw new OperationError(
+        "permission_denied",
+        `'${name}' jobs cannot be submitted over MCP (CLI-only for security)`,
+      );
     }
 
-    const { MinionQueue } = await import('./minions/queue.ts');
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     // Trusted flag fires ONLY for an explicit local CLI submission of a protected
     // name. Strict `=== false` so an untyped/cast context can't escalate.
-    const trusted = ctx.remote === false && isProtectedJobName(name) ? { allowProtectedSubmit: true } : undefined;
-    return queue.add(name, (p.data as Record<string, unknown>) || {}, {
-      queue: (p.queue as string) || 'default',
-      priority: (p.priority as number) || 0,
-      max_attempts: (p.max_attempts as number) || 3,
-      delay: (p.delay as number) || undefined,
-      timeout_ms: (p.timeout_ms as number) || undefined,
-    }, trusted);
+    const trusted =
+      ctx.remote === false && isProtectedJobName(name)
+        ? { allowProtectedSubmit: true }
+        : undefined;
+    return queue.add(
+      name,
+      (p.data as Record<string, unknown>) || {},
+      {
+        queue: (p.queue as string) || "default",
+        priority: (p.priority as number) || 0,
+        max_attempts: (p.max_attempts as number) || 3,
+        delay: (p.delay as number) || undefined,
+        timeout_ms: (p.timeout_ms as number) || undefined,
+      },
+      trusted,
+    );
   },
 };
 
 const get_job: Operation = {
-  name: 'get_job',
-  description: 'Get job status and details by ID',
+  name: "get_job",
+  description: "Get job status and details by ID",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID' },
+    id: { type: "number", required: true, description: "Job ID" },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    const { MinionQueue } = await import('./minions/queue.ts');
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     const job = await queue.getJob(p.id as number);
-    if (!job) throw new OperationError('invalid_params', `Job not found: ${p.id}`);
+    if (!job)
+      throw new OperationError("invalid_params", `Job not found: ${p.id}`);
     return job;
   },
 };
 
 const list_jobs: Operation = {
-  name: 'list_jobs',
-  description: 'List jobs with optional filters',
+  name: "list_jobs",
+  description: "List jobs with optional filters",
   params: {
-    status: { type: 'string', description: 'Filter by status (waiting, active, completed, failed, delayed, dead, cancelled)' },
-    queue: { type: 'string', description: 'Filter by queue name' },
-    name: { type: 'string', description: 'Filter by job type' },
-    limit: { type: 'number', description: 'Max results (default: 50)' },
+    status: {
+      type: "string",
+      description:
+        "Filter by status (waiting, active, completed, failed, delayed, dead, cancelled)",
+    },
+    queue: { type: "string", description: "Filter by queue name" },
+    name: { type: "string", description: "Filter by job type" },
+    limit: { type: "number", description: "Max results (default: 50)" },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    const { MinionQueue } = await import('./minions/queue.ts');
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     return queue.getJobs({
       status: p.status as string | undefined,
@@ -1770,122 +2202,177 @@ const list_jobs: Operation = {
 };
 
 const cancel_job: Operation = {
-  name: 'cancel_job',
-  description: 'Cancel a waiting, active, or delayed job',
+  name: "cancel_job",
+  description: "Cancel a waiting, active, or delayed job",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID' },
+    id: { type: "number", required: true, description: "Job ID" },
   },
   mutating: true,
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'cancel_job', id: p.id };
-    const { MinionQueue } = await import('./minions/queue.ts');
+    if (ctx.dryRun) return { dry_run: true, action: "cancel_job", id: p.id };
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     const cancelled = await queue.cancelJob(p.id as number);
-    if (!cancelled) throw new OperationError('invalid_params', `Cannot cancel job ${p.id} (may already be in terminal status)`);
+    if (!cancelled)
+      throw new OperationError(
+        "invalid_params",
+        `Cannot cancel job ${p.id} (may already be in terminal status)`,
+      );
     return cancelled;
   },
 };
 
 const retry_job: Operation = {
-  name: 'retry_job',
-  description: 'Re-queue a failed or dead job for retry',
+  name: "retry_job",
+  description: "Re-queue a failed or dead job for retry",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID' },
+    id: { type: "number", required: true, description: "Job ID" },
   },
   mutating: true,
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'retry_job', id: p.id };
-    const { MinionQueue } = await import('./minions/queue.ts');
+    if (ctx.dryRun) return { dry_run: true, action: "retry_job", id: p.id };
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     const retried = await queue.retryJob(p.id as number);
-    if (!retried) throw new OperationError('invalid_params', `Cannot retry job ${p.id} (must be failed or dead)`);
+    if (!retried)
+      throw new OperationError(
+        "invalid_params",
+        `Cannot retry job ${p.id} (must be failed or dead)`,
+      );
     return retried;
   },
 };
 
 const get_job_progress: Operation = {
-  name: 'get_job_progress',
-  description: 'Get structured progress for a running job',
+  name: "get_job_progress",
+  description: "Get structured progress for a running job",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID' },
+    id: { type: "number", required: true, description: "Job ID" },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    const { MinionQueue } = await import('./minions/queue.ts');
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     const job = await queue.getJob(p.id as number);
-    if (!job) throw new OperationError('invalid_params', `Job not found: ${p.id}`);
-    return { id: job.id, name: job.name, status: job.status, progress: job.progress };
+    if (!job)
+      throw new OperationError("invalid_params", `Job not found: ${p.id}`);
+    return {
+      id: job.id,
+      name: job.name,
+      status: job.status,
+      progress: job.progress,
+    };
   },
 };
 
 const pause_job: Operation = {
-  name: 'pause_job',
-  description: 'Pause a waiting, active, or delayed job',
+  name: "pause_job",
+  description: "Pause a waiting, active, or delayed job",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID' },
+    id: { type: "number", required: true, description: "Job ID" },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    const { MinionQueue } = await import('./minions/queue.ts');
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     const job = await queue.pauseJob(p.id as number);
-    if (!job) throw new OperationError('invalid_params', `Job not found or not pausable: ${p.id}`);
+    if (!job)
+      throw new OperationError(
+        "invalid_params",
+        `Job not found or not pausable: ${p.id}`,
+      );
     return { id: job.id, status: job.status };
   },
 };
 
 const resume_job: Operation = {
-  name: 'resume_job',
-  description: 'Resume a paused job back to waiting',
+  name: "resume_job",
+  description: "Resume a paused job back to waiting",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID' },
+    id: { type: "number", required: true, description: "Job ID" },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    const { MinionQueue } = await import('./minions/queue.ts');
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
     const job = await queue.resumeJob(p.id as number);
-    if (!job) throw new OperationError('invalid_params', `Job not found or not paused: ${p.id}`);
+    if (!job)
+      throw new OperationError(
+        "invalid_params",
+        `Job not found or not paused: ${p.id}`,
+      );
     return { id: job.id, status: job.status };
   },
 };
 
 const replay_job: Operation = {
-  name: 'replay_job',
-  description: 'Replay a completed/failed/dead job, optionally with modified data',
+  name: "replay_job",
+  description:
+    "Replay a completed/failed/dead job, optionally with modified data",
   params: {
-    id: { type: 'number', required: true, description: 'Source job ID to replay' },
-    data_overrides: { type: 'object', required: false, description: 'Data fields to override (merged with original)' },
+    id: {
+      type: "number",
+      required: true,
+      description: "Source job ID to replay",
+    },
+    data_overrides: {
+      type: "object",
+      required: false,
+      description: "Data fields to override (merged with original)",
+    },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'replay_job', id: p.id };
-    const { MinionQueue } = await import('./minions/queue.ts');
+    if (ctx.dryRun) return { dry_run: true, action: "replay_job", id: p.id };
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
-    const job = await queue.replayJob(p.id as number, p.data_overrides as Record<string, unknown> | undefined);
-    if (!job) throw new OperationError('invalid_params', `Job not found or not in terminal state: ${p.id}`);
+    const job = await queue.replayJob(
+      p.id as number,
+      p.data_overrides as Record<string, unknown> | undefined,
+    );
+    if (!job)
+      throw new OperationError(
+        "invalid_params",
+        `Job not found or not in terminal state: ${p.id}`,
+      );
     return { id: job.id, name: job.name, status: job.status, source_id: p.id };
   },
 };
 
 const send_job_message: Operation = {
-  name: 'send_job_message',
-  description: 'Send a sidechannel message to a running job\'s inbox',
+  name: "send_job_message",
+  description: "Send a sidechannel message to a running job's inbox",
   params: {
-    id: { type: 'number', required: true, description: 'Job ID to message' },
-    payload: { type: 'object', required: true, description: 'Message payload (arbitrary JSON)' },
-    sender: { type: 'string', required: false, description: 'Sender identity (default: admin)' },
+    id: { type: "number", required: true, description: "Job ID to message" },
+    payload: {
+      type: "object",
+      required: true,
+      description: "Message payload (arbitrary JSON)",
+    },
+    sender: {
+      type: "string",
+      required: false,
+      description: "Sender identity (default: admin)",
+    },
   },
-  scope: 'admin',
+  scope: "admin",
   handler: async (ctx, p) => {
-    if (ctx.dryRun) return { dry_run: true, action: 'send_job_message', id: p.id };
-    const { MinionQueue } = await import('./minions/queue.ts');
+    if (ctx.dryRun)
+      return { dry_run: true, action: "send_job_message", id: p.id };
+    const { MinionQueue } = await import("./minions/queue.ts");
     const queue = new MinionQueue(ctx.engine);
-    const msg = await queue.sendMessage(p.id as number, p.payload, (p.sender as string) ?? 'admin');
-    if (!msg) throw new OperationError('invalid_params', `Job not found, not messageable, or sender unauthorized: ${p.id}`);
+    const msg = await queue.sendMessage(
+      p.id as number,
+      p.payload,
+      (p.sender as string) ?? "admin",
+    );
+    if (!msg)
+      throw new OperationError(
+        "invalid_params",
+        `Job not found, not messageable, or sender unauthorized: ${p.id}`,
+      );
     return { sent: true, message_id: msg.id, job_id: p.id };
   },
 };
@@ -1893,38 +2380,45 @@ const send_job_message: Operation = {
 // --- Orphans ---
 
 const find_orphans: Operation = {
-  name: 'find_orphans',
-  description: 'Find pages with no inbound wikilinks. Essential for content enrichment cycles.',
+  name: "find_orphans",
+  description:
+    "Find pages with no inbound wikilinks. Essential for content enrichment cycles.",
   params: {
     include_pseudo: {
-      type: 'boolean',
-      description: 'Include auto-generated and pseudo pages (default: false)',
+      type: "boolean",
+      description: "Include auto-generated and pseudo pages (default: false)",
     },
   },
-  scope: 'read',
+  scope: "read",
   handler: async (ctx, p) => {
-    const { findOrphans } = await import('../commands/orphans.ts');
-    return findOrphans(ctx.engine, { includePseudo: (p.include_pseudo as boolean) || false });
+    const { findOrphans } = await import("../commands/orphans.ts");
+    return findOrphans(ctx.engine, {
+      includePseudo: (p.include_pseudo as boolean) || false,
+    });
   },
-  cliHints: { name: 'orphans', hidden: true },
+  cliHints: { name: "orphans", hidden: true },
 };
 
 // --- v0.29: Salience + Anomaly Detection ---
 
 const get_recent_salience: Operation = {
-  name: 'get_recent_salience',
+  name: "get_recent_salience",
   description: GET_RECENT_SALIENCE_DESCRIPTION,
-  scope: 'read',
+  scope: "read",
   params: {
-    days: { type: 'number', description: 'Window in days. Default 14.' },
-    limit: { type: 'number', description: 'Max results (default 20, capped at 100).' },
+    days: { type: "number", description: "Window in days. Default 14." },
+    limit: {
+      type: "number",
+      description: "Max results (default 20, capped at 100).",
+    },
     slugPrefix: {
-      type: 'string',
-      description: "Optional slug-prefix filter, e.g. 'personal' or 'wiki/people'.",
+      type: "string",
+      description:
+        "Optional slug-prefix filter, e.g. 'personal' or 'wiki/people'.",
     },
     recency_bias: {
-      type: 'string',
-      enum: ['flat', 'on'],
+      type: "string",
+      enum: ["flat", "on"],
       description:
         "v0.29.1: how to weight recency in the salience score.\n" +
         "  'flat' (DEFAULT) — v0.29.0 behavior. Every page gets 1/(1+days_old).\n" +
@@ -1938,60 +2432,62 @@ const get_recent_salience: Operation = {
     },
   },
   handler: async (ctx, p) => {
-    const recencyBias = p.recency_bias === 'on' ? 'on' : 'flat';
+    const recencyBias = p.recency_bias === "on" ? "on" : "flat";
     return ctx.engine.getRecentSalience({
-      days: typeof p.days === 'number' ? p.days : undefined,
-      limit: typeof p.limit === 'number' ? p.limit : undefined,
-      slugPrefix: typeof p.slugPrefix === 'string' ? p.slugPrefix : undefined,
+      days: typeof p.days === "number" ? p.days : undefined,
+      limit: typeof p.limit === "number" ? p.limit : undefined,
+      slugPrefix: typeof p.slugPrefix === "string" ? p.slugPrefix : undefined,
       recency_bias: recencyBias,
     });
   },
-  cliHints: { name: 'salience' },
+  cliHints: { name: "salience" },
 };
 
 const find_anomalies: Operation = {
-  name: 'find_anomalies',
+  name: "find_anomalies",
   description: FIND_ANOMALIES_DESCRIPTION,
-  scope: 'read',
+  scope: "read",
   params: {
     since: {
-      type: 'string',
-      description: 'ISO date YYYY-MM-DD. Default = today (UTC).',
+      type: "string",
+      description: "ISO date YYYY-MM-DD. Default = today (UTC).",
     },
     lookback_days: {
-      type: 'number',
-      description: 'Days of history for the baseline. Default 30.',
+      type: "number",
+      description: "Days of history for the baseline. Default 30.",
     },
     sigma: {
-      type: 'number',
-      description: 'Sigma threshold. Default 3.0.',
+      type: "number",
+      description: "Sigma threshold. Default 3.0.",
     },
   },
   handler: async (ctx, p) => {
     return ctx.engine.findAnomalies({
-      since: typeof p.since === 'string' ? p.since : undefined,
-      lookback_days: typeof p.lookback_days === 'number' ? p.lookback_days : undefined,
-      sigma: typeof p.sigma === 'number' ? p.sigma : undefined,
+      since: typeof p.since === "string" ? p.since : undefined,
+      lookback_days:
+        typeof p.lookback_days === "number" ? p.lookback_days : undefined,
+      sigma: typeof p.sigma === "number" ? p.sigma : undefined,
     });
   },
-  cliHints: { name: 'anomalies' },
+  cliHints: { name: "anomalies" },
 };
 
 const get_recent_transcripts: Operation = {
-  name: 'get_recent_transcripts',
+  name: "get_recent_transcripts",
   description: GET_RECENT_TRANSCRIPTS_DESCRIPTION,
-  scope: 'read',
+  scope: "read",
   // Local-only: rejects HTTP-borne MCP traffic at tool-list time
   // (serve-http.ts filters on `localOnly`) AND at runtime via the in-handler
   // ctx.remote check. Defense in depth: hidden + rejected.
   localOnly: true,
   params: {
-    days: { type: 'number', description: 'Window in days. Default 7.' },
+    days: { type: "number", description: "Window in days. Default 7." },
     summary: {
-      type: 'boolean',
-      description: 'When true (default), return first ~300 chars per transcript. When false, full content (capped at 100 KB per file).',
+      type: "boolean",
+      description:
+        "When true (default), return first ~300 chars per transcript. When false, full content (capped at 100 KB per file).",
     },
-    limit: { type: 'number', description: 'Max transcripts (default 50).' },
+    limit: { type: "number", description: "Max transcripts (default 50)." },
   },
   handler: async (ctx, p) => {
     // Trust gate (eng review D2 + codex C3): MCP / HTTP callers (`remote=true`)
@@ -2001,33 +2497,33 @@ const get_recent_transcripts: Operation = {
     // rejected, which is a footgun if the op is visible).
     if (ctx.remote === true) {
       throw new OperationError(
-        'permission_denied',
-        'get_recent_transcripts is local-only — call via the gbrain CLI.',
+        "permission_denied",
+        "get_recent_transcripts is local-only — call via the gbrain CLI.",
       );
     }
-    const { listRecentTranscripts } = await import('./transcripts.ts');
+    const { listRecentTranscripts } = await import("./transcripts.ts");
     return listRecentTranscripts(ctx.engine, {
-      days: typeof p.days === 'number' ? p.days : undefined,
-      summary: typeof p.summary === 'boolean' ? p.summary : undefined,
-      limit: typeof p.limit === 'number' ? p.limit : undefined,
+      days: typeof p.days === "number" ? p.days : undefined,
+      summary: typeof p.summary === "boolean" ? p.summary : undefined,
+      limit: typeof p.limit === "number" ? p.limit : undefined,
     });
   },
-  cliHints: { name: 'transcripts', hidden: true },
+  cliHints: { name: "transcripts", hidden: true },
 };
 
 // --- v0.28: whoami + sources management ---
 
 const whoami: Operation = {
-  name: 'whoami',
+  name: "whoami",
   description:
-    'Introspect the calling identity. Returns one of three transport shapes: ' +
+    "Introspect the calling identity. Returns one of three transport shapes: " +
     '{transport: "oauth", client_id, client_name, scopes, expires_at}, ' +
     '{transport: "legacy", token_name, scopes, expires_at: null}, or ' +
     '{transport: "local", scopes: []}. Throws unknown_transport when the ' +
-    'context is ambiguous (remote=true without auth) — fail-closed posture ' +
-    'mirroring the v0.26.9 trust-boundary contract.',
+    "context is ambiguous (remote=true without auth) — fail-closed posture " +
+    "mirroring the v0.26.9 trust-boundary contract.",
   params: {},
-  scope: 'read',
+  scope: "read",
   handler: async (ctx) => {
     // Trust boundary: ctx.remote === false is the trusted local CLI surface.
     // Returning OAuth-shaped scopes here would resurrect the v0.26.9 footgun
@@ -2035,23 +2531,23 @@ const whoami: Operation = {
     // of `ctx.remote === false`. Empty scopes array forces clients to
     // special-case `transport: 'local'` explicitly.
     if (ctx.remote === false) {
-      return { transport: 'local', scopes: [] };
+      return { transport: "local", scopes: [] };
     }
     if (!ctx.auth) {
       throw new OperationError(
-        'unknown_transport',
-        'whoami called over a remote transport that did not thread ctx.auth. ' +
-          'This is a transport bug — every remote call site must populate ctx.auth ' +
-          'or set ctx.remote === false.',
+        "unknown_transport",
+        "whoami called over a remote transport that did not thread ctx.auth. " +
+          "This is a transport bug — every remote call site must populate ctx.auth " +
+          "or set ctx.remote === false.",
       );
     }
     // OAuth tokens have client_id starting with 'gbrain_cl_'; legacy
     // access_tokens reuse `name` as both clientId and clientName (verifyAccessToken
     // at oauth-provider.ts:417-430). Detect by inspecting the prefix.
-    const isOauth = ctx.auth.clientId.startsWith('gbrain_cl_');
+    const isOauth = ctx.auth.clientId.startsWith("gbrain_cl_");
     if (isOauth) {
       return {
-        transport: 'oauth',
+        transport: "oauth",
         client_id: ctx.auth.clientId,
         client_name: ctx.auth.clientName ?? ctx.auth.clientId,
         scopes: ctx.auth.scopes,
@@ -2059,50 +2555,53 @@ const whoami: Operation = {
       };
     }
     return {
-      transport: 'legacy',
+      transport: "legacy",
       token_name: ctx.auth.clientName ?? ctx.auth.clientId,
       scopes: ctx.auth.scopes,
       expires_at: null,
     };
   },
-  cliHints: { name: 'whoami' },
+  cliHints: { name: "whoami" },
 };
 
 const sources_add: Operation = {
-  name: 'sources_add',
+  name: "sources_add",
   description:
-    'Register a new source. Supports either --path (existing v0.17 behavior) ' +
-    'or --url (v0.28 federated remote-clone path: parses the URL through the ' +
-    'SSRF gate, clones into $GBRAIN_HOME/clones/<id>/ via temp-dir + rename ' +
-    'atomicity, and stores remote_url in sources.config). Pre-flight collision ' +
-    'check on id; rollback on either-side failure.',
+    "Register a new source. Supports either --path (existing v0.17 behavior) " +
+    "or --url (v0.28 federated remote-clone path: parses the URL through the " +
+    "SSRF gate, clones into $GBRAIN_HOME/clones/<id>/ via temp-dir + rename " +
+    "atomicity, and stores remote_url in sources.config). Pre-flight collision " +
+    "check on id; rollback on either-side failure.",
   params: {
     id: {
-      type: 'string',
+      type: "string",
       required: true,
-      description: 'Source id ([a-z0-9-]{1,32}). Immutable citation key.',
+      description: "Source id ([a-z0-9-]{1,32}). Immutable citation key.",
     },
-    name: { type: 'string', description: 'Display name (defaults to id).' },
-    path: { type: 'string', description: 'Local path. Mutually optional with url.' },
+    name: { type: "string", description: "Display name (defaults to id)." },
+    path: {
+      type: "string",
+      description: "Local path. Mutually optional with url.",
+    },
     url: {
-      type: 'string',
+      type: "string",
       description:
-        'HTTPS git URL. Cloned into $GBRAIN_HOME/clones/<id>/. SSRF-guarded.',
+        "HTTPS git URL. Cloned into $GBRAIN_HOME/clones/<id>/. SSRF-guarded.",
     },
     federated: {
-      type: 'boolean',
-      description: 'true → cross-source default search. false → isolated.',
+      type: "boolean",
+      description: "true → cross-source default search. false → isolated.",
     },
     clone_dir: {
-      type: 'string',
+      type: "string",
       description:
-        'Override clone destination (only valid with url). Default: $GBRAIN_HOME/clones/<id>/.',
+        "Override clone destination (only valid with url). Default: $GBRAIN_HOME/clones/<id>/.",
     },
   },
   mutating: true,
-  scope: 'sources_admin',
+  scope: "sources_admin",
   handler: async (ctx, p) => {
-    const { addSource } = await import('./sources-ops.ts');
+    const { addSource } = await import("./sources-ops.ts");
 
     // v0.28.1 codex finding (CRITICAL + HIGH): a `sources_admin` token over
     // HTTP MCP must not be able to plant content at arbitrary host paths.
@@ -2121,13 +2620,17 @@ const sources_add: Operation = {
     // to $GBRAIN_HOME/clones/<id>/ and path is rejected. Local CLI callers
     // (ctx.remote === false, per F7b fail-closed contract) keep the override.
     const isLocal = ctx.remote === false;
-    const remotePath = isLocal ? (p.path as string | undefined) ?? null : null;
-    const remoteCloneDir = isLocal ? (p.clone_dir as string | undefined) : undefined;
+    const remotePath = isLocal
+      ? ((p.path as string | undefined) ?? null)
+      : null;
+    const remoteCloneDir = isLocal
+      ? (p.clone_dir as string | undefined)
+      : undefined;
     if (!isLocal && (p.path !== undefined || p.clone_dir !== undefined)) {
       ctx.logger.warn(
-        '[sources_add] ignoring path/clone_dir overrides on HTTP MCP transport ' +
-          '(remote callers can only register a remote --url; the clone path is ' +
-          'fixed under $GBRAIN_HOME/clones/).',
+        "[sources_add] ignoring path/clone_dir overrides on HTTP MCP transport " +
+          "(remote callers can only register a remote --url; the clone path is " +
+          "fixed under $GBRAIN_HOME/clones/).",
       );
     }
 
@@ -2136,60 +2639,66 @@ const sources_add: Operation = {
       name: p.name as string | undefined,
       localPath: remotePath,
       remoteUrl: p.url as string | undefined,
-      federated:
-        p.federated === undefined ? null : (p.federated as boolean),
+      federated: p.federated === undefined ? null : (p.federated as boolean),
       cloneDir: remoteCloneDir,
     });
     return row;
   },
-  cliHints: { name: 'sources_add', hidden: true },
+  cliHints: { name: "sources_add", hidden: true },
 };
 
 const sources_list: Operation = {
-  name: 'sources_list',
+  name: "sources_list",
   description:
-    'List registered sources with page counts and remote_url. v0.28 surfaces ' +
-    'the new remote_url field so a remote MCP caller can confirm a source is ' +
-    'managed by clone+pull rather than user-supplied path.',
+    "List registered sources with page counts and remote_url. v0.28 surfaces " +
+    "the new remote_url field so a remote MCP caller can confirm a source is " +
+    "managed by clone+pull rather than user-supplied path.",
   params: {
-    include_archived: { type: 'boolean', description: 'Include soft-deleted sources.' },
+    include_archived: {
+      type: "boolean",
+      description: "Include soft-deleted sources.",
+    },
   },
-  scope: 'read',
+  scope: "read",
   handler: async (ctx, p) => {
-    const { listSources } = await import('./sources-ops.ts');
+    const { listSources } = await import("./sources-ops.ts");
     return {
       sources: await listSources(ctx.engine, {
         includeArchived: (p.include_archived as boolean) === true,
       }),
     };
   },
-  cliHints: { name: 'sources_list', hidden: true },
+  cliHints: { name: "sources_list", hidden: true },
 };
 
 const sources_remove: Operation = {
-  name: 'sources_remove',
+  name: "sources_remove",
   description:
-    'Hard-remove a source (cascades pages/chunks/embeddings). Refuses to ' +
-    'delete the auto-managed clone dir unless its resolved path is confined ' +
-    'under $GBRAIN_HOME/clones/ (realpath+lstat — symlink-safe). For most ' +
-    'workflows prefer sources_archive for the soft-delete path.',
+    "Hard-remove a source (cascades pages/chunks/embeddings). Refuses to " +
+    "delete the auto-managed clone dir unless its resolved path is confined " +
+    "under $GBRAIN_HOME/clones/ (realpath+lstat — symlink-safe). For most " +
+    "workflows prefer sources_archive for the soft-delete path.",
   params: {
-    id: { type: 'string', required: true },
+    id: { type: "string", required: true },
     confirm_destructive: {
-      type: 'boolean',
+      type: "boolean",
       description:
-        'Required when the source has data (pages, chunks). Without it the op refuses.',
+        "Required when the source has data (pages, chunks). Without it the op refuses.",
     },
-    dry_run: { type: 'boolean', description: 'Preview impact without side effects.' },
+    dry_run: {
+      type: "boolean",
+      description: "Preview impact without side effects.",
+    },
     keep_storage: {
-      type: 'boolean',
-      description: 'Skip clone-dir cleanup even when the source is auto-managed.',
+      type: "boolean",
+      description:
+        "Skip clone-dir cleanup even when the source is auto-managed.",
     },
   },
   mutating: true,
-  scope: 'sources_admin',
+  scope: "sources_admin",
   handler: async (ctx, p) => {
-    const { removeSource } = await import('./sources-ops.ts');
+    const { removeSource } = await import("./sources-ops.ts");
     return removeSource(ctx.engine, {
       id: p.id as string,
       confirmDestructive: (p.confirm_destructive as boolean) === true,
@@ -2197,69 +2706,107 @@ const sources_remove: Operation = {
       keepStorage: (p.keep_storage as boolean) === true,
     });
   },
-  cliHints: { name: 'sources_remove', hidden: true },
+  cliHints: { name: "sources_remove", hidden: true },
 };
 
 const sources_status: Operation = {
-  name: 'sources_status',
+  name: "sources_status",
   description:
     'Per-source diagnostic. Returns clone_state ("healthy" | "missing" | ' +
     '"not-a-dir" | "no-git" | "url-drift" | "corrupted" | "not-applicable") ' +
-    'so a remote MCP caller can diagnose whether the on-disk clone is ' +
-    'syncable without SSH access to the brain host.',
+    "so a remote MCP caller can diagnose whether the on-disk clone is " +
+    "syncable without SSH access to the brain host.",
   params: {
-    id: { type: 'string', required: true },
+    id: { type: "string", required: true },
   },
-  scope: 'read',
+  scope: "read",
   handler: async (ctx, p) => {
-    const { getSourceStatus } = await import('./sources-ops.ts');
+    const { getSourceStatus } = await import("./sources-ops.ts");
     return getSourceStatus(ctx.engine, p.id as string);
   },
-  cliHints: { name: 'sources_status', hidden: true },
+  cliHints: { name: "sources_status", hidden: true },
 };
 
 // --- Exports ---
 
 export const operations: Operation[] = [
   // Page CRUD
-  get_page, put_page, delete_page, list_pages,
+  get_page,
+  put_page,
+  delete_page,
+  list_pages,
   // v0.26.5 destructive-guard ops (page-level soft-delete + recovery + admin purge)
-  restore_page, purge_deleted_pages,
+  restore_page,
+  purge_deleted_pages,
   // Search
-  search, query,
+  search,
+  query,
   // Tags
-  add_tag, remove_tag, get_tags,
+  add_tag,
+  remove_tag,
+  get_tags,
   // Links
-  add_link, remove_link, get_links, get_backlinks, traverse_graph,
+  add_link,
+  remove_link,
+  get_links,
+  get_backlinks,
+  traverse_graph,
   // Timeline
-  add_timeline_entry, get_timeline,
+  add_timeline_entry,
+  get_timeline,
   // Admin
-  get_stats, get_health, run_doctor, get_versions, revert_version,
+  get_stats,
+  get_health,
+  run_doctor,
+  get_versions,
+  revert_version,
   // Sync
   sync_brain,
   // Raw data
-  put_raw_data, get_raw_data,
+  put_raw_data,
+  get_raw_data,
   // Resolution & chunks
-  resolve_slugs, get_chunks,
+  resolve_slugs,
+  get_chunks,
   // Ingest log
-  log_ingest, get_ingest_log,
+  log_ingest,
+  get_ingest_log,
   // Files
-  file_list, file_upload, file_url,
+  file_list,
+  file_upload,
+  file_url,
   // Jobs (Minions)
-  submit_job, get_job, list_jobs, cancel_job, retry_job, get_job_progress,
-  pause_job, resume_job, replay_job, send_job_message,
+  submit_job,
+  get_job,
+  list_jobs,
+  cancel_job,
+  retry_job,
+  get_job_progress,
+  pause_job,
+  resume_job,
+  replay_job,
+  send_job_message,
   // Orphans
   find_orphans,
   // v0.28: Takes + think
-  takes_list, takes_search, think,
+  takes_list,
+  takes_search,
+  think,
   // v0.30: calibration aggregates over takes
-  takes_scorecard, takes_calibration,
+  takes_scorecard,
+  takes_calibration,
   // v0.28: whoami + scoped sources management
-  whoami, sources_add, sources_list, sources_remove, sources_status,
+  whoami,
+  sources_add,
+  sources_list,
+  sources_remove,
+  sources_status,
   // v0.29: Salience + anomalies + recent transcripts
-  get_recent_salience, find_anomalies, get_recent_transcripts,
+  get_recent_salience,
+  find_anomalies,
+  get_recent_transcripts,
 ];
 
 export const operationsByName = Object.fromEntries(
-  operations.map(op => [op.name, op]),
+  operations.map((op) => [op.name, op]),
 ) as Record<string, Operation>;

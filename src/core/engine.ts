@@ -1,20 +1,39 @@
 import type {
-  Page, PageInput, PageFilters, GetPageOpts,
-  Chunk, ChunkInput, StaleChunkRow,
-  SearchResult, SearchOpts,
-  Link, GraphNode, GraphPath,
-  TimelineEntry, TimelineInput, TimelineOpts,
+  Page,
+  PageInput,
+  PageFilters,
+  GetPageOpts,
+  Chunk,
+  ChunkInput,
+  StaleChunkRow,
+  SearchResult,
+  SearchOpts,
+  Link,
+  GraphNode,
+  GraphPath,
+  TimelineEntry,
+  TimelineInput,
+  TimelineOpts,
   RawData,
   PageVersion,
-  BrainStats, BrainHealth,
-  IngestLogEntry, IngestLogInput,
+  BrainStats,
+  BrainHealth,
+  IngestLogEntry,
+  IngestLogInput,
   EngineConfig,
-  CodeEdgeInput, CodeEdgeResult,
-  EvalCandidate, EvalCandidateInput,
-  EvalCaptureFailure, EvalCaptureFailureReason,
-  SalienceOpts, SalienceResult, AnomaliesOpts, AnomalyResult,
-  EmotionalWeightInputRow, EmotionalWeightWriteRow,
-} from './types.ts';
+  CodeEdgeInput,
+  CodeEdgeResult,
+  EvalCandidate,
+  EvalCandidateInput,
+  EvalCaptureFailure,
+  EvalCaptureFailureReason,
+  SalienceOpts,
+  SalienceResult,
+  AnomaliesOpts,
+  AnomalyResult,
+  EmotionalWeightInputRow,
+  EmotionalWeightWriteRow,
+} from "./types.ts";
 
 /**
  * v0.27.1: file row for binary-asset metadata. Mirrors the `files` table
@@ -123,7 +142,10 @@ export interface TimelineBatchInput {
  * transaction itself is waiting to write.
  */
 export interface ReservedConnection {
-  executeRaw<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>;
+  executeRaw<T = Record<string, unknown>>(
+    sql: string,
+    params?: unknown[],
+  ): Promise<T[]>;
 }
 
 /**
@@ -132,8 +154,10 @@ export interface ReservedConnection {
  * derived index. Page-scoped via page_id (NOT slug — slug is unique only
  * within a source). `(page_id, row_num)` is the natural unique key.
  */
-export interface TakeKindLiteral { kind: 'fact' | 'take' | 'bet' | 'hunch' }
-export type TakeKind = TakeKindLiteral['kind'];
+export interface TakeKindLiteral {
+  kind: "fact" | "take" | "bet" | "hunch";
+}
+export type TakeKind = TakeKindLiteral["kind"];
 
 /** Input row for addTakesBatch. */
 export interface TakeBatchInput {
@@ -142,19 +166,19 @@ export interface TakeBatchInput {
   claim: string;
   kind: TakeKind;
   holder: string;
-  weight?: number;          // 0..1, default 0.5; clamped server-side
-  since_date?: string;      // ISO date 'YYYY-MM-DD'
+  weight?: number; // 0..1, default 0.5; clamped server-side
+  since_date?: string; // ISO date 'YYYY-MM-DD'
   until_date?: string;
   source?: string;
   superseded_by?: number | null;
-  active?: boolean;         // default true
+  active?: boolean; // default true
 }
 
 /** Take row as returned by listTakes / searchTakes. */
 export interface Take {
   id: number;
   page_id: number;
-  page_slug: string;        // joined from pages
+  page_slug: string; // joined from pages
   row_num: number;
   claim: string;
   kind: TakeKind;
@@ -174,7 +198,7 @@ export interface Take {
    * Null on unresolved rows. Schema CHECK enforces (quality, outcome) consistency:
    * `correct` ↔ `outcome=true`, `incorrect` ↔ `outcome=false`, `partial` ↔ `outcome=NULL`.
    */
-  resolved_quality: 'correct' | 'incorrect' | 'partial' | null;
+  resolved_quality: "correct" | "incorrect" | "partial" | null;
   resolved_value: number | null;
   resolved_unit: string | null;
   resolved_source: string | null;
@@ -185,16 +209,18 @@ export interface Take {
 
 export interface TakesListOpts {
   page_id?: number;
-  page_slug?: string;       // resolved via JOIN
+  page_slug?: string; // resolved via JOIN
   holder?: string;
   kind?: TakeKind;
-  active?: boolean;         // default true (only active rows)
-  resolved?: boolean;       // true = only resolved; false = only unresolved; undefined = both
+  active?: boolean; // default true (only active rows)
+  resolved?: boolean; // true = only resolved; false = only unresolved; undefined = both
   /** Per-token MCP allow-list. Server applies AND holder = ANY($takesHoldersAllowList) when set. */
   takesHoldersAllowList?: string[];
-  sortBy?: 'weight' | 'since_date' | 'created_at';
+  sortBy?: "weight" | "since_date" | "created_at";
   limit?: number;
   offset?: number;
+  /** Filter by page's source_id (v0.18). */
+  sourceId?: string;
 }
 
 /** Search result row from searchTakes / searchTakesVector. */
@@ -207,7 +233,7 @@ export interface TakeHit {
   kind: TakeKind;
   holder: string;
   weight: number;
-  score: number;            // search rank score (ts_rank for keyword, 1-cos_dist for vector)
+  score: number; // search rank score (ts_rank for keyword, 1-cos_dist for vector)
 }
 
 /** v0.28 stale-takes row (mirrors StaleChunkRow shape). Embedding column intentionally omitted. */
@@ -225,7 +251,7 @@ export interface TakeResolution {
    * and the engine writes both columns (quality directly; outcome derived:
    * `correct→true`, `incorrect→false`, `partial→null`).
    */
-  quality?: 'correct' | 'incorrect' | 'partial';
+  quality?: "correct" | "incorrect" | "partial";
   /**
    * v0.28 back-compat input. Keep submitting for v0.28 callers; the engine
    * derives quality (`true→correct`, `false→incorrect`). When `quality` is
@@ -235,9 +261,9 @@ export interface TakeResolution {
    */
   outcome?: boolean;
   value?: number;
-  unit?: string;       // 'usd' | 'pct' | 'count' | other
+  unit?: string; // 'usd' | 'pct' | 'count' | other
   source?: string;
-  resolvedBy: string;  // slug or 'garry'
+  resolvedBy: string; // slug or 'garry'
 }
 
 /** v0.30.0: scorecard aggregate. */
@@ -264,8 +290,8 @@ export interface TakesScorecard {
 export interface TakesScorecardOpts {
   holder?: string;
   domainPrefix?: string; // e.g. 'companies/' to scope the scorecard
-  since?: string;        // ISO date 'YYYY-MM-DD'
-  until?: string;        // ISO date 'YYYY-MM-DD'
+  since?: string; // ISO date 'YYYY-MM-DD'
+  until?: string; // ISO date 'YYYY-MM-DD'
 }
 
 /** v0.30.0: calibration curve bucket. */
@@ -312,15 +338,25 @@ export interface DreamVerdictInput {
 export const MAX_SEARCH_LIMIT = 100;
 
 /** Clamp a user-provided search limit to a safe range. */
-export function clampSearchLimit(limit: number | undefined, defaultLimit = 20, cap = MAX_SEARCH_LIMIT): number {
-  if (limit === undefined || limit === null || !Number.isFinite(limit) || Number.isNaN(limit)) return defaultLimit;
+export function clampSearchLimit(
+  limit: number | undefined,
+  defaultLimit = 20,
+  cap = MAX_SEARCH_LIMIT,
+): number {
+  if (
+    limit === undefined ||
+    limit === null ||
+    !Number.isFinite(limit) ||
+    Number.isNaN(limit)
+  )
+    return defaultLimit;
   if (limit <= 0) return defaultLimit;
   return Math.min(Math.floor(limit), cap);
 }
 
 export interface BrainEngine {
   /** Discriminator: lets migrations and other consumers branch on engine kind without instanceof + dynamic imports. */
-  readonly kind: 'postgres' | 'pglite';
+  readonly kind: "postgres" | "pglite";
 
   // Lifecycle
   connect(config: EngineConfig): Promise<void>;
@@ -332,7 +368,9 @@ export interface BrainEngine {
    * PGLite: pass-through). See `ReservedConnection` for semantics and
    * usage constraints. Release is automatic.
    */
-  withReservedConnection<T>(fn: (conn: ReservedConnection) => Promise<T>): Promise<T>;
+  withReservedConnection<T>(
+    fn: (conn: ReservedConnection) => Promise<T>,
+  ): Promise<T>;
 
   // Pages CRUD
   /**
@@ -353,14 +391,17 @@ export interface BrainEngine {
    * as the underlying primitive used by `purgeDeletedPages` and by callers
    * that explicitly want hard-delete semantics (e.g. test setup teardown).
    */
-  deletePage(slug: string): Promise<void>;
+  deletePage(slug: string, opts?: { sourceId?: string }): Promise<void>;
   /**
    * v0.26.5 — set `deleted_at = now()` on a page. Returns the slug if a row
    * was soft-deleted, null if no row matched (already soft-deleted OR not found).
    * Idempotent-as-null. The page stays in the DB and cascade rows (chunks,
    * links) stay intact; the autopilot purge phase hard-deletes after 72h.
    */
-  softDeletePage(slug: string, opts?: { sourceId?: string }): Promise<{ slug: string } | null>;
+  softDeletePage(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<{ slug: string } | null>;
   /**
    * v0.26.5 — clear `deleted_at` on a soft-deleted page. Returns true iff a
    * row was restored. False if the slug is unknown OR the page is not
@@ -372,13 +413,19 @@ export interface BrainEngine {
    * Called by the autopilot purge phase and by the `gbrain pages purge-deleted`
    * CLI escape hatch. Cascades through existing FKs.
    */
-  purgeDeletedPages(olderThanHours: number): Promise<{ slugs: string[]; count: number }>;
+  purgeDeletedPages(
+    olderThanHours: number,
+  ): Promise<{ slugs: string[]; count: number }>;
   /**
    * v0.26.5: by default `listPages` excludes soft-deleted rows. Set
    * `filters.includeDeleted: true` to surface them.
    */
   listPages(filters?: PageFilters): Promise<Page[]>;
-  resolveSlugs(partial: string): Promise<string[]>;
+  resolveSlugs(
+    partial: string,
+    opts?: { sourceId?: string },
+  ): Promise<string[]>;
+
   /**
    * Returns the slug of every page in the brain. Used by batch commands as a
    * mutation-immune iteration source (alternative to listPages OFFSET pagination,
@@ -388,12 +435,19 @@ export interface BrainEngine {
 
   // Search
   searchKeyword(query: string, opts?: SearchOpts): Promise<SearchResult[]>;
-  searchVector(embedding: Float32Array, opts?: SearchOpts): Promise<SearchResult[]>;
+  searchVector(
+    embedding: Float32Array,
+    opts?: SearchOpts,
+  ): Promise<SearchResult[]>;
   getEmbeddingsByChunkIds(ids: number[]): Promise<Map<number, Float32Array>>;
 
   // Chunks
-  upsertChunks(slug: string, chunks: ChunkInput[]): Promise<void>;
-  getChunks(slug: string): Promise<Chunk[]>;
+  upsertChunks(
+    slug: string,
+    chunks: ChunkInput[],
+    opts?: { sourceId?: string },
+  ): Promise<void>;
+  getChunks(slug: string, opts?: { sourceId?: string }): Promise<Chunk[]>;
   /**
    * Count chunks across the entire brain where embedded_at IS NULL.
    * Pre-flight short-circuit for `embed --stale` so a 100%-embedded brain
@@ -409,7 +463,7 @@ export interface BrainEngine {
    * Bounded by an internal LIMIT of 100000 to mirror listPages.
    */
   listStaleChunks(): Promise<StaleChunkRow[]>;
-  deleteChunks(slug: string): Promise<void>;
+  deleteChunks(slug: string, opts?: { sourceId?: string }): Promise<void>;
 
   // Links
   /**
@@ -441,7 +495,12 @@ export interface BrainEngine {
    * 'manual') — used by runAutoLink reconciliation to avoid deleting edges from
    * other provenances when pruning frontmatter-derived edges.
    */
-  removeLink(from: string, to: string, linkType?: string, linkSource?: string): Promise<void>;
+  removeLink(
+    from: string,
+    to: string,
+    linkType?: string,
+    linkSource?: string,
+  ): Promise<void>;
   getLinks(slug: string): Promise<Link[]>;
   getBacklinks(slug: string): Promise<Link[]>;
   /**
@@ -461,6 +520,7 @@ export interface BrainEngine {
     name: string,
     dirPrefix?: string,
     minSimilarity?: number,
+    opts?: { sourceId?: string },
   ): Promise<{ slug: string; similarity: number } | null>;
   traverseGraph(slug: string, depth?: number): Promise<GraphNode[]>;
   /**
@@ -473,14 +533,23 @@ export interface BrainEngine {
    */
   traversePaths(
     slug: string,
-    opts?: { depth?: number; linkType?: string; direction?: 'in' | 'out' | 'both' },
+    opts?: {
+      depth?: number;
+      linkType?: string;
+      direction?: "in" | "out" | "both";
+      sourceId?: string;
+    },
   ): Promise<GraphPath[]>;
+
   /**
    * For a list of slugs, return how many inbound links each has.
    * Used by hybrid search backlink boost. Single SQL query, not N+1.
    * Slugs with zero inbound links are present in the map with value 0.
    */
-  getBacklinkCounts(slugs: string[]): Promise<Map<string, number>>;
+  getBacklinkCounts(
+    slugs: string[],
+    opts?: { sourceId?: string },
+  ): Promise<Map<string, number>>;
   /**
    * v0.27.0: for a list of slugs, return their updated_at timestamps (or created_at fallback).
    * Used by hybrid search recency boost. Single SQL query, not N+1.
@@ -499,7 +568,9 @@ export interface BrainEngine {
    * Drives the new applyRecencyBoost post-fusion stage. Returns NULL for refs
    * with no row; map omits them.
    */
-  getEffectiveDates(refs: Array<{slug: string; source_id: string}>): Promise<Map<string, Date>>;
+  getEffectiveDates(
+    refs: Array<{ slug: string; source_id: string }>,
+  ): Promise<Map<string, Date>>;
   /**
    * v0.29.1: for a list of (slug, source_id) refs, return the salience score
    * (emotional_weight × 5 + ln(1 + take_count)) per ref. Single SQL query.
@@ -509,19 +580,31 @@ export interface BrainEngine {
    * (or zero emotional_weight + zero takes) get score = 0; the boost stage
    * skips them.
    */
-  getSalienceScores(refs: Array<{slug: string; source_id: string}>): Promise<Map<string, number>>;
+  getSalienceScores(
+    refs: Array<{ slug: string; source_id: string }>,
+  ): Promise<Map<string, number>>;
   /**
    * Return every page with no inbound links (from any source).
    * Domain comes from the frontmatter `domain` field (null if unset).
    * The caller filters pseudo-pages + derives display domain.
    * Used by `gbrain orphans` and `runCycle`'s orphan sweep phase.
    */
-  findOrphanPages(): Promise<Array<{ slug: string; title: string; domain: string | null }>>;
+  findOrphanPages(): Promise<
+    Array<{ slug: string; title: string; domain: string | null }>
+  >;
 
   // Tags
-  addTag(slug: string, tag: string): Promise<void>;
-  removeTag(slug: string, tag: string): Promise<void>;
-  getTags(slug: string): Promise<string[]>;
+  addTag(
+    slug: string,
+    tag: string,
+    opts?: { sourceId?: string },
+  ): Promise<void>;
+  removeTag(
+    slug: string,
+    tag: string,
+    opts?: { sourceId?: string },
+  ): Promise<void>;
+  getTags(slug: string, opts?: { sourceId?: string }): Promise<string[]>;
 
   // Timeline
   /**
@@ -579,7 +662,10 @@ export interface BrainEngine {
    * Honors `takesHoldersAllowList` via WHERE filter so MCP-bound calls cannot
    * retrieve holders outside the token's allow-list.
    */
-  searchTakes(query: string, opts?: SearchOpts & { takesHoldersAllowList?: string[] }): Promise<TakeHit[]>;
+  searchTakes(
+    query: string,
+    opts?: SearchOpts & { takesHoldersAllowList?: string[] },
+  ): Promise<TakeHit[]>;
 
   /**
    * Vector search across active takes. Cosine distance against `embedding`.
@@ -621,7 +707,7 @@ export interface BrainEngine {
   supersedeTake(
     pageId: number,
     oldRow: number,
-    newRow: Omit<TakeBatchInput, 'page_id' | 'row_num' | 'superseded_by'>,
+    newRow: Omit<TakeBatchInput, "page_id" | "row_num" | "superseded_by">,
   ): Promise<{ oldRow: number; newRow: number }>;
 
   /**
@@ -635,7 +721,11 @@ export interface BrainEngine {
    * `takes_resolution_consistency` CHECK constraint catches contradictory
    * states at the DB layer as a defense-in-depth backstop.
    */
-  resolveTake(pageId: number, rowNum: number, resolution: TakeResolution): Promise<void>;
+  resolveTake(
+    pageId: number,
+    rowNum: number,
+    resolution: TakeResolution,
+  ): Promise<void>;
 
   /**
    * v0.30.0: aggregate calibration scorecard. Pure SQL aggregation; no LLM.
@@ -650,7 +740,10 @@ export interface BrainEngine {
    * to enforce zero-results; pass `undefined` only from server-side trusted
    * callers that have already verified the request is unrestricted.
    */
-  getScorecard(opts: TakesScorecardOpts, allowList: string[] | undefined): Promise<TakesScorecard>;
+  getScorecard(
+    opts: TakesScorecardOpts,
+    allowList: string[] | undefined,
+  ): Promise<TakesScorecard>;
 
   /**
    * v0.30.0: calibration curve. Bins resolved correct+incorrect bets by stated
@@ -658,7 +751,10 @@ export interface BrainEngine {
    * per bucket. Same allow-list contract as `getScorecard`. Excludes partial
    * (consistent with Brier — partial has no binary outcome to compare against).
    */
-  getCalibrationCurve(opts: CalibrationCurveOpts, allowList: string[] | undefined): Promise<CalibrationBucket[]>;
+  getCalibrationCurve(
+    opts: CalibrationCurveOpts,
+    allowList: string[] | undefined,
+  ): Promise<CalibrationBucket[]>;
 
   /** Persist think provenance. ON CONFLICT DO NOTHING; returns rows inserted. */
   addSynthesisEvidence(rows: SynthesisEvidenceInput[]): Promise<number>;
@@ -666,11 +762,21 @@ export interface BrainEngine {
   // Dream-cycle significance verdict cache (v0.23).
   // Keyed by (file_path, content_hash). Distinct from raw_data, which is
   // page-scoped — transcripts being judged aren't pages yet.
-  getDreamVerdict(filePath: string, contentHash: string): Promise<DreamVerdict | null>;
-  putDreamVerdict(filePath: string, contentHash: string, verdict: DreamVerdictInput): Promise<void>;
+  getDreamVerdict(
+    filePath: string,
+    contentHash: string,
+  ): Promise<DreamVerdict | null>;
+  putDreamVerdict(
+    filePath: string,
+    contentHash: string,
+    verdict: DreamVerdictInput,
+  ): Promise<void>;
 
   // Versions
-  createVersion(slug: string): Promise<PageVersion>;
+  createVersion(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<PageVersion>;
   getVersions(slug: string): Promise<PageVersion[]>;
   revertToVersion(slug: string, versionId: number): Promise<void>;
 
@@ -683,7 +789,11 @@ export interface BrainEngine {
   getIngestLog(opts?: { limit?: number }): Promise<IngestLogEntry[]>;
 
   // Sync
-  updateSlug(oldSlug: string, newSlug: string): Promise<void>;
+  updateSlug(
+    oldSlug: string,
+    newSlug: string,
+    opts?: { sourceId?: string },
+  ): Promise<void>;
   rewriteLinks(oldSlug: string, newSlug: string): Promise<void>;
 
   // Config
@@ -695,7 +805,10 @@ export interface BrainEngine {
   getChunksWithEmbeddings(slug: string): Promise<Chunk[]>;
 
   // Raw SQL (for Minions job queue and other internal modules)
-  executeRaw<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>;
+  executeRaw<T = Record<string, unknown>>(
+    sql: string,
+    params?: unknown[],
+  ): Promise<T[]>;
 
   // ============================================================
   // v0.20.0 Cathedral II: code edges (Layer 5 populates, Layer 7 consumes)
@@ -745,7 +858,11 @@ export interface BrainEngine {
    */
   getEdgesByChunk(
     chunkId: number,
-    opts?: { direction?: 'in' | 'out' | 'both'; edgeType?: string; limit?: number },
+    opts?: {
+      direction?: "in" | "out" | "both";
+      edgeType?: string;
+      limit?: number;
+    },
   ): Promise<CodeEdgeResult[]>;
 
   /**
@@ -754,7 +871,10 @@ export interface BrainEngine {
    * by A2 two-pass retrieval as its anchor source. Most callers should
    * prefer searchKeyword (external contract: page-grain best-chunk-per-page).
    */
-  searchKeywordChunks(query: string, opts?: SearchOpts): Promise<SearchResult[]>;
+  searchKeywordChunks(
+    query: string,
+    opts?: SearchOpts,
+  ): Promise<SearchResult[]>;
 
   // Eval capture (v0.25.0 — BrainBench-Real substrate).
   // Captured at the op-layer wrapper in src/core/operations.ts; reads via
@@ -764,13 +884,19 @@ export interface BrainEngine {
   /** Insert a captured candidate. Returns the new row id. Best-effort: callers swallow failures and route them through `logEvalCaptureFailure`. */
   logEvalCandidate(input: EvalCandidateInput): Promise<number>;
   /** Read candidates by time window / limit / tool filter. Used by `gbrain eval export`. */
-  listEvalCandidates(filter?: { since?: Date; limit?: number; tool?: 'query' | 'search' }): Promise<EvalCandidate[]>;
+  listEvalCandidates(filter?: {
+    since?: Date;
+    limit?: number;
+    tool?: "query" | "search";
+  }): Promise<EvalCandidate[]>;
   /** Delete candidates created before `date`. Returns rows deleted. Used by `gbrain eval prune`. */
   deleteEvalCandidatesBefore(date: Date): Promise<number>;
   /** Log a capture failure so `gbrain doctor` can surface drops cross-process. Best-effort; symmetric with logEvalCandidate (failure-of-failure is lost). */
   logEvalCaptureFailure(reason: EvalCaptureFailureReason): Promise<void>;
   /** Read capture failures within an optional time window. Used by `gbrain doctor`. */
-  listEvalCaptureFailures(filter?: { since?: Date }): Promise<EvalCaptureFailure[]>;
+  listEvalCaptureFailures(filter?: {
+    since?: Date;
+  }): Promise<EvalCaptureFailure[]>;
 
   // ============================================================
   // v0.29 — Salience + Anomaly Detection
@@ -792,7 +918,9 @@ export interface BrainEngine {
    * Multi-source-aware: each row carries its `source_id` so the matching
    * `setEmotionalWeightBatch` UPDATE can composite-key correctly.
    */
-  batchLoadEmotionalInputs(slugs?: string[]): Promise<EmotionalWeightInputRow[]>;
+  batchLoadEmotionalInputs(
+    slugs?: string[],
+  ): Promise<EmotionalWeightInputRow[]>;
 
   /**
    * Apply pre-computed emotional weights in a single UPDATE. Composite-keyed

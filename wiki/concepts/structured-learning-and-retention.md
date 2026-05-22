@@ -27,10 +27,13 @@ For technical growth, use [[sources/system-design-course|System Design Course]] 
 
 AI-assisted learning should preserve ownership. Supportive AI use explains, critiques, explores tradeoffs, and tests assumptions. Risky AI use bypasses effort, accepts generated work blindly, or delegates debugging without understanding. Reflection before, during, and after AI use helps keep leverage from becoming dependency.
 
+The same distinction applies inside production coding. If AI closes the ticket but the engineer cannot explain the failure, reconstruct the fix, or identify the tradeoffs, the session produced output without retention. A learning-preserving workflow starts with a human hypothesis, uses the model to compare explanations, then re-derives important parts often enough to keep the mental model alive.
+
 ## Source Support
 
 - [[sources/learn-from-course-content|How to Learn from Course Content Without Paying for It]]
 - [[sources/retaining-cs-knowledge|Retaining Computer Science Knowledge]]
 - [[sources/karpathy-second-brain-article|Karpathy Second Brain Article]]
 - [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]
+- [[sources/dont-outsource-learning|Don't Outsource the Learning]]
 

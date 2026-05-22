@@ -163,12 +163,12 @@ async function resolveBrainDir(
 function printHelp() {
   console.log(`Usage: gbrain dream [options]
 
-Run one brain maintenance cycle. Eight phases:
-  lint -> backlinks -> sync -> synthesize -> extract -> patterns -> embed -> orphans
+Run one brain maintenance cycle. Nine phases:
+  lint -> backlinks -> sync -> synthesize -> wiki -> extract -> patterns -> embed -> orphans
 
-The synthesize + patterns phases (v0.21) consolidate yesterday's
-conversation transcripts into reflections, originals, and cross-session
-pattern pages. Designed for cron (exits when done).
+The synthesize + wiki + patterns phases (v1.0) consolidate yesterday's
+conversation transcripts and raw source files into reflections, originals,
+wiki pages, and cross-session pattern pages. Designed for cron (exits when done).
 
 Options:
   --dry-run           Preview all fixes without writing. Note: synthesize
@@ -202,9 +202,10 @@ Examples:
   gbrain dream --phase synthesize --from 2026-04-01 --to 2026-04-25
   0 2 * * * gbrain dream --json         # nightly via cron
 
-Configure synthesize:
+Configure synthesize + wiki:
   gbrain config set dream.synthesize.session_corpus_dir /path/to/transcripts
   gbrain config set dream.synthesize.enabled true
+  gbrain config set dream.wiki.enabled true
 
 Related:
   gbrain autopilot --install            # continuous maintenance as a daemon
@@ -251,12 +252,14 @@ function printHuman(report: CycleReport) {
   const hasTotals =
     t.lint_fixes > 0 || t.backlinks_added > 0 || t.pages_synced > 0 ||
     t.pages_extracted > 0 || t.pages_embedded > 0 || t.orphans_found > 0 ||
-    t.transcripts_processed > 0 || t.synth_pages_written > 0 || t.patterns_written > 0;
+    t.transcripts_processed > 0 || t.synth_pages_written > 0 || t.patterns_written > 0 ||
+    t.wiki_sources_ingested > 0 || t.wiki_pages_written > 0;
   if (hasTotals) {
     console.log(
       `  totals: lint=${t.lint_fixes} backlinks=${t.backlinks_added} synced=${t.pages_synced} ` +
       `extracted=${t.pages_extracted} embedded=${t.pages_embedded} orphans=${t.orphans_found} ` +
       `synth_transcripts=${t.transcripts_processed} synth_pages=${t.synth_pages_written} ` +
+      `wiki_sources=${t.wiki_sources_ingested} wiki_pages=${t.wiki_pages_written} ` +
       `patterns=${t.patterns_written}`,
     );
   }

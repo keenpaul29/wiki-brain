@@ -30,6 +30,8 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/frontend-build-performance|Frontend Build Performance]] - Tree shaking, module-system migration, bundle footprint, and rollout strategy for frontend optimization.
 - [[concepts/local-llm-serving|Local LLM Serving]] - Prefill/decode, KV cache, context length, scheduler, and observability patterns for local model serving.
 - [[concepts/software-design-patterns|Software Design Patterns]] - Choosing design patterns from concrete creation, structure, or behavior pain.
+- [[concepts/project-operating-architecture|Project Operating Architecture]] - The local GBrain, wiki, codebase, and agent handoff architecture for this checkout.
+- [[concepts/shared-engineering-language|Shared Engineering Language]] - A lightweight CONTEXT-style glossary for recurring project terms and durable engineering decisions.
 
 ## Sources
 
@@ -70,6 +72,7 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]] - Data-structure tradeoffs for membership and key-value lookup workloads.
 - [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] - A plan-first, context-rich AI coding workflow with review gates and clarification loops.
 - [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]] - Validation-first error handling, typed exceptions, centralized handlers, and expected-failure result types.
+- [[sources/dont-outsource-learning|Don't Outsource the Learning]] - A warning about cognitive debt when AI coding closes tasks without preserving engineering understanding.
 
 ## Maintenance Notes
 

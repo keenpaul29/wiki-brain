@@ -359,6 +359,31 @@ describe('performSync dry-run never writes', () => {
     // Structural assertion: the contract includes `embedded: number`.
     expect(typeof result.embedded).toBe('number');
   });
+
+  test('source-scoped full sync writes imported pages to the requested source', async () => {
+    await engine.executeRaw(
+      `INSERT INTO sources (id, name, local_path, config)
+       VALUES ($1, $2, $3, '{"federated": true}'::jsonb)`,
+      ['project', 'Project', repoPath],
+    );
+
+    const { performSync } = await import('../src/commands/sync.ts');
+    const result = await performSync(engine, {
+      repoPath,
+      sourceId: 'project',
+      noPull: true,
+      noEmbed: true,
+    });
+
+    expect(result.status).toBe('first_sync');
+    expect(await engine.getPage('people/alice', { sourceId: 'project' })).not.toBeNull();
+    expect(await engine.getPage('people/bob', { sourceId: 'project' })).not.toBeNull();
+
+    const rows = await engine.executeRaw<{ source_id: string; n: number }>(
+      `SELECT source_id, COUNT(*)::int AS n FROM pages GROUP BY source_id ORDER BY source_id`,
+    );
+    expect(rows).toEqual([{ source_id: 'project', n: 2 }]);
+  });
 });
 
 describe('sync regression — #132 nested transaction deadlock', () => {

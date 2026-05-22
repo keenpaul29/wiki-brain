@@ -77,9 +77,15 @@ export async function expandAnchors(
   // additional anchors. Best-effort — if none found, fall through.
   if (opts.nearSymbol) {
     try {
+      const sourceId = opts.sourceId;
+      const sourceJoin = sourceId ? `JOIN pages p ON p.id = cc.page_id` : '';
+      const sourceClause = sourceId ? `AND p.source_id = $2` : '';
+      const params: unknown[] = [opts.nearSymbol];
+      if (sourceId) params.push(sourceId);
+
       const rows = await engine.executeRaw<{ id: number }>(
-        `SELECT id FROM content_chunks WHERE symbol_name_qualified = $1 LIMIT 50`,
-        [opts.nearSymbol],
+        `SELECT cc.id FROM content_chunks cc ${sourceJoin} WHERE cc.symbol_name_qualified = $1 ${sourceClause} LIMIT 50`,
+        params,
       );
       const baseScore = anchors.length > 0 ? anchors[0]!.score : 1.0;
       for (const r of rows) {
@@ -128,9 +134,15 @@ export async function expandAnchors(
       // symbol_name_qualified matches. One batch query per frontier node.
       if (unresolvedTargets.length > 0) {
         try {
+          const sourceId = opts.sourceId;
+          const sourceJoin = sourceId ? `JOIN pages p ON p.id = cc.page_id` : '';
+          const sourceClause = sourceId ? `AND p.source_id = $2` : '';
+          const params: unknown[] = [unresolvedTargets];
+          if (sourceId) params.push(sourceId);
+
           const resolved = await engine.executeRaw<{ id: number }>(
-            `SELECT id FROM content_chunks WHERE symbol_name_qualified = ANY($1::text[]) LIMIT ${NEIGHBOR_CAP_PER_HOP}`,
-            [unresolvedTargets],
+            `SELECT cc.id FROM content_chunks cc ${sourceJoin} WHERE cc.symbol_name_qualified = ANY($1::text[]) ${sourceClause} LIMIT ${NEIGHBOR_CAP_PER_HOP}`,
+            params,
           );
           for (const r of resolved) directChunkIds.push(r.id);
         } catch {

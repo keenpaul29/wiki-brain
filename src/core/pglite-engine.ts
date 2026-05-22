@@ -1,43 +1,87 @@
-import { PGlite } from '@electric-sql/pglite';
-import { vector } from '@electric-sql/pglite/vector';
-import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
-import type { Transaction } from '@electric-sql/pglite';
+import { PGlite } from "@electric-sql/pglite";
+import { vector } from "@electric-sql/pglite/vector";
+import { pg_trgm } from "@electric-sql/pglite/contrib/pg_trgm";
+import type { Transaction } from "@electric-sql/pglite";
 import type {
   BrainEngine,
-  LinkBatchInput, TimelineBatchInput,
+  LinkBatchInput,
+  TimelineBatchInput,
   ReservedConnection,
-  DreamVerdict, DreamVerdictInput,
-  FileSpec, FileRow,
-  TakeBatchInput, Take, TakesListOpts, TakeHit, StaleTakeRow,
-  TakeResolution, SynthesisEvidenceInput,
-  TakesScorecard, TakesScorecardOpts, CalibrationBucket, CalibrationCurveOpts,
-} from './engine.ts';
-import { MAX_SEARCH_LIMIT, clampSearchLimit } from './engine.ts';
-import { runMigrations } from './migrate.ts';
-import { PGLITE_SCHEMA_SQL, getPGLiteSchema } from './pglite-schema.ts';
-import { acquireLock, releaseLock, type LockHandle } from './pglite-lock.ts';
+  DreamVerdict,
+  DreamVerdictInput,
+  FileSpec,
+  FileRow,
+  TakeBatchInput,
+  Take,
+  TakesListOpts,
+  TakeHit,
+  StaleTakeRow,
+  TakeResolution,
+  SynthesisEvidenceInput,
+  TakesScorecard,
+  TakesScorecardOpts,
+  CalibrationBucket,
+  CalibrationCurveOpts,
+} from "./engine.ts";
+import { MAX_SEARCH_LIMIT, clampSearchLimit } from "./engine.ts";
+import { runMigrations } from "./migrate.ts";
+import { PGLITE_SCHEMA_SQL, getPGLiteSchema } from "./pglite-schema.ts";
+import { acquireLock, releaseLock, type LockHandle } from "./pglite-lock.ts";
 import type {
-  Page, PageInput, PageFilters, PageType,
-  Chunk, ChunkInput, StaleChunkRow,
-  SearchResult, SearchOpts,
-  Link, GraphNode, GraphPath,
-  TimelineEntry, TimelineInput, TimelineOpts,
+  Page,
+  PageInput,
+  PageFilters,
+  PageType,
+  Chunk,
+  ChunkInput,
+  StaleChunkRow,
+  SearchResult,
+  SearchOpts,
+  Link,
+  GraphNode,
+  GraphPath,
+  TimelineEntry,
+  TimelineInput,
+  TimelineOpts,
   RawData,
   PageVersion,
-  BrainStats, BrainHealth,
-  IngestLogEntry, IngestLogInput,
+  BrainStats,
+  BrainHealth,
+  IngestLogEntry,
+  IngestLogInput,
   EngineConfig,
-  EvalCandidate, EvalCandidateInput,
-  EvalCaptureFailure, EvalCaptureFailureReason,
-  SalienceOpts, SalienceResult, AnomaliesOpts, AnomalyResult,
-  EmotionalWeightInputRow, EmotionalWeightWriteRow,
-} from './types.ts';
-import { validateSlug, contentHash, rowToPage, rowToChunk, rowToSearchResult, takeRowToTake } from './utils.ts';
-import { deriveResolutionTuple, finalizeScorecard } from './takes-resolution.ts';
-import { GBrainError, PAGE_SORT_SQL } from './types.ts';
-import { computeAnomaliesFromBuckets } from './cycle/anomaly.ts';
-import { resolveBoostMap, resolveHardExcludes } from './search/source-boost.ts';
-import { buildSourceFactorCase, buildHardExcludeClause, buildVisibilityClause, buildRecencyComponentSql } from './search/sql-ranking.ts';
+  EvalCandidate,
+  EvalCandidateInput,
+  EvalCaptureFailure,
+  EvalCaptureFailureReason,
+  SalienceOpts,
+  SalienceResult,
+  AnomaliesOpts,
+  AnomalyResult,
+  EmotionalWeightInputRow,
+  EmotionalWeightWriteRow,
+} from "./types.ts";
+import {
+  validateSlug,
+  contentHash,
+  rowToPage,
+  rowToChunk,
+  rowToSearchResult,
+  takeRowToTake,
+} from "./utils.ts";
+import {
+  deriveResolutionTuple,
+  finalizeScorecard,
+} from "./takes-resolution.ts";
+import { GBrainError, PAGE_SORT_SQL } from "./types.ts";
+import { computeAnomaliesFromBuckets } from "./cycle/anomaly.ts";
+import { resolveBoostMap, resolveHardExcludes } from "./search/source-boost.ts";
+import {
+  buildSourceFactorCase,
+  buildHardExcludeClause,
+  buildVisibilityClause,
+  buildRecencyComponentSql,
+} from "./search/sql-ranking.ts";
 
 type PGLiteDB = PGlite;
 
@@ -51,34 +95,46 @@ function tryLoadSnapshot(snapshotPath: string): Blob | null {
   try {
     // Lazy require so production builds without these imports don't crash.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require('node:fs') as typeof import('node:fs');
-    const crypto = require('node:crypto') as typeof import('node:crypto');
-    const { MIGRATIONS } = require('./migrate.ts') as typeof import('./migrate.ts');
-    const { PGLITE_SCHEMA_SQL } = require('./pglite-schema.ts') as typeof import('./pglite-schema.ts');
+    const fs = require("node:fs") as typeof import("node:fs");
+    const crypto = require("node:crypto") as typeof import("node:crypto");
+    const { MIGRATIONS } =
+      require("./migrate.ts") as typeof import("./migrate.ts");
+    const { PGLITE_SCHEMA_SQL } =
+      require("./pglite-schema.ts") as typeof import("./pglite-schema.ts");
 
     if (!fs.existsSync(snapshotPath)) {
       if (!_snapshotWarnLogged) {
         // eslint-disable-next-line no-console
-        console.warn(`[pglite] GBRAIN_PGLITE_SNAPSHOT set but file missing: ${snapshotPath} — using normal init.`);
+        console.warn(
+          `[pglite] GBRAIN_PGLITE_SNAPSHOT set but file missing: ${snapshotPath} — using normal init.`,
+        );
         _snapshotWarnLogged = true;
       }
       return null;
     }
-    const versionPath = snapshotPath.replace(/\.tar(?:\.gz)?$/, '.version');
+    const versionPath = snapshotPath.replace(/\.tar(?:\.gz)?$/, ".version");
     if (!fs.existsSync(versionPath)) {
       if (!_snapshotWarnLogged) {
         // eslint-disable-next-line no-console
-        console.warn(`[pglite] snapshot version file missing: ${versionPath} — using normal init.`);
+        console.warn(
+          `[pglite] snapshot version file missing: ${versionPath} — using normal init.`,
+        );
         _snapshotWarnLogged = true;
       }
       return null;
     }
-    const expectedHash = computeSnapshotSchemaHash(MIGRATIONS, PGLITE_SCHEMA_SQL, crypto);
-    const actualHash = fs.readFileSync(versionPath, 'utf8').trim();
+    const expectedHash = computeSnapshotSchemaHash(
+      MIGRATIONS,
+      PGLITE_SCHEMA_SQL,
+      crypto,
+    );
+    const actualHash = fs.readFileSync(versionPath, "utf8").trim();
     if (expectedHash !== actualHash) {
       if (!_snapshotWarnLogged) {
         // eslint-disable-next-line no-console
-        console.warn(`[pglite] snapshot stale (schema hash mismatch) — using normal init. Rebuild with: bun run build:pglite-snapshot`);
+        console.warn(
+          `[pglite] snapshot stale (schema hash mismatch) — using normal init. Rebuild with: bun run build:pglite-snapshot`,
+        );
         _snapshotWarnLogged = true;
       }
       return null;
@@ -92,29 +148,34 @@ function tryLoadSnapshot(snapshotPath: string): Blob | null {
 }
 
 export function computeSnapshotSchemaHash(
-  migrations: Array<{ version: number; name: string; sql?: string; sqlFor?: { pglite?: string } }>,
+  migrations: Array<{
+    version: number;
+    name: string;
+    sql?: string;
+    sqlFor?: { pglite?: string };
+  }>,
   schemaSQL: string,
-  crypto: typeof import('node:crypto'),
+  crypto: typeof import("node:crypto"),
 ): string {
-  const hash = crypto.createHash('sha256');
-  hash.update('schema:');
+  const hash = crypto.createHash("sha256");
+  hash.update("schema:");
   hash.update(schemaSQL);
-  hash.update('\nmigrations:\n');
+  hash.update("\nmigrations:\n");
   for (const m of migrations) {
     hash.update(String(m.version));
-    hash.update('\t');
+    hash.update("\t");
     hash.update(m.name);
-    hash.update('\t');
-    hash.update(m.sql ?? '');
-    hash.update('\t');
-    hash.update(m.sqlFor?.pglite ?? '');
-    hash.update('\n');
+    hash.update("\t");
+    hash.update(m.sql ?? "");
+    hash.update("\t");
+    hash.update(m.sqlFor?.pglite ?? "");
+    hash.update("\n");
   }
-  return hash.digest('hex');
+  return hash.digest("hex");
 }
 
 export class PGLiteEngine implements BrainEngine {
-  readonly kind = 'pglite' as const;
+  readonly kind = "pglite" as const;
   private _db: PGLiteDB | null = null;
   private _lock: LockHandle | null = null;
   // Tier 3: when GBRAIN_PGLITE_SNAPSHOT loaded a post-initSchema state into
@@ -123,7 +184,8 @@ export class PGLiteEngine implements BrainEngine {
   private _snapshotLoaded = false;
 
   get db(): PGLiteDB {
-    if (!this._db) throw new Error('PGLite not connected. Call connect() first.');
+    if (!this._db)
+      throw new Error("PGLite not connected. Call connect() first.");
     return this._db;
   }
 
@@ -135,7 +197,9 @@ export class PGLiteEngine implements BrainEngine {
     this._lock = await acquireLock(dataDir);
 
     if (!this._lock.acquired) {
-      throw new Error('Could not acquire PGLite lock. Another gbrain process is using the database.');
+      throw new Error(
+        "Could not acquire PGLite lock. Another gbrain process is using the database.",
+      );
     }
 
     // Tier 3: optional snapshot fast-restore. Only applies to in-memory
@@ -145,7 +209,9 @@ export class PGLiteEngine implements BrainEngine {
     // file silently falls back to normal init.
     let loadDataDir: Blob | undefined;
     if (!dataDir && process.env.GBRAIN_PGLITE_SNAPSHOT) {
-      const snapshotResult = tryLoadSnapshot(process.env.GBRAIN_PGLITE_SNAPSHOT);
+      const snapshotResult = tryLoadSnapshot(
+        process.env.GBRAIN_PGLITE_SNAPSHOT,
+      );
       if (snapshotResult) {
         loadDataDir = snapshotResult;
         this._snapshotLoaded = true;
@@ -167,14 +233,18 @@ export class PGLiteEngine implements BrainEngine {
       const original = err instanceof Error ? err.message : String(err);
       const wrapped = new Error(
         `PGLite failed to initialize its WASM runtime.\n` +
-        `  This is most commonly the macOS 26.3 WASM bug: https://github.com/garrytan/gbrain/issues/223\n` +
-        `  Run \`gbrain doctor\` for a full diagnosis.\n` +
-        `  Original error: ${original}`
+          `  This is most commonly the macOS 26.3 WASM bug: https://github.com/garrytan/gbrain/issues/223\n` +
+          `  Run \`gbrain doctor\` for a full diagnosis.\n` +
+          `  Original error: ${original}`,
       );
       // Release the lock so a fresh process can try again; leaking the lock
       // here turns a recoverable init error into a stuck-brain state.
       if (this._lock?.acquired) {
-        try { await releaseLock(this._lock); } catch { /* ignore cleanup error */ }
+        try {
+          await releaseLock(this._lock);
+        } catch {
+          /* ignore cleanup error */
+        }
         this._lock = null;
       }
       throw wrapped;
@@ -206,12 +276,14 @@ export class PGLiteEngine implements BrainEngine {
 
     // Resolve embedding dim/model from gateway (v0.14+). Defaults preserve v0.13.
     let dims = 1536;
-    let model = 'text-embedding-3-large';
+    let model = "text-embedding-3-large";
     try {
-      const gw = await import('./ai/gateway.ts');
+      const gw = await import("./ai/gateway.ts");
       dims = gw.getEmbeddingDimensions();
-      model = gw.getEmbeddingModel().split(':').slice(1).join(':') || model;
-    } catch { /* gateway not configured — use defaults */ }
+      model = gw.getEmbeddingModel().split(":").slice(1).join(":") || model;
+    } catch {
+      /* gateway not configured — use defaults */
+    }
 
     await this.db.exec(getPGLiteSchema(dims, model));
 
@@ -299,25 +371,41 @@ export class PGLiteEngine implements BrainEngine {
     };
 
     const needsPagesBootstrap = probe.pages_exists && !probe.source_id_exists;
-    const needsLinksBootstrap = probe.links_exists
-      && (!probe.link_source_exists || !probe.origin_page_id_exists);
-    const needsChunksBootstrap = probe.chunks_exists
-      && (!probe.symbol_name_exists || !probe.language_exists || !probe.search_vector_exists);
+    const needsLinksBootstrap =
+      probe.links_exists &&
+      (!probe.link_source_exists || !probe.origin_page_id_exists);
+    const needsChunksBootstrap =
+      probe.chunks_exists &&
+      (!probe.symbol_name_exists ||
+        !probe.language_exists ||
+        !probe.search_vector_exists);
     const needsPagesDeletedAt = probe.pages_exists && !probe.deleted_at_exists;
     // v0.27.1 — partial HNSW idx_chunks_embedding_image references this column.
-    const needsChunksEmbeddingImage = probe.chunks_exists && !probe.embedding_image_exists;
+    const needsChunksEmbeddingImage =
+      probe.chunks_exists && !probe.embedding_image_exists;
     // v0.26.3 (v33): idx_mcp_log_agent_time in PGLITE_SCHEMA_SQL needs agent_name col.
-    const needsMcpLogBootstrap = probe.mcp_log_exists && !probe.agent_name_exists;
+    const needsMcpLogBootstrap =
+      probe.mcp_log_exists && !probe.agent_name_exists;
     // v0.27 (v36): idx_subagent_messages_provider in PGLITE_SCHEMA_SQL needs
     // provider_id (the SECOND column in the composite index `(job_id, provider_id)`).
-    const needsSubagentProviderId = probe.subagent_messages_exists && !probe.subagent_provider_id_exists;
+    const needsSubagentProviderId =
+      probe.subagent_messages_exists && !probe.subagent_provider_id_exists;
 
     // Fresh installs (no tables yet) and modern brains both no-op.
-    if (!needsPagesBootstrap && !needsLinksBootstrap && !needsChunksBootstrap
-        && !needsPagesDeletedAt && !needsChunksEmbeddingImage
-        && !needsMcpLogBootstrap && !needsSubagentProviderId) return;
+    if (
+      !needsPagesBootstrap &&
+      !needsLinksBootstrap &&
+      !needsChunksBootstrap &&
+      !needsPagesDeletedAt &&
+      !needsChunksEmbeddingImage &&
+      !needsMcpLogBootstrap &&
+      !needsSubagentProviderId
+    )
+      return;
 
-    console.log('  Pre-v0.21 brain detected, applying forward-reference bootstrap');
+    console.log(
+      "  Pre-v0.21 brain detected, applying forward-reference bootstrap",
+    );
 
     if (needsPagesBootstrap) {
       // Mirror schema-embedded.ts shape for `sources` so the subsequent
@@ -417,12 +505,17 @@ export class PGLiteEngine implements BrainEngine {
     }
   }
 
-  async withReservedConnection<T>(fn: (conn: ReservedConnection) => Promise<T>): Promise<T> {
+  async withReservedConnection<T>(
+    fn: (conn: ReservedConnection) => Promise<T>,
+  ): Promise<T> {
     // PGLite has no connection pool. The single backing connection is
     // always effectively reserved — pass it through.
     const db = this.db;
     const conn: ReservedConnection = {
-      async executeRaw<R = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<R[]> {
+      async executeRaw<R = Record<string, unknown>>(
+        sql: string,
+        params?: unknown[],
+      ): Promise<R[]> {
         const { rows } = await db.query(sql, params);
         return rows as R[];
       },
@@ -433,29 +526,32 @@ export class PGLiteEngine implements BrainEngine {
   async transaction<T>(fn: (engine: BrainEngine) => Promise<T>): Promise<T> {
     return this.db.transaction(async (tx) => {
       const txEngine = Object.create(this) as PGLiteEngine;
-      Object.defineProperty(txEngine, 'db', { get: () => tx });
+      Object.defineProperty(txEngine, "db", { get: () => tx });
       return fn(txEngine);
     });
   }
 
   // Pages CRUD
-  async getPage(slug: string, opts?: { sourceId?: string; includeDeleted?: boolean }): Promise<Page | null> {
+  async getPage(
+    slug: string,
+    opts?: { sourceId?: string; includeDeleted?: boolean },
+  ): Promise<Page | null> {
     // v0.26.5: hide soft-deleted by default; opt-in via opts.includeDeleted.
     const includeDeleted = opts?.includeDeleted === true;
     const sourceId = opts?.sourceId;
-    const where: string[] = ['slug = $1'];
+    const where: string[] = ["slug = $1"];
     const params: unknown[] = [slug];
     if (sourceId) {
       params.push(sourceId);
       where.push(`source_id = $${params.length}`);
     }
     if (!includeDeleted) {
-      where.push('deleted_at IS NULL');
+      where.push("deleted_at IS NULL");
     }
     const { rows } = await this.db.query(
       `SELECT id, slug, type, title, compiled_truth, timeline, frontmatter, content_hash, created_at, updated_at, deleted_at
-       FROM pages WHERE ${where.join(' AND ')} LIMIT 1`,
-      params
+       FROM pages WHERE ${where.join(" AND ")} LIMIT 1`,
+      params,
     );
     if (rows.length === 0) return null;
     return rowToPage(rows[0] as Record<string, unknown>);
@@ -463,23 +559,25 @@ export class PGLiteEngine implements BrainEngine {
 
   async putPage(slug: string, page: PageInput): Promise<Page> {
     slug = validateSlug(slug);
+    const sourceId = page.source_id ?? "default";
     const hash = page.content_hash || contentHash(page);
     const frontmatter = page.frontmatter || {};
 
-    // v0.18.0 Step 2: source_id relies on the schema DEFAULT 'default'.
-    // ON CONFLICT target is (source_id, slug); global UNIQUE(slug) dropped in v17.
-    const pageKind = page.page_kind || 'markdown';
+    // v0.18.0 Step 2: ON CONFLICT target is (source_id, slug); global
+    // UNIQUE(slug) dropped in v17. Source-aware callers pass source_id.
+    const pageKind = page.page_kind || "markdown";
     // v0.29.1 — additive opt-in columns. COALESCE(EXCLUDED.x, pages.x)
     // preserves existing values when caller omits them (auto-link path,
     // code reindex, etc.). Mirrors postgres-engine.ts.
-    const effectiveDate = page.effective_date instanceof Date
-      ? page.effective_date.toISOString()
-      : (page.effective_date ?? null);
+    const effectiveDate =
+      page.effective_date instanceof Date
+        ? page.effective_date.toISOString()
+        : (page.effective_date ?? null);
     const effectiveDateSource = page.effective_date_source ?? null;
     const importFilename = page.import_filename ?? null;
     const { rows } = await this.db.query(
-      `INSERT INTO pages (slug, type, page_kind, title, compiled_truth, timeline, frontmatter, content_hash, updated_at, effective_date, effective_date_source, import_filename)
-       VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, now(), $9::timestamptz, $10, $11)
+      `INSERT INTO pages (source_id, slug, type, page_kind, title, compiled_truth, timeline, frontmatter, content_hash, updated_at, effective_date, effective_date_source, import_filename)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, now(), $10::timestamptz, $11, $12)
        ON CONFLICT (source_id, slug) DO UPDATE SET
          type = EXCLUDED.type,
          page_kind = EXCLUDED.page_kind,
@@ -493,49 +591,77 @@ export class PGLiteEngine implements BrainEngine {
          effective_date_source = COALESCE(EXCLUDED.effective_date_source, pages.effective_date_source),
          import_filename       = COALESCE(EXCLUDED.import_filename,       pages.import_filename)
        RETURNING id, slug, type, title, compiled_truth, timeline, frontmatter, content_hash, created_at, updated_at, effective_date, effective_date_source, import_filename`,
-      [slug, page.type, pageKind, page.title, page.compiled_truth, page.timeline || '', JSON.stringify(frontmatter), hash, effectiveDate, effectiveDateSource, importFilename]
+      [
+        sourceId,
+        slug,
+        page.type,
+        pageKind,
+        page.title,
+        page.compiled_truth,
+        page.timeline || "",
+        JSON.stringify(frontmatter),
+        hash,
+        effectiveDate,
+        effectiveDateSource,
+        importFilename,
+      ],
     );
     return rowToPage(rows[0] as Record<string, unknown>);
   }
 
-  async deletePage(slug: string): Promise<void> {
-    await this.db.query('DELETE FROM pages WHERE slug = $1', [slug]);
+  async deletePage(slug: string, opts?: { sourceId?: string }): Promise<void> {
+    const params: unknown[] = [slug];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
+    await this.db.query(
+      `DELETE FROM pages WHERE slug = $1${sourceClause}`,
+      params,
+    );
   }
 
-  async softDeletePage(slug: string, opts?: { sourceId?: string }): Promise<{ slug: string } | null> {
+  async softDeletePage(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<{ slug: string } | null> {
     // Idempotent-as-null: only flip rows currently active. Source filter is
     // optional; without it the first matching row across sources gets soft-deleted.
     const sourceId = opts?.sourceId;
-    const where: string[] = ['slug = $1', 'deleted_at IS NULL'];
+    const where: string[] = ["slug = $1", "deleted_at IS NULL"];
     const params: unknown[] = [slug];
     if (sourceId) {
       params.push(sourceId);
       where.push(`source_id = $${params.length}`);
     }
     const { rows } = await this.db.query(
-      `UPDATE pages SET deleted_at = now() WHERE ${where.join(' AND ')} RETURNING slug`,
-      params
+      `UPDATE pages SET deleted_at = now() WHERE ${where.join(" AND ")} RETURNING slug`,
+      params,
     );
     if (rows.length === 0) return null;
     return { slug: (rows[0] as { slug: string }).slug };
   }
 
-  async restorePage(slug: string, opts?: { sourceId?: string }): Promise<boolean> {
+  async restorePage(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<boolean> {
     const sourceId = opts?.sourceId;
-    const where: string[] = ['slug = $1', 'deleted_at IS NOT NULL'];
+    const where: string[] = ["slug = $1", "deleted_at IS NOT NULL"];
     const params: unknown[] = [slug];
     if (sourceId) {
       params.push(sourceId);
       where.push(`source_id = $${params.length}`);
     }
     const { rows } = await this.db.query(
-      `UPDATE pages SET deleted_at = NULL WHERE ${where.join(' AND ')} RETURNING slug`,
-      params
+      `UPDATE pages SET deleted_at = NULL WHERE ${where.join(" AND ")} RETURNING slug`,
+      params,
     );
     return rows.length > 0;
   }
 
-  async purgeDeletedPages(olderThanHours: number): Promise<{ slugs: string[]; count: number }> {
+  async purgeDeletedPages(
+    olderThanHours: number,
+  ): Promise<{ slugs: string[]; count: number }> {
     // Clamp to non-negative integer; cascade through FKs (content_chunks,
     // page_links, chunk_relations) on DELETE.
     const hours = Math.max(0, Math.floor(olderThanHours));
@@ -544,7 +670,7 @@ export class PGLiteEngine implements BrainEngine {
        WHERE deleted_at IS NOT NULL
          AND deleted_at < now() - ($1 || ' hours')::interval
        RETURNING slug`,
-      [hours]
+      [hours],
     );
     const slugs = (rows as { slug: string }[]).map((r) => r.slug);
     return { slugs, count: slugs.length };
@@ -556,7 +682,7 @@ export class PGLiteEngine implements BrainEngine {
 
     const where: string[] = [];
     const params: unknown[] = [];
-    const tagJoin = filters?.tag ? 'JOIN tags t ON t.page_id = p.id' : '';
+    const tagJoin = filters?.tag ? "JOIN tags t ON t.page_id = p.id" : "";
 
     if (filters?.type) {
       params.push(filters.type);
@@ -573,41 +699,64 @@ export class PGLiteEngine implements BrainEngine {
     // slugPrefix uses the (source_id, slug) UNIQUE btree for index range scans.
     // Escape LIKE metacharacters so the user prefix is treated as a literal.
     if (filters?.slugPrefix) {
-      const escaped = filters.slugPrefix.replace(/[\\%_]/g, (c) => '\\' + c) + '%';
+      const escaped =
+        filters.slugPrefix.replace(/[\\%_]/g, (c) => "\\" + c) + "%";
       params.push(escaped);
       where.push(`p.slug LIKE $${params.length} ESCAPE '\\'`);
     }
     // v0.26.5: hide soft-deleted by default; opt in via filters.includeDeleted.
     if (filters?.includeDeleted !== true) {
-      where.push('p.deleted_at IS NULL');
+      where.push("p.deleted_at IS NULL");
+    }
+    if (filters?.sourceId) {
+      params.push(filters.sourceId);
+      where.push(`p.source_id = $${params.length}`);
     }
 
-    const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
+    const whereSql = where.length > 0 ? `WHERE ${where.join(" AND ")}` : "";
     params.push(limit, offset);
     const limitSql = `LIMIT $${params.length - 1} OFFSET $${params.length}`;
 
     // v0.29: ORDER BY threading via PAGE_SORT_SQL whitelist (no SQL injection).
-    const sortKey = filters?.sort && PAGE_SORT_SQL[filters.sort] ? filters.sort : 'updated_desc';
+    const sortKey =
+      filters?.sort && PAGE_SORT_SQL[filters.sort]
+        ? filters.sort
+        : "updated_desc";
     const orderBy = PAGE_SORT_SQL[sortKey];
 
     const { rows } = await this.db.query(
       `SELECT p.* FROM pages p ${tagJoin} ${whereSql}
        ORDER BY ${orderBy} ${limitSql}`,
-      params
+      params,
     );
 
     return (rows as Record<string, unknown>[]).map(rowToPage);
   }
 
   async getAllSlugs(): Promise<Set<string>> {
-    const { rows } = await this.db.query('SELECT slug FROM pages');
-    return new Set((rows as { slug: string }[]).map(r => r.slug));
+    const { rows } = await this.db.query("SELECT slug FROM pages");
+    return new Set((rows as { slug: string }[]).map((r) => r.slug));
   }
 
-  async resolveSlugs(partial: string): Promise<string[]> {
+  async resolveSlugs(
+    partial: string,
+    opts?: { sourceId?: string },
+  ): Promise<string[]> {
     // Try exact match first
-    const exact = await this.db.query('SELECT slug FROM pages WHERE slug = $1', [partial]);
-    if (exact.rows.length > 0) return [(exact.rows[0] as { slug: string }).slug];
+    const sourceId = opts?.sourceId;
+    const where: string[] = ["slug = $1"];
+    const params: unknown[] = [partial];
+    if (sourceId) {
+      params.push(sourceId);
+      where.push(`source_id = $${params.length}`);
+    }
+    const exact = await this.db.query(
+      `SELECT slug FROM pages WHERE ${where.join(" AND ")}`,
+      params,
+    );
+
+    if (exact.rows.length > 0)
+      return [(exact.rows[0] as { slug: string }).slug];
 
     // Fuzzy match via pg_trgm
     const { rows } = await this.db.query(
@@ -616,9 +765,9 @@ export class PGLiteEngine implements BrainEngine {
        WHERE title % $1 OR slug ILIKE $2
        ORDER BY sim DESC
        LIMIT 5`,
-      [partial, '%' + partial + '%']
+      [partial, "%" + partial + "%"],
     );
-    return (rows as { slug: string }[]).map(r => r.slug);
+    return (rows as { slug: string }[]).map((r) => r.slug);
   }
 
   // Search
@@ -635,13 +784,19 @@ export class PGLiteEngine implements BrainEngine {
   // PGLite's query planner handles CTEs-with-DISTINCT-ON less optimally
   // than direct window function + GROUP BY. Fetch more chunks than the
   // page limit (3x) to ensure N dedup'd pages survive; bounded and fast.
-  async searchKeyword(query: string, opts?: SearchOpts): Promise<SearchResult[]> {
+  async searchKeyword(
+    query: string,
+    opts?: SearchOpts,
+  ): Promise<SearchResult[]> {
     const limit = clampSearchLimit(opts?.limit);
     const offset = opts?.offset || 0;
-    const detailFilter = opts?.detail === 'low' ? `AND cc.chunk_source = 'compiled_truth'` : '';
+    const detailFilter =
+      opts?.detail === "low" ? `AND cc.chunk_source = 'compiled_truth'` : "";
 
     if (opts?.limit && opts.limit > MAX_SEARCH_LIMIT) {
-      console.warn(`[gbrain] Warning: search limit clamped from ${opts.limit} to ${MAX_SEARCH_LIMIT}`);
+      console.warn(
+        `[gbrain] Warning: search limit clamped from ${opts.limit} to ${MAX_SEARCH_LIMIT}`,
+      );
     }
 
     // Fetch 3x to give dedup headroom, then page-dedup + re-limit.
@@ -649,13 +804,27 @@ export class PGLiteEngine implements BrainEngine {
 
     // Source-aware ranking (v0.22): see postgres-engine.ts for rationale.
     const boostMap = resolveBoostMap();
-    const sourceFactorCase = buildSourceFactorCase('p.slug', boostMap, opts?.detail);
-    const hardExcludePrefixes = resolveHardExcludes(opts?.exclude_slug_prefixes, opts?.include_slug_prefixes);
-    const hardExcludeClause = buildHardExcludeClause('p.slug', hardExcludePrefixes);
+    const sourceFactorCase = buildSourceFactorCase(
+      "p.slug",
+      boostMap,
+      opts?.detail,
+    );
+    const hardExcludePrefixes = resolveHardExcludes(
+      opts?.exclude_slug_prefixes,
+      opts?.include_slug_prefixes,
+    );
+    const hardExcludeClause = buildHardExcludeClause(
+      "p.slug",
+      hardExcludePrefixes,
+    );
 
     // v0.20.0 Cathedral II Layer 10 C1/C2: language + symbol-kind filters.
     const params: unknown[] = [query, innerLimit, limit, offset];
-    let extraFilter = '';
+    let extraFilter = "";
+    if (opts?.sourceId && opts.sourceId !== '__all__') {
+      params.push(opts.sourceId);
+      extraFilter += ` AND p.source_id = $${params.length}`;
+    }
     if (opts?.language) {
       params.push(opts.language);
       extraFilter += ` AND cc.language = $${params.length}`;
@@ -678,7 +847,7 @@ export class PGLiteEngine implements BrainEngine {
     }
 
     // v0.26.5: visibility filter (soft-deleted + archived-source).
-    const visibilityClause = buildVisibilityClause('p', 's');
+    const visibilityClause = buildVisibilityClause("p", "s");
 
     const { rows } = await this.db.query(
       `WITH ranked AS (
@@ -708,7 +877,7 @@ export class PGLiteEngine implements BrainEngine {
        SELECT * FROM best_per_page
        ORDER BY score DESC
        LIMIT $3 OFFSET $4`,
-      params
+      params,
     );
 
     return (rows as Record<string, unknown>[]).map(rowToSearchResult);
@@ -726,24 +895,44 @@ export class PGLiteEngine implements BrainEngine {
    * Most callers should prefer searchKeyword (external page-grain
    * contract). This method is intentionally a narrow internal knob.
    */
-  async searchKeywordChunks(query: string, opts?: SearchOpts): Promise<SearchResult[]> {
+  async searchKeywordChunks(
+    query: string,
+    opts?: SearchOpts,
+  ): Promise<SearchResult[]> {
     const limit = clampSearchLimit(opts?.limit);
     const offset = opts?.offset || 0;
-    const detailFilter = opts?.detail === 'low' ? `AND cc.chunk_source = 'compiled_truth'` : '';
+    const detailFilter =
+      opts?.detail === "low" ? `AND cc.chunk_source = 'compiled_truth'` : "";
 
     if (opts?.limit && opts.limit > MAX_SEARCH_LIMIT) {
-      console.warn(`[gbrain] Warning: search limit clamped from ${opts.limit} to ${MAX_SEARCH_LIMIT}`);
+      console.warn(
+        `[gbrain] Warning: search limit clamped from ${opts.limit} to ${MAX_SEARCH_LIMIT}`,
+      );
     }
 
     // Source-aware ranking applied here too — searchKeywordChunks is the
     // chunk-grain anchor primitive that two-pass retrieval (Layer 7) uses.
     const boostMap = resolveBoostMap();
-    const sourceFactorCase = buildSourceFactorCase('p.slug', boostMap, opts?.detail);
-    const hardExcludePrefixes = resolveHardExcludes(opts?.exclude_slug_prefixes, opts?.include_slug_prefixes);
-    const hardExcludeClause = buildHardExcludeClause('p.slug', hardExcludePrefixes);
+    const sourceFactorCase = buildSourceFactorCase(
+      "p.slug",
+      boostMap,
+      opts?.detail,
+    );
+    const hardExcludePrefixes = resolveHardExcludes(
+      opts?.exclude_slug_prefixes,
+      opts?.include_slug_prefixes,
+    );
+    const hardExcludeClause = buildHardExcludeClause(
+      "p.slug",
+      hardExcludePrefixes,
+    );
 
     const params: unknown[] = [query, limit, offset];
-    let extraFilter = '';
+    let extraFilter = "";
+    if (opts?.sourceId && opts.sourceId !== '__all__') {
+      params.push(opts.sourceId);
+      extraFilter += ` AND p.source_id = $${params.length}`;
+    }
     if (opts?.language) {
       params.push(opts.language);
       extraFilter += ` AND cc.language = $${params.length}`;
@@ -763,7 +952,7 @@ export class PGLiteEngine implements BrainEngine {
     }
 
     // v0.26.5: visibility filter for the chunk-grain anchor primitive.
-    const visibilityClause = buildVisibilityClause('p', 's');
+    const visibilityClause = buildVisibilityClause("p", "s");
 
     const { rows } = await this.db.query(
       `SELECT
@@ -779,20 +968,26 @@ export class PGLiteEngine implements BrainEngine {
        WHERE cc.search_vector @@ websearch_to_tsquery('english', $1) ${detailFilter}${extraFilter} ${hardExcludeClause} ${visibilityClause}
        ORDER BY score DESC
        LIMIT $2 OFFSET $3`,
-      params
+      params,
     );
 
     return (rows as Record<string, unknown>[]).map(rowToSearchResult);
   }
 
-  async searchVector(embedding: Float32Array, opts?: SearchOpts): Promise<SearchResult[]> {
+  async searchVector(
+    embedding: Float32Array,
+    opts?: SearchOpts,
+  ): Promise<SearchResult[]> {
     const limit = clampSearchLimit(opts?.limit);
     const offset = opts?.offset || 0;
-    const vecStr = '[' + Array.from(embedding).join(',') + ']';
-    const detailFilter = opts?.detail === 'low' ? `AND cc.chunk_source = 'compiled_truth'` : '';
+    const vecStr = "[" + Array.from(embedding).join(",") + "]";
+    const detailFilter =
+      opts?.detail === "low" ? `AND cc.chunk_source = 'compiled_truth'` : "";
 
     if (opts?.limit && opts.limit > MAX_SEARCH_LIMIT) {
-      console.warn(`[gbrain] Warning: search limit clamped from ${opts.limit} to ${MAX_SEARCH_LIMIT}`);
+      console.warn(
+        `[gbrain] Warning: search limit clamped from ${opts.limit} to ${MAX_SEARCH_LIMIT}`,
+      );
     }
 
     // Two-stage CTE (v0.22): pure-distance ORDER BY in inner CTE preserves
@@ -806,13 +1001,27 @@ export class PGLiteEngine implements BrainEngine {
     // subquery's WHERE would lexically resolve back to `te.page_id` itself
     // and degrade to `te.page_id = te.page_id` (always true), making every
     // result stale=true. Codex caught this in adversarial review.
-    const sourceFactorCaseOnSlug = buildSourceFactorCase('hc.slug', boostMap, opts?.detail);
-    const hardExcludePrefixes = resolveHardExcludes(opts?.exclude_slug_prefixes, opts?.include_slug_prefixes);
-    const hardExcludeClause = buildHardExcludeClause('p.slug', hardExcludePrefixes);
+    const sourceFactorCaseOnSlug = buildSourceFactorCase(
+      "hc.slug",
+      boostMap,
+      opts?.detail,
+    );
+    const hardExcludePrefixes = resolveHardExcludes(
+      opts?.exclude_slug_prefixes,
+      opts?.include_slug_prefixes,
+    );
+    const hardExcludeClause = buildHardExcludeClause(
+      "p.slug",
+      hardExcludePrefixes,
+    );
     const innerLimit = offset + Math.max(limit * 5, 100);
 
     const params: unknown[] = [vecStr, innerLimit, limit, offset];
-    let extraFilter = '';
+    let extraFilter = "";
+    if (opts?.sourceId && opts.sourceId !== '__all__') {
+      params.push(opts.sourceId);
+      extraFilter += ` AND p.source_id = $${params.length}`;
+    }
     if (opts?.language) {
       params.push(opts.language);
       extraFilter += ` AND cc.language = $${params.length}`;
@@ -835,17 +1044,23 @@ export class PGLiteEngine implements BrainEngine {
 
     // v0.26.5: visibility filter applied in the inner CTE so HNSW sees the
     // same candidate count it always did. See postgres-engine.ts for rationale.
-    const visibilityClause = buildVisibilityClause('p', 's');
+    const visibilityClause = buildVisibilityClause("p", "s");
 
     // v0.27.1: column routing. Default 'embedding' targets the brain's
     // primary text-embedding column; 'embedding_image' targets the
     // multimodal column populated by importImageFile. Image-similarity
     // queries pass embeddingColumn='embedding_image' AND a 1024-dim vector
     // produced by gateway.embedMultimodal — must match the column dim.
-    const col = opts?.embeddingColumn === 'embedding_image' ? 'embedding_image' : 'embedding';
+    const col =
+      opts?.embeddingColumn === "embedding_image"
+        ? "embedding_image"
+        : "embedding";
     // Image rows live in modality='image'; text/code in 'text'. Restrict
     // to the modality matching the column to avoid cross-mode dim leaks.
-    const modalityFilter = col === 'embedding_image' ? `AND cc.modality = 'image'` : `AND cc.modality = 'text'`;
+    const modalityFilter =
+      col === "embedding_image"
+        ? `AND cc.modality = 'image'`
+        : `AND cc.modality = 'text'`;
 
     const { rows } = await this.db.query(
       `WITH hnsw_candidates AS (
@@ -871,24 +1086,27 @@ export class PGLiteEngine implements BrainEngine {
        ORDER BY score DESC
        LIMIT $3
        OFFSET $4`,
-      params
+      params,
     );
 
     return (rows as Record<string, unknown>[]).map(rowToSearchResult);
   }
 
-  async getEmbeddingsByChunkIds(ids: number[]): Promise<Map<number, Float32Array>> {
+  async getEmbeddingsByChunkIds(
+    ids: number[],
+  ): Promise<Map<number, Float32Array>> {
     if (ids.length === 0) return new Map();
     const { rows } = await this.db.query(
       `SELECT id, embedding FROM content_chunks WHERE id = ANY($1::int[]) AND embedding IS NOT NULL`,
-      [ids]
+      [ids],
     );
     const result = new Map<number, Float32Array>();
     for (const row of rows as Record<string, unknown>[]) {
       if (row.embedding) {
-        const emb = typeof row.embedding === 'string'
-          ? new Float32Array(JSON.parse(row.embedding))
-          : row.embedding as Float32Array;
+        const emb =
+          typeof row.embedding === "string"
+            ? new Float32Array(JSON.parse(row.embedding))
+            : (row.embedding as Float32Array);
         result.set(row.id as number, emb);
       }
     }
@@ -896,22 +1114,36 @@ export class PGLiteEngine implements BrainEngine {
   }
 
   // Chunks
-  async upsertChunks(slug: string, chunks: ChunkInput[]): Promise<void> {
+  async upsertChunks(
+    slug: string,
+    chunks: ChunkInput[],
+    opts?: { sourceId?: string },
+  ): Promise<void> {
     // Get page_id
-    const pageResult = await this.db.query('SELECT id FROM pages WHERE slug = $1', [slug]);
-    if (pageResult.rows.length === 0) throw new Error(`Page not found: ${slug}`);
+    const pageParams: unknown[] = [slug];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${pageParams.push(opts.sourceId)}`
+      : "";
+    const pageResult = await this.db.query(
+      `SELECT id FROM pages WHERE slug = $1${sourceClause}`,
+      pageParams,
+    );
+    if (pageResult.rows.length === 0)
+      throw new Error(`Page not found: ${slug}`);
     const pageId = (pageResult.rows[0] as { id: number }).id;
 
     // Remove chunks that no longer exist
-    const newIndices = chunks.map(c => c.chunk_index);
+    const newIndices = chunks.map((c) => c.chunk_index);
     if (newIndices.length > 0) {
       // PGLite doesn't auto-serialize arrays, so use ANY with explicit array cast
       await this.db.query(
         `DELETE FROM content_chunks WHERE page_id = $1 AND chunk_index != ALL($2::int[])`,
-        [pageId, newIndices]
+        [pageId, newIndices],
       );
     } else {
-      await this.db.query('DELETE FROM content_chunks WHERE page_id = $1', [pageId]);
+      await this.db.query("DELETE FROM content_chunks WHERE page_id = $1", [
+        pageId,
+      ]);
       return;
     }
 
@@ -926,34 +1158,38 @@ export class PGLiteEngine implements BrainEngine {
     // list. Image chunks pass embedding=null + embedding_image=Float32Array
     // (1024-dim Voyage). Text/code chunks pass embedding=Float32Array +
     // embedding_image=null. Default modality='text' when omitted.
-    const cols = '(page_id, chunk_index, chunk_text, chunk_source, embedding, model, token_count, embedded_at, language, symbol_name, symbol_type, start_line, end_line, parent_symbol_path, doc_comment, symbol_name_qualified, modality, embedding_image)';
+    const cols =
+      "(page_id, chunk_index, chunk_text, chunk_source, embedding, model, token_count, embedded_at, language, symbol_name, symbol_type, start_line, end_line, parent_symbol_path, doc_comment, symbol_name_qualified, modality, embedding_image)";
     const rowParts: string[] = [];
     const params: unknown[] = [];
     let paramIdx = 1;
 
     for (const chunk of chunks) {
       const embeddingStr = chunk.embedding
-        ? '[' + Array.from(chunk.embedding).join(',') + ']'
+        ? "[" + Array.from(chunk.embedding).join(",") + "]"
         : null;
       const embeddingImageStr = chunk.embedding_image
-        ? '[' + Array.from(chunk.embedding_image).join(',') + ']'
+        ? "[" + Array.from(chunk.embedding_image).join(",") + "]"
         : null;
-      const parentPath = chunk.parent_symbol_path && chunk.parent_symbol_path.length > 0
-        ? chunk.parent_symbol_path
-        : null;
-      const modality = chunk.modality ?? 'text';
+      const parentPath =
+        chunk.parent_symbol_path && chunk.parent_symbol_path.length > 0
+          ? chunk.parent_symbol_path
+          : null;
+      const modality = chunk.modality ?? "text";
 
       // Inline ::vector NULL literals to avoid a per-branch placeholder.
-      const embeddingPh = embeddingStr ? `$${paramIdx++}::vector` : 'NULL';
-      const embeddedAtPh = embeddingStr ? 'now()' : 'NULL';
-      const embeddingImagePh = embeddingImageStr ? `$${paramIdx++}::vector` : 'NULL';
+      const embeddingPh = embeddingStr ? `$${paramIdx++}::vector` : "NULL";
+      const embeddedAtPh = embeddingStr ? "now()" : "NULL";
+      const embeddingImagePh = embeddingImageStr
+        ? `$${paramIdx++}::vector`
+        : "NULL";
 
       rowParts.push(
         `($${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, ` +
-        `${embeddingPh}, $${paramIdx++}, $${paramIdx++}, ${embeddedAtPh}, ` +
-        `$${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, ` +
-        `$${paramIdx++}::text[], $${paramIdx++}, $${paramIdx++}, ` +
-        `$${paramIdx++}, ${embeddingImagePh})`,
+          `${embeddingPh}, $${paramIdx++}, $${paramIdx++}, ${embeddedAtPh}, ` +
+          `$${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, ` +
+          `$${paramIdx++}::text[], $${paramIdx++}, $${paramIdx++}, ` +
+          `$${paramIdx++}, ${embeddingImagePh})`,
       );
 
       // Param push order MUST match placeholder allocation order. Both
@@ -962,11 +1198,20 @@ export class PGLiteEngine implements BrainEngine {
       if (embeddingStr) params.push(embeddingStr);
       if (embeddingImageStr) params.push(embeddingImageStr);
       params.push(
-        pageId, chunk.chunk_index, chunk.chunk_text, chunk.chunk_source,
-        chunk.model || 'text-embedding-3-large', chunk.token_count || null,
-        chunk.language || null, chunk.symbol_name || null, chunk.symbol_type || null,
-        chunk.start_line ?? null, chunk.end_line ?? null,
-        parentPath, chunk.doc_comment || null, chunk.symbol_name_qualified || null,
+        pageId,
+        chunk.chunk_index,
+        chunk.chunk_text,
+        chunk.chunk_source,
+        chunk.model || "text-embedding-3-large",
+        chunk.token_count || null,
+        chunk.language || null,
+        chunk.symbol_name || null,
+        chunk.symbol_type || null,
+        chunk.start_line ?? null,
+        chunk.end_line ?? null,
+        parentPath,
+        chunk.doc_comment || null,
+        chunk.symbol_name_qualified || null,
         modality,
       );
     }
@@ -975,7 +1220,7 @@ export class PGLiteEngine implements BrainEngine {
     // embedded_at must reset to NULL so `embed --stale` correctly picks up the row for re-embedding.
     // See postgres-engine.ts upsertChunks for the full rationale — pglite mirrors it for parity.
     await this.db.query(
-      `INSERT INTO content_chunks ${cols} VALUES ${rowParts.join(', ')}
+      `INSERT INTO content_chunks ${cols} VALUES ${rowParts.join(", ")}
        ON CONFLICT (page_id, chunk_index) DO UPDATE SET
          chunk_text = EXCLUDED.chunk_text,
          chunk_source = EXCLUDED.chunk_source,
@@ -996,19 +1241,26 @@ export class PGLiteEngine implements BrainEngine {
          symbol_name_qualified = EXCLUDED.symbol_name_qualified,
          modality = EXCLUDED.modality,
          embedding_image = COALESCE(EXCLUDED.embedding_image, content_chunks.embedding_image)`,
-      params
+      params,
     );
   }
 
-  async getChunks(slug: string): Promise<Chunk[]> {
+  async getChunks(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<Chunk[]> {
+    const params: unknown[] = [slug];
+    const sourceClause = opts?.sourceId
+      ? ` AND p.source_id = $${params.push(opts.sourceId)}`
+      : "";
     const { rows } = await this.db.query(
       `SELECT cc.* FROM content_chunks cc
        JOIN pages p ON p.id = cc.page_id
-       WHERE p.slug = $1
+       WHERE p.slug = $1${sourceClause}
        ORDER BY cc.chunk_index`,
-      [slug]
+      params,
     );
-    return (rows as Record<string, unknown>[]).map(r => rowToChunk(r));
+    return (rows as Record<string, unknown>[]).map((r) => rowToChunk(r));
   }
 
   async countStaleChunks(): Promise<number> {
@@ -1034,11 +1286,18 @@ export class PGLiteEngine implements BrainEngine {
     return rows as unknown as StaleChunkRow[];
   }
 
-  async deleteChunks(slug: string): Promise<void> {
+  async deleteChunks(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<void> {
+    const params: unknown[] = [slug];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
     await this.db.query(
       `DELETE FROM content_chunks
-       WHERE page_id = (SELECT id FROM pages WHERE slug = $1)`,
-      [slug]
+       WHERE page_id = (SELECT id FROM pages WHERE slug = $1${sourceClause})`,
+      params,
     );
   }
 
@@ -1052,7 +1311,7 @@ export class PGLiteEngine implements BrainEngine {
     originSlug?: string,
     originField?: string,
   ): Promise<void> {
-    const src = linkSource ?? 'markdown';
+    const src = linkSource ?? "markdown";
     await this.db.query(
       `INSERT INTO links (from_page_id, to_page_id, link_type, context, link_source, origin_page_id, origin_field)
        SELECT f.id, t.id, $3, $4, $5,
@@ -1063,7 +1322,15 @@ export class PGLiteEngine implements BrainEngine {
        ON CONFLICT (from_page_id, to_page_id, link_type, link_source, origin_page_id) DO UPDATE SET
          context = EXCLUDED.context,
          origin_field = EXCLUDED.origin_field`,
-      [from, to, linkType || '', context || '', src, originSlug ?? null, originField ?? null]
+      [
+        from,
+        to,
+        linkType || "",
+        context || "",
+        src,
+        originSlug ?? null,
+        originField ?? null,
+      ],
     );
   }
 
@@ -1077,16 +1344,16 @@ export class PGLiteEngine implements BrainEngine {
     // can't fan out across sources when the same slug exists in multiple
     // sources. Origin JOIN uses LEFT JOIN on a composite key — NULL
     // origin_slug leaves origin_page_id NULL, same as pre-v0.18.
-    const fromSlugs = links.map(l => l.from_slug);
-    const toSlugs = links.map(l => l.to_slug);
-    const linkTypes = links.map(l => l.link_type || '');
-    const contexts = links.map(l => l.context || '');
-    const linkSources = links.map(l => l.link_source || 'markdown');
-    const originSlugs = links.map(l => l.origin_slug || null);
-    const originFields = links.map(l => l.origin_field || null);
-    const fromSourceIds = links.map(l => l.from_source_id || 'default');
-    const toSourceIds = links.map(l => l.to_source_id || 'default');
-    const originSourceIds = links.map(l => l.origin_source_id || 'default');
+    const fromSlugs = links.map((l) => l.from_slug);
+    const toSlugs = links.map((l) => l.to_slug);
+    const linkTypes = links.map((l) => l.link_type || "");
+    const contexts = links.map((l) => l.context || "");
+    const linkSources = links.map((l) => l.link_source || "markdown");
+    const originSlugs = links.map((l) => l.origin_slug || null);
+    const originFields = links.map((l) => l.origin_field || null);
+    const fromSourceIds = links.map((l) => l.from_source_id || "default");
+    const toSourceIds = links.map((l) => l.to_source_id || "default");
+    const originSourceIds = links.map((l) => l.origin_source_id || "default");
     const result = await this.db.query(
       `INSERT INTO links (from_page_id, to_page_id, link_type, context, link_source, origin_page_id, origin_field)
        SELECT f.id, t.id, v.link_type, v.context, v.link_source, o.id, v.origin_field
@@ -1097,12 +1364,28 @@ export class PGLiteEngine implements BrainEngine {
        LEFT JOIN pages o ON o.slug = v.origin_slug AND o.source_id = v.origin_source_id
        ON CONFLICT (from_page_id, to_page_id, link_type, link_source, origin_page_id) DO NOTHING
        RETURNING 1`,
-      [fromSlugs, toSlugs, linkTypes, contexts, linkSources, originSlugs, originFields, fromSourceIds, toSourceIds, originSourceIds]
+      [
+        fromSlugs,
+        toSlugs,
+        linkTypes,
+        contexts,
+        linkSources,
+        originSlugs,
+        originFields,
+        fromSourceIds,
+        toSourceIds,
+        originSourceIds,
+      ],
     );
     return result.rows.length;
   }
 
-  async removeLink(from: string, to: string, linkType?: string, linkSource?: string): Promise<void> {
+  async removeLink(
+    from: string,
+    to: string,
+    linkType?: string,
+    linkSource?: string,
+  ): Promise<void> {
     if (linkType !== undefined && linkSource !== undefined) {
       await this.db.query(
         `DELETE FROM links
@@ -1110,7 +1393,7 @@ export class PGLiteEngine implements BrainEngine {
            AND to_page_id = (SELECT id FROM pages WHERE slug = $2)
            AND link_type = $3
            AND link_source IS NOT DISTINCT FROM $4`,
-        [from, to, linkType, linkSource]
+        [from, to, linkType, linkSource],
       );
     } else if (linkType !== undefined) {
       await this.db.query(
@@ -1118,7 +1401,7 @@ export class PGLiteEngine implements BrainEngine {
          WHERE from_page_id = (SELECT id FROM pages WHERE slug = $1)
            AND to_page_id = (SELECT id FROM pages WHERE slug = $2)
            AND link_type = $3`,
-        [from, to, linkType]
+        [from, to, linkType],
       );
     } else if (linkSource !== undefined) {
       await this.db.query(
@@ -1126,14 +1409,14 @@ export class PGLiteEngine implements BrainEngine {
          WHERE from_page_id = (SELECT id FROM pages WHERE slug = $1)
            AND to_page_id = (SELECT id FROM pages WHERE slug = $2)
            AND link_source IS NOT DISTINCT FROM $3`,
-        [from, to, linkSource]
+        [from, to, linkSource],
       );
     } else {
       await this.db.query(
         `DELETE FROM links
          WHERE from_page_id = (SELECT id FROM pages WHERE slug = $1)
            AND to_page_id = (SELECT id FROM pages WHERE slug = $2)`,
-        [from, to]
+        [from, to],
       );
     }
   }
@@ -1148,7 +1431,7 @@ export class PGLiteEngine implements BrainEngine {
        JOIN pages t ON t.id = l.to_page_id
        LEFT JOIN pages o ON o.id = l.origin_page_id
        WHERE f.slug = $1`,
-      [slug]
+      [slug],
     );
     return rows as unknown as Link[];
   }
@@ -1163,7 +1446,7 @@ export class PGLiteEngine implements BrainEngine {
        JOIN pages t ON t.id = l.to_page_id
        LEFT JOIN pages o ON o.id = l.origin_page_id
        WHERE t.slug = $1`,
-      [slug]
+      [slug],
     );
     return rows as unknown as Link[];
   }
@@ -1172,21 +1455,24 @@ export class PGLiteEngine implements BrainEngine {
     name: string,
     dirPrefix?: string,
     minSimilarity: number = 0.55,
+    opts?: { sourceId?: string },
   ): Promise<{ slug: string; similarity: number } | null> {
     // Inline threshold comparison instead of `SET LOCAL pg_trgm.similarity_threshold`.
     // The GUC only scopes to the current transaction and pglite auto-commits each
     // .query() call, so the SET LOCAL would be a no-op. Using similarity() >= $N
     // directly gives predictable behavior. Tie-breaker: sort by slug so re-runs
     // pick the same winner.
-    const prefixPattern = dirPrefix ? `${dirPrefix}/%` : '%';
+    const prefixPattern = dirPrefix ? `${dirPrefix}/%` : "%";
+    const sourceId = opts?.sourceId ?? null;
     const { rows } = await this.db.query(
       `SELECT slug, similarity(title, $1) AS sim
        FROM pages
        WHERE similarity(title, $1) >= $3
          AND slug LIKE $2
+         AND ($4::text IS NULL OR source_id = $4::text)
        ORDER BY sim DESC, slug ASC
        LIMIT 1`,
-      [name, prefixPattern, minSimilarity]
+      [name, prefixPattern, minSimilarity, sourceId],
     );
     if (rows.length === 0) return null;
     const row = rows[0] as { slug: string; sim: number };
@@ -1225,35 +1511,46 @@ export class PGLiteEngine implements BrainEngine {
         ) as links
       FROM graph g
       ORDER BY g.depth, g.slug`,
-      [slug, depth]
+      [slug, depth],
     );
 
-    return (rows as Record<string, unknown>[]).map(r => ({
+    return (rows as Record<string, unknown>[]).map((r) => ({
       slug: r.slug as string,
       title: r.title as string,
       type: r.type as PageType,
       depth: r.depth as number,
-      links: (typeof r.links === 'string' ? JSON.parse(r.links) : r.links) as { to_slug: string; link_type: string }[],
+      links: (typeof r.links === "string" ? JSON.parse(r.links) : r.links) as {
+        to_slug: string;
+        link_type: string;
+      }[],
     }));
   }
 
   async traversePaths(
     slug: string,
-    opts?: { depth?: number; linkType?: string; direction?: 'in' | 'out' | 'both' },
+    opts?: {
+      depth?: number;
+      linkType?: string;
+      direction?: "in" | "out" | "both";
+      sourceId?: string;
+    },
   ): Promise<GraphPath[]> {
     const depth = opts?.depth ?? 5;
-    const direction = opts?.direction ?? 'out';
+    const direction = opts?.direction ?? "out";
     const linkType = opts?.linkType ?? null;
-    const linkTypeWhere = linkType !== null ? 'AND l.link_type = $3' : '';
+    const sourceId = opts?.sourceId ?? null;
+    const linkTypeWhere = linkType !== null ? "AND l.link_type = $3" : "";
+    const sourceWhere = sourceId !== null ? `AND p.source_id = $${linkType !== null ? 4 : 3}` : "";
     const params: unknown[] = [slug, depth];
     if (linkType !== null) params.push(linkType);
+    if (sourceId !== null) params.push(sourceId);
 
     let sql: string;
-    if (direction === 'out') {
+    if (direction === "out") {
       sql = `
         WITH RECURSIVE walk AS (
           SELECT p.id, p.slug, 0::int AS depth, ARRAY[p.id] AS visited
-          FROM pages p WHERE p.slug = $1
+          FROM pages p WHERE p.slug = $1 ${sourceWhere}
           UNION ALL
           SELECT p2.id, p2.slug, w.depth + 1, w.visited || p2.id
           FROM walk w
@@ -1272,11 +1569,11 @@ export class PGLiteEngine implements BrainEngine {
           ${linkTypeWhere}
         ORDER BY depth, from_slug, to_slug
       `;
-    } else if (direction === 'in') {
+    } else if (direction === "in") {
       sql = `
         WITH RECURSIVE walk AS (
           SELECT p.id, p.slug, 0::int AS depth, ARRAY[p.id] AS visited
-          FROM pages p WHERE p.slug = $1
+          FROM pages p WHERE p.slug = $1 ${sourceWhere}
           UNION ALL
           SELECT p2.id, p2.slug, w.depth + 1, w.visited || p2.id
           FROM walk w
@@ -1301,7 +1598,7 @@ export class PGLiteEngine implements BrainEngine {
       sql = `
         WITH RECURSIVE walk AS (
           SELECT p.id, 0::int AS depth, ARRAY[p.id] AS visited
-          FROM pages p WHERE p.slug = $1
+          FROM pages p WHERE p.slug = $1 ${sourceWhere}
           UNION ALL
           SELECT p2.id, w.depth + 1, w.visited || p2.id
           FROM walk w
@@ -1335,27 +1632,29 @@ export class PGLiteEngine implements BrainEngine {
         from_slug: r.from_slug as string,
         to_slug: r.to_slug as string,
         link_type: r.link_type as string,
-        context: (r.context as string) || '',
+        context: (r.context as string) || "",
         depth: r.depth as number,
       });
     }
     return result;
   }
 
-  async getBacklinkCounts(slugs: string[]): Promise<Map<string, number>> {
+  async getBacklinkCounts(slugs: string[], opts?: { sourceId?: string }): Promise<Map<string, number>> {
     const result = new Map<string, number>();
     if (slugs.length === 0) return result;
     // Initialize all slugs to 0 so callers get a consistent map.
     for (const s of slugs) result.set(s, 0);
 
+    const sourceId = opts?.sourceId ?? null;
     // PGLite needs explicit cast for array binding (does not auto-serialize JS arrays).
     const { rows } = await this.db.query(
       `SELECT p.slug AS slug, COUNT(l.id)::int AS cnt
        FROM pages p
        LEFT JOIN links l ON l.to_page_id = p.id
        WHERE p.slug = ANY($1::text[])
+         AND ($2::text IS NULL OR p.source_id = $2::text)
        GROUP BY p.slug`,
-      [slugs]
+      [slugs, sourceId],
     );
     for (const r of rows as { slug: string; cnt: number }[]) {
       result.set(r.slug, Number(r.cnt));
@@ -1368,15 +1667,19 @@ export class PGLiteEngine implements BrainEngine {
     const { rows } = await this.db.query(
       `SELECT slug, COALESCE(updated_at, created_at) as ts
        FROM pages WHERE slug = ANY($1::text[])`,
-      [slugs]
+      [slugs],
     );
-    return new Map(rows.map((r: any) => [r.slug as string, new Date(r.ts as string)]));
+    return new Map(
+      rows.map((r: any) => [r.slug as string, new Date(r.ts as string)]),
+    );
   }
 
-  async getEffectiveDates(refs: Array<{slug: string; source_id: string}>): Promise<Map<string, Date>> {
+  async getEffectiveDates(
+    refs: Array<{ slug: string; source_id: string }>,
+  ): Promise<Map<string, Date>> {
     if (refs.length === 0) return new Map();
-    const slugs = refs.map(r => r.slug);
-    const sourceIds = refs.map(r => r.source_id);
+    const slugs = refs.map((r) => r.slug);
+    const sourceIds = refs.map((r) => r.source_id);
     const { rows } = await this.db.query(
       `SELECT p.slug, p.source_id, COALESCE(p.effective_date, p.updated_at, p.created_at) AS ts
          FROM pages p
@@ -1385,17 +1688,23 @@ export class PGLiteEngine implements BrainEngine {
       [slugs, sourceIds],
     );
     const out = new Map<string, Date>();
-    for (const r of rows as Array<{slug: string; source_id: string; ts: string | Date}>) {
+    for (const r of rows as Array<{
+      slug: string;
+      source_id: string;
+      ts: string | Date;
+    }>) {
       const key = `${r.source_id}::${r.slug}`;
       out.set(key, r.ts instanceof Date ? r.ts : new Date(r.ts));
     }
     return out;
   }
 
-  async getSalienceScores(refs: Array<{slug: string; source_id: string}>): Promise<Map<string, number>> {
+  async getSalienceScores(
+    refs: Array<{ slug: string; source_id: string }>,
+  ): Promise<Map<string, number>> {
     if (refs.length === 0) return new Map();
-    const slugs = refs.map(r => r.slug);
-    const sourceIds = refs.map(r => r.source_id);
+    const slugs = refs.map((r) => r.slug);
+    const sourceIds = refs.map((r) => r.source_id);
     const { rows } = await this.db.query(
       `SELECT p.slug, p.source_id,
               (COALESCE(p.emotional_weight, 0) * 5
@@ -1408,14 +1717,20 @@ export class PGLiteEngine implements BrainEngine {
       [slugs, sourceIds],
     );
     const out = new Map<string, number>();
-    for (const r of rows as Array<{slug: string; source_id: string; score: number | string}>) {
+    for (const r of rows as Array<{
+      slug: string;
+      source_id: string;
+      score: number | string;
+    }>) {
       const key = `${r.source_id}::${r.slug}`;
       out.set(key, Number(r.score));
     }
     return out;
   }
 
-  async findOrphanPages(): Promise<Array<{ slug: string; title: string; domain: string | null }>> {
+  async findOrphanPages(): Promise<
+    Array<{ slug: string; title: string; domain: string | null }>
+  > {
     const { rows } = await this.db.query(
       `SELECT
          p.slug,
@@ -1425,38 +1740,62 @@ export class PGLiteEngine implements BrainEngine {
        WHERE NOT EXISTS (
          SELECT 1 FROM links l WHERE l.to_page_id = p.id
        )
-       ORDER BY p.slug`
+       ORDER BY p.slug`,
     );
-    return rows as Array<{ slug: string; title: string; domain: string | null }>;
+    return rows as Array<{
+      slug: string;
+      title: string;
+      domain: string | null;
+    }>;
   }
 
   // Tags
-  async addTag(slug: string, tag: string): Promise<void> {
+  async addTag(
+    slug: string,
+    tag: string,
+    opts?: { sourceId?: string },
+  ): Promise<void> {
+    const params: unknown[] = [slug, tag];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
     await this.db.query(
       `INSERT INTO tags (page_id, tag)
-       SELECT id, $2 FROM pages WHERE slug = $1
+       SELECT id, $2 FROM pages WHERE slug = $1${sourceClause}
        ON CONFLICT (page_id, tag) DO NOTHING`,
-      [slug, tag]
+      params,
     );
   }
 
-  async removeTag(slug: string, tag: string): Promise<void> {
+  async removeTag(
+    slug: string,
+    tag: string,
+    opts?: { sourceId?: string },
+  ): Promise<void> {
+    const params: unknown[] = [slug, tag];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
     await this.db.query(
       `DELETE FROM tags
-       WHERE page_id = (SELECT id FROM pages WHERE slug = $1)
+       WHERE page_id = (SELECT id FROM pages WHERE slug = $1${sourceClause})
          AND tag = $2`,
-      [slug, tag]
+      params,
     );
   }
 
-  async getTags(slug: string): Promise<string[]> {
+  async getTags(slug: string, opts?: { sourceId?: string }): Promise<string[]> {
+    const params: unknown[] = [slug];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
     const { rows } = await this.db.query(
       `SELECT tag FROM tags
-       WHERE page_id = (SELECT id FROM pages WHERE slug = $1)
+       WHERE page_id = (SELECT id FROM pages WHERE slug = $1${sourceClause})
        ORDER BY tag`,
-      [slug]
+      params,
     );
-    return (rows as { tag: string }[]).map(r => r.tag);
+    return (rows as { tag: string }[]).map((r) => r.tag);
   }
 
   // Timeline
@@ -1466,7 +1805,10 @@ export class PGLiteEngine implements BrainEngine {
     opts?: { skipExistenceCheck?: boolean },
   ): Promise<void> {
     if (!opts?.skipExistenceCheck) {
-      const { rows } = await this.db.query('SELECT 1 FROM pages WHERE slug = $1', [slug]);
+      const { rows } = await this.db.query(
+        "SELECT 1 FROM pages WHERE slug = $1",
+        [slug],
+      );
       if (rows.length === 0) {
         throw new Error(`Page not found: ${slug}`);
       }
@@ -1478,18 +1820,20 @@ export class PGLiteEngine implements BrainEngine {
        SELECT id, $2::date, $3, $4, $5
        FROM pages WHERE slug = $1
        ON CONFLICT (page_id, date, summary) DO NOTHING`,
-      [slug, entry.date, entry.source || '', entry.summary, entry.detail || '']
+      [slug, entry.date, entry.source || "", entry.summary, entry.detail || ""],
     );
   }
 
-  async addTimelineEntriesBatch(entries: TimelineBatchInput[]): Promise<number> {
+  async addTimelineEntriesBatch(
+    entries: TimelineBatchInput[],
+  ): Promise<number> {
     if (entries.length === 0) return 0;
-    const slugs = entries.map(e => e.slug);
-    const dates = entries.map(e => e.date);
-    const sources = entries.map(e => e.source || '');
-    const summaries = entries.map(e => e.summary);
-    const details = entries.map(e => e.detail || '');
-    const sourceIds = entries.map(e => e.source_id || 'default');
+    const slugs = entries.map((e) => e.slug);
+    const dates = entries.map((e) => e.date);
+    const sources = entries.map((e) => e.source || "");
+    const summaries = entries.map((e) => e.summary);
+    const details = entries.map((e) => e.detail || "");
+    const sourceIds = entries.map((e) => e.source_id || "default");
     const result = await this.db.query(
       `INSERT INTO timeline_entries (page_id, date, source, summary, detail)
        SELECT p.id, v.date::date, v.source, v.summary, v.detail
@@ -1498,12 +1842,15 @@ export class PGLiteEngine implements BrainEngine {
        JOIN pages p ON p.slug = v.slug AND p.source_id = v.source_id
        ON CONFLICT (page_id, date, summary) DO NOTHING
        RETURNING 1`,
-      [slugs, dates, sources, summaries, details, sourceIds]
+      [slugs, dates, sources, summaries, details, sourceIds],
     );
     return result.rows.length;
   }
 
-  async getTimeline(slug: string, opts?: TimelineOpts): Promise<TimelineEntry[]> {
+  async getTimeline(
+    slug: string,
+    opts?: TimelineOpts,
+  ): Promise<TimelineEntry[]> {
     const limit = opts?.limit || 100;
 
     let result;
@@ -1513,7 +1860,7 @@ export class PGLiteEngine implements BrainEngine {
          JOIN pages p ON p.id = te.page_id
          WHERE p.slug = $1 AND te.date >= $2::date AND te.date <= $3::date
          ORDER BY te.date DESC LIMIT $4`,
-        [slug, opts.after, opts.before, limit]
+        [slug, opts.after, opts.before, limit],
       );
     } else if (opts?.after) {
       result = await this.db.query(
@@ -1521,7 +1868,7 @@ export class PGLiteEngine implements BrainEngine {
          JOIN pages p ON p.id = te.page_id
          WHERE p.slug = $1 AND te.date >= $2::date
          ORDER BY te.date DESC LIMIT $3`,
-        [slug, opts.after, limit]
+        [slug, opts.after, limit],
       );
     } else {
       result = await this.db.query(
@@ -1529,7 +1876,7 @@ export class PGLiteEngine implements BrainEngine {
          JOIN pages p ON p.id = te.page_id
          WHERE p.slug = $1
          ORDER BY te.date DESC LIMIT $2`,
-        [slug, limit]
+        [slug, limit],
       );
     }
 
@@ -1545,7 +1892,7 @@ export class PGLiteEngine implements BrainEngine {
        ON CONFLICT (page_id, source) DO UPDATE SET
          data = EXCLUDED.data,
          fetched_at = now()`,
-      [slug, source, JSON.stringify(data)]
+      [slug, source, JSON.stringify(data)],
     );
   }
 
@@ -1556,14 +1903,14 @@ export class PGLiteEngine implements BrainEngine {
         `SELECT rd.source, rd.data, rd.fetched_at FROM raw_data rd
          JOIN pages p ON p.id = rd.page_id
          WHERE p.slug = $1 AND rd.source = $2`,
-        [slug, source]
+        [slug, source],
       );
     } else {
       result = await this.db.query(
         `SELECT rd.source, rd.data, rd.fetched_at FROM raw_data rd
          JOIN pages p ON p.id = rd.page_id
          WHERE p.slug = $1`,
-        [slug]
+        [slug],
       );
     }
     return result.rows as unknown as RawData[];
@@ -1571,7 +1918,7 @@ export class PGLiteEngine implements BrainEngine {
 
   // Files (v0.27.1): see PostgresEngine.upsertFile for the same contract.
   async upsertFile(spec: FileSpec): Promise<{ id: number; created: boolean }> {
-    const sourceId = spec.source_id ?? 'default';
+    const sourceId = spec.source_id ?? "default";
     const result = await this.db.query<{ id: number; created: boolean }>(
       `INSERT INTO files (source_id, page_slug, page_id, filename, storage_path, mime_type, size_bytes, content_hash, metadata)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
@@ -1594,7 +1941,7 @@ export class PGLiteEngine implements BrainEngine {
         spec.size_bytes ?? null,
         spec.content_hash,
         JSON.stringify(spec.metadata ?? {}),
-      ]
+      ],
     );
     if (result.rows.length === 0) {
       throw new Error(`upsertFile returned no rows for ${spec.storage_path}`);
@@ -1602,13 +1949,16 @@ export class PGLiteEngine implements BrainEngine {
     return { id: result.rows[0].id, created: !!result.rows[0].created };
   }
 
-  async getFile(sourceId: string, storagePath: string): Promise<FileRow | null> {
+  async getFile(
+    sourceId: string,
+    storagePath: string,
+  ): Promise<FileRow | null> {
     const result = await this.db.query<FileRow>(
       `SELECT id, source_id, page_slug, page_id, filename, storage_path, mime_type, size_bytes, content_hash, metadata, created_at
        FROM files
        WHERE source_id = $1 AND storage_path = $2
        LIMIT 1`,
-      [sourceId, storagePath]
+      [sourceId, storagePath],
     );
     return result.rows.length > 0 ? (result.rows[0] as FileRow) : null;
   }
@@ -1619,13 +1969,16 @@ export class PGLiteEngine implements BrainEngine {
        FROM files
        WHERE page_id = $1
        ORDER BY created_at ASC`,
-      [pageId]
+      [pageId],
     );
     return result.rows as FileRow[];
   }
 
   // Dream-cycle significance verdict cache (v0.23).
-  async getDreamVerdict(filePath: string, contentHash: string): Promise<DreamVerdict | null> {
+  async getDreamVerdict(
+    filePath: string,
+    contentHash: string,
+  ): Promise<DreamVerdict | null> {
     const result = await this.db.query<{
       worth_processing: boolean;
       reasons: string[] | null;
@@ -1634,18 +1987,25 @@ export class PGLiteEngine implements BrainEngine {
       `SELECT worth_processing, reasons, judged_at
        FROM dream_verdicts
        WHERE file_path = $1 AND content_hash = $2`,
-      [filePath, contentHash]
+      [filePath, contentHash],
     );
     if (result.rows.length === 0) return null;
     const r = result.rows[0];
     return {
       worth_processing: r.worth_processing,
       reasons: r.reasons ?? [],
-      judged_at: r.judged_at instanceof Date ? r.judged_at.toISOString() : String(r.judged_at),
+      judged_at:
+        r.judged_at instanceof Date
+          ? r.judged_at.toISOString()
+          : String(r.judged_at),
     };
   }
 
-  async putDreamVerdict(filePath: string, contentHash: string, verdict: DreamVerdictInput): Promise<void> {
+  async putDreamVerdict(
+    filePath: string,
+    contentHash: string,
+    verdict: DreamVerdictInput,
+  ): Promise<void> {
     await this.db.query(
       `INSERT INTO dream_verdicts (file_path, content_hash, worth_processing, reasons)
        VALUES ($1, $2, $3, $4::jsonb)
@@ -1653,7 +2013,12 @@ export class PGLiteEngine implements BrainEngine {
          worth_processing = EXCLUDED.worth_processing,
          reasons = EXCLUDED.reasons,
          judged_at = now()`,
-      [filePath, contentHash, verdict.worth_processing, JSON.stringify(verdict.reasons)]
+      [
+        filePath,
+        contentHash,
+        verdict.worth_processing,
+        JSON.stringify(verdict.reasons),
+      ],
     );
   }
 
@@ -1664,23 +2029,28 @@ export class PGLiteEngine implements BrainEngine {
   async addTakesBatch(rowsIn: TakeBatchInput[]): Promise<number> {
     if (rowsIn.length === 0) return 0;
     let weightClamped = 0;
-    const pageIds   = rowsIn.map(r => r.page_id);
-    const rowNums   = rowsIn.map(r => r.row_num);
-    const claims    = rowsIn.map(r => r.claim);
-    const kinds     = rowsIn.map(r => r.kind);
-    const holders   = rowsIn.map(r => r.holder);
-    const weights   = rowsIn.map(r => {
+    const pageIds = rowsIn.map((r) => r.page_id);
+    const rowNums = rowsIn.map((r) => r.row_num);
+    const claims = rowsIn.map((r) => r.claim);
+    const kinds = rowsIn.map((r) => r.kind);
+    const holders = rowsIn.map((r) => r.holder);
+    const weights = rowsIn.map((r) => {
       const w = r.weight ?? 0.5;
-      if (w < 0 || w > 1) { weightClamped++; return Math.max(0, Math.min(1, w)); }
+      if (w < 0 || w > 1) {
+        weightClamped++;
+        return Math.max(0, Math.min(1, w));
+      }
       return w;
     });
-    const sinces    = rowsIn.map(r => r.since_date ?? null);
-    const untils    = rowsIn.map(r => r.until_date ?? null);
-    const sources   = rowsIn.map(r => r.source ?? null);
-    const supersededBys = rowsIn.map(r => r.superseded_by ?? null);
-    const actives   = rowsIn.map(r => r.active ?? true);
+    const sinces = rowsIn.map((r) => r.since_date ?? null);
+    const untils = rowsIn.map((r) => r.until_date ?? null);
+    const sources = rowsIn.map((r) => r.source ?? null);
+    const supersededBys = rowsIn.map((r) => r.superseded_by ?? null);
+    const actives = rowsIn.map((r) => r.active ?? true);
     if (weightClamped > 0) {
-      process.stderr.write(`[takes] TAKES_WEIGHT_CLAMPED: ${weightClamped} row(s) had weight outside [0,1]; clamped\n`);
+      process.stderr.write(
+        `[takes] TAKES_WEIGHT_CLAMPED: ${weightClamped} row(s) had weight outside [0,1]; clamped\n`,
+      );
     }
     const result = await this.db.query(
       `INSERT INTO takes (page_id, row_num, claim, kind, holder, weight, since_date, until_date, source, superseded_by, active)
@@ -1701,7 +2071,19 @@ export class PGLiteEngine implements BrainEngine {
          active        = EXCLUDED.active,
          updated_at    = now()
        RETURNING 1`,
-      [pageIds, rowNums, claims, kinds, holders, weights, sinces, untils, sources, supersededBys, actives]
+      [
+        pageIds,
+        rowNums,
+        claims,
+        kinds,
+        holders,
+        weights,
+        sinces,
+        untils,
+        sources,
+        supersededBys,
+        actives,
+      ],
     );
     return result.rows.length;
   }
@@ -1710,7 +2092,7 @@ export class PGLiteEngine implements BrainEngine {
     const limit = clampSearchLimit(opts.limit, 100, 500);
     const offset = Math.max(0, Math.floor(opts.offset ?? 0));
     const active = opts.active ?? true;
-    const sortBy = opts.sortBy ?? 'created_at';
+    const sortBy = opts.sortBy ?? "created_at";
     const { rows } = await this.db.query(
       `SELECT t.*, p.slug AS page_slug
        FROM takes t
@@ -1727,6 +2109,7 @@ export class PGLiteEngine implements BrainEngine {
            OR ($6::boolean = false AND t.resolved_at IS NULL)
          )
          AND ($7::text[] IS NULL OR t.holder = ANY($7::text[]))
+         AND ($11::text IS NULL OR p.source_id = $11::text)
        ORDER BY
          CASE WHEN $8 = 'weight'      THEN t.weight     END DESC NULLS LAST,
          CASE WHEN $8 = 'since_date'  THEN t.since_date END DESC NULLS LAST,
@@ -1743,7 +2126,8 @@ export class PGLiteEngine implements BrainEngine {
         sortBy,
         limit,
         offset,
-      ]
+        opts.sourceId ?? null,
+      ],
     );
     return rows.map((r) => takeRowToTake(r as Record<string, unknown>));
   }
@@ -1762,9 +2146,10 @@ export class PGLiteEngine implements BrainEngine {
        WHERE t.active
          AND t.claim % $1
          AND ($2::text[] IS NULL OR t.holder = ANY($2::text[]))
+         AND ($4::text IS NULL OR p.source_id = $4::text)
        ORDER BY score DESC, t.weight DESC
        LIMIT $3`,
-      [query, opts.takesHoldersAllowList ?? null, limit]
+      [query, opts.takesHoldersAllowList ?? null, limit, (opts as any).sourceId ?? null],
     );
     return rows as unknown as TakeHit[];
   }
@@ -1774,7 +2159,7 @@ export class PGLiteEngine implements BrainEngine {
     opts: { limit?: number; takesHoldersAllowList?: string[] } = {},
   ): Promise<TakeHit[]> {
     const limit = clampSearchLimit(opts.limit, 30, 100);
-    const vec = `[${Array.from(embedding).join(',')}]`;
+    const vec = `[${Array.from(embedding).join(",")}]`;
     const { rows } = await this.db.query(
       `SELECT t.id AS take_id, t.page_id, p.slug AS page_slug, t.row_num,
               t.claim, t.kind, t.holder, t.weight,
@@ -1784,9 +2169,10 @@ export class PGLiteEngine implements BrainEngine {
        WHERE t.active
          AND t.embedding IS NOT NULL
          AND ($2::text[] IS NULL OR t.holder = ANY($2::text[]))
+         AND ($4::text IS NULL OR p.source_id = $4::text)
        ORDER BY t.embedding <=> $1::vector
        LIMIT $3`,
-      [vec, opts.takesHoldersAllowList ?? null, limit]
+      [vec, opts.takesHoldersAllowList ?? null, limit, (opts as any).sourceId ?? null],
     );
     return rows as unknown as TakeHit[];
   }
@@ -1795,14 +2181,17 @@ export class PGLiteEngine implements BrainEngine {
     if (ids.length === 0) return new Map();
     const { rows } = await this.db.query(
       `SELECT id, embedding FROM takes WHERE id = ANY($1::bigint[]) AND embedding IS NOT NULL`,
-      [ids]
+      [ids],
     );
     const out = new Map<number, Float32Array>();
     for (const r of rows as Array<{ id: number; embedding: unknown }>) {
       const v = r.embedding;
-      if (typeof v === 'string') {
-        const trimmed = v.replace(/^\[|\]$/g, '');
-        const arr = trimmed.split(',').map(parseFloat).filter(n => !Number.isNaN(n));
+      if (typeof v === "string") {
+        const trimmed = v.replace(/^\[|\]$/g, "");
+        const arr = trimmed
+          .split(",")
+          .map(parseFloat)
+          .filter((n) => !Number.isNaN(n));
         out.set(Number(r.id), new Float32Array(arr));
       } else if (Array.isArray(v)) {
         out.set(Number(r.id), new Float32Array(v as number[]));
@@ -1813,7 +2202,7 @@ export class PGLiteEngine implements BrainEngine {
 
   async countStaleTakes(): Promise<number> {
     const { rows } = await this.db.query(
-      `SELECT count(*)::int AS count FROM takes WHERE active AND embedding IS NULL`
+      `SELECT count(*)::int AS count FROM takes WHERE active AND embedding IS NULL`,
     );
     return Number((rows[0] as { count?: number } | undefined)?.count ?? 0);
   }
@@ -1825,7 +2214,7 @@ export class PGLiteEngine implements BrainEngine {
        JOIN pages p ON p.id = t.page_id
        WHERE t.active AND t.embedding IS NULL
        ORDER BY t.id
-       LIMIT 100000`
+       LIMIT 100000`,
     );
     return rows as unknown as StaleTakeRow[];
   }
@@ -1837,7 +2226,9 @@ export class PGLiteEngine implements BrainEngine {
   ): Promise<void> {
     let weight = fields.weight;
     if (weight !== undefined && (weight < 0 || weight > 1)) {
-      process.stderr.write(`[takes] TAKES_WEIGHT_CLAMPED: updateTake clamped weight ${weight} → [0,1]\n`);
+      process.stderr.write(
+        `[takes] TAKES_WEIGHT_CLAMPED: updateTake clamped weight ${weight} → [0,1]\n`,
+      );
       weight = Math.max(0, Math.min(1, weight));
     }
     const result = await this.db.query(
@@ -1848,13 +2239,19 @@ export class PGLiteEngine implements BrainEngine {
          updated_at = now()
        WHERE page_id = $1 AND row_num = $2
        RETURNING 1`,
-      [pageId, rowNum, weight ?? null, fields.since_date ?? null, fields.source ?? null]
+      [
+        pageId,
+        rowNum,
+        weight ?? null,
+        fields.since_date ?? null,
+        fields.source ?? null,
+      ],
     );
     if (result.rows.length === 0) {
       throw new GBrainError(
-        'TAKE_ROW_NOT_FOUND',
+        "TAKE_ROW_NOT_FOUND",
         `take not found at page_id=${pageId} row=${rowNum}`,
-        'list takes for this page with `gbrain takes <slug>` to see valid row numbers',
+        "list takes for this page with `gbrain takes <slug>` to see valid row numbers",
       );
     }
   }
@@ -1862,55 +2259,88 @@ export class PGLiteEngine implements BrainEngine {
   async supersedeTake(
     pageId: number,
     oldRow: number,
-    newRow: Omit<TakeBatchInput, 'page_id' | 'row_num' | 'superseded_by'>,
+    newRow: Omit<TakeBatchInput, "page_id" | "row_num" | "superseded_by">,
   ): Promise<{ oldRow: number; newRow: number }> {
     return await this.db.transaction(async (tx) => {
       const existingRes = await tx.query(
         `SELECT resolved_at FROM takes WHERE page_id = $1 AND row_num = $2`,
-        [pageId, oldRow]
+        [pageId, oldRow],
       );
-      const existing = existingRes.rows[0] as { resolved_at?: unknown } | undefined;
+      const existing = existingRes.rows[0] as
+        | { resolved_at?: unknown }
+        | undefined;
       if (!existing) {
-        throw new GBrainError('TAKE_ROW_NOT_FOUND', `take not found at page_id=${pageId} row=${oldRow}`, 'list takes with `gbrain takes <slug>`');
+        throw new GBrainError(
+          "TAKE_ROW_NOT_FOUND",
+          `take not found at page_id=${pageId} row=${oldRow}`,
+          "list takes with `gbrain takes <slug>`",
+        );
       }
       if (existing.resolved_at) {
-        throw new GBrainError('TAKE_RESOLVED_IMMUTABLE', `take ${pageId}#${oldRow} is resolved`, 'resolved bets are immutable; add a new take instead');
+        throw new GBrainError(
+          "TAKE_RESOLVED_IMMUTABLE",
+          `take ${pageId}#${oldRow} is resolved`,
+          "resolved bets are immutable; add a new take instead",
+        );
       }
       const maxRowRes = await tx.query(
         `SELECT COALESCE(MAX(row_num), 0) + 1 AS next FROM takes WHERE page_id = $1`,
-        [pageId]
+        [pageId],
       );
-      const newRowNum = Number((maxRowRes.rows[0] as { next?: number })?.next ?? 1);
+      const newRowNum = Number(
+        (maxRowRes.rows[0] as { next?: number })?.next ?? 1,
+      );
       const w = Math.max(0, Math.min(1, newRow.weight ?? 0.5));
       await tx.query(
         `INSERT INTO takes (page_id, row_num, claim, kind, holder, weight, since_date, until_date, source, active)
          VALUES ($1, $2, $3, $4, $5, $6, $7::text, $8::text, $9, $10)`,
         [
-          pageId, newRowNum, newRow.claim, newRow.kind, newRow.holder, w,
-          newRow.since_date ?? null, newRow.until_date ?? null, newRow.source ?? null,
+          pageId,
+          newRowNum,
+          newRow.claim,
+          newRow.kind,
+          newRow.holder,
+          w,
+          newRow.since_date ?? null,
+          newRow.until_date ?? null,
+          newRow.source ?? null,
           newRow.active ?? true,
-        ]
+        ],
       );
       await tx.query(
         `UPDATE takes SET active = false, superseded_by = $3, updated_at = now()
          WHERE page_id = $1 AND row_num = $2`,
-        [pageId, oldRow, newRowNum]
+        [pageId, oldRow, newRowNum],
       );
       return { oldRow, newRow: newRowNum };
     });
   }
 
-  async resolveTake(pageId: number, rowNum: number, resolution: TakeResolution): Promise<void> {
+  async resolveTake(
+    pageId: number,
+    rowNum: number,
+    resolution: TakeResolution,
+  ): Promise<void> {
     const existingRes = await this.db.query(
       `SELECT resolved_at FROM takes WHERE page_id = $1 AND row_num = $2`,
-      [pageId, rowNum]
+      [pageId, rowNum],
     );
-    const existing = existingRes.rows[0] as { resolved_at?: unknown } | undefined;
+    const existing = existingRes.rows[0] as
+      | { resolved_at?: unknown }
+      | undefined;
     if (!existing) {
-      throw new GBrainError('TAKE_ROW_NOT_FOUND', `take not found at page_id=${pageId} row=${rowNum}`, 'list takes with `gbrain takes <slug>`');
+      throw new GBrainError(
+        "TAKE_ROW_NOT_FOUND",
+        `take not found at page_id=${pageId} row=${rowNum}`,
+        "list takes with `gbrain takes <slug>`",
+      );
     }
     if (existing.resolved_at) {
-      throw new GBrainError('TAKE_ALREADY_RESOLVED', `take ${pageId}#${rowNum} already resolved`, 'resolution is immutable; add a new take to record a new outcome');
+      throw new GBrainError(
+        "TAKE_ALREADY_RESOLVED",
+        `take ${pageId}#${rowNum} already resolved`,
+        "resolution is immutable; add a new take to record a new outcome",
+      );
     }
     // v0.30.0: derive (quality, outcome) tuple. quality wins when both set.
     const { quality, outcome } = deriveResolutionTuple(resolution);
@@ -1926,14 +2356,15 @@ export class PGLiteEngine implements BrainEngine {
          updated_at       = now()
        WHERE page_id = $1 AND row_num = $2`,
       [
-        pageId, rowNum,
+        pageId,
+        rowNum,
         quality,
         outcome,
         resolution.value ?? null,
         resolution.unit ?? null,
         resolution.source ?? null,
         resolution.resolvedBy,
-      ]
+      ],
     );
   }
 
@@ -1941,20 +2372,37 @@ export class PGLiteEngine implements BrainEngine {
    * v0.30.0: aggregate scorecard. SQL-level allow-list filter (D4 fail-closed).
    * Hidden-holder rows contribute zero to aggregates.
    */
-  async getScorecard(opts: TakesScorecardOpts, allowList: string[] | undefined): Promise<TakesScorecard> {
+  async getScorecard(
+    opts: TakesScorecardOpts,
+    allowList: string[] | undefined,
+  ): Promise<TakesScorecard> {
     // Build the WHERE clause with positional params. PGLite (postgres-via-WASM)
     // shares the SQL dialect with real Postgres so the math expressions match.
     const params: unknown[] = [];
     const clauses: string[] = [];
-    if (opts.holder !== undefined) { params.push(opts.holder); clauses.push(`AND holder = $${params.length}`); }
-    if (opts.domainPrefix !== undefined) {
-      params.push(opts.domainPrefix + '%');
-      clauses.push(`AND EXISTS (SELECT 1 FROM pages p WHERE p.id = takes.page_id AND p.slug LIKE $${params.length})`);
+    if (opts.holder !== undefined) {
+      params.push(opts.holder);
+      clauses.push(`AND holder = $${params.length}`);
     }
-    if (opts.since !== undefined) { params.push(opts.since); clauses.push(`AND since_date >= $${params.length}`); }
-    if (opts.until !== undefined) { params.push(opts.until); clauses.push(`AND since_date <= $${params.length}`); }
-    if (allowList !== undefined) { params.push(allowList); clauses.push(`AND holder = ANY($${params.length}::text[])`); }
-    const where = clauses.join(' ');
+    if (opts.domainPrefix !== undefined) {
+      params.push(opts.domainPrefix + "%");
+      clauses.push(
+        `AND EXISTS (SELECT 1 FROM pages p WHERE p.id = takes.page_id AND p.slug LIKE $${params.length})`,
+      );
+    }
+    if (opts.since !== undefined) {
+      params.push(opts.since);
+      clauses.push(`AND since_date >= $${params.length}`);
+    }
+    if (opts.until !== undefined) {
+      params.push(opts.until);
+      clauses.push(`AND since_date <= $${params.length}`);
+    }
+    if (allowList !== undefined) {
+      params.push(allowList);
+      clauses.push(`AND holder = ANY($${params.length}::text[])`);
+    }
+    const where = clauses.join(" ");
     const res = await this.db.query(
       `SELECT
          COUNT(*) FILTER (WHERE kind = 'bet')::int                            AS total_bets,
@@ -1971,21 +2419,40 @@ export class PGLiteEngine implements BrainEngine {
        WHERE 1=1 ${where}`,
       params,
     );
-    const r = res.rows[0] as { total_bets: number; resolved: number; correct: number; incorrect: number; partial: number; brier: number | null };
+    const r = res.rows[0] as {
+      total_bets: number;
+      resolved: number;
+      correct: number;
+      incorrect: number;
+      partial: number;
+      brier: number | null;
+    };
     return finalizeScorecard(r);
   }
 
   /**
    * v0.30.0: calibration curve. Bins resolved correct/incorrect bets by stated weight.
    */
-  async getCalibrationCurve(opts: CalibrationCurveOpts, allowList: string[] | undefined): Promise<CalibrationBucket[]> {
-    const bucketSize = opts.bucketSize && opts.bucketSize > 0 && opts.bucketSize <= 1 ? opts.bucketSize : 0.1;
+  async getCalibrationCurve(
+    opts: CalibrationCurveOpts,
+    allowList: string[] | undefined,
+  ): Promise<CalibrationBucket[]> {
+    const bucketSize =
+      opts.bucketSize && opts.bucketSize > 0 && opts.bucketSize <= 1
+        ? opts.bucketSize
+        : 0.1;
     const maxIdx = Math.floor(1 / bucketSize) - 1;
     const params: unknown[] = [bucketSize, maxIdx];
     const clauses: string[] = [];
-    if (opts.holder !== undefined) { params.push(opts.holder); clauses.push(`AND holder = $${params.length}`); }
-    if (allowList !== undefined) { params.push(allowList); clauses.push(`AND holder = ANY($${params.length}::text[])`); }
-    const where = clauses.join(' ');
+    if (opts.holder !== undefined) {
+      params.push(opts.holder);
+      clauses.push(`AND holder = $${params.length}`);
+    }
+    if (allowList !== undefined) {
+      params.push(allowList);
+      clauses.push(`AND holder = ANY($${params.length}::text[])`);
+    }
+    const where = clauses.join(" ");
     // NUMERIC casts for exact decimal arithmetic — keeps PGLite + Postgres
     // bucket boundaries identical at FP-edge weights (e.g. 0.7/0.1).
     // See parity test in test/e2e/takes-scorecard-parity.test.ts.
@@ -2010,7 +2477,15 @@ export class PGLiteEngine implements BrainEngine {
        ORDER BY bucket_idx`,
       params,
     );
-    return (res.rows as { bucket_lo: number; bucket_hi: number; n: number; observed: number | null; predicted: number | null }[]).map(r => ({
+    return (
+      res.rows as {
+        bucket_lo: number;
+        bucket_hi: number;
+        n: number;
+        observed: number | null;
+        predicted: number | null;
+      }[]
+    ).map((r) => ({
       bucket_lo: r.bucket_lo,
       bucket_hi: r.bucket_hi,
       n: r.n,
@@ -2019,12 +2494,14 @@ export class PGLiteEngine implements BrainEngine {
     }));
   }
 
-  async addSynthesisEvidence(rowsIn: SynthesisEvidenceInput[]): Promise<number> {
+  async addSynthesisEvidence(
+    rowsIn: SynthesisEvidenceInput[],
+  ): Promise<number> {
     if (rowsIn.length === 0) return 0;
-    const synthesisIds = rowsIn.map(r => r.synthesis_page_id);
-    const takePageIds  = rowsIn.map(r => r.take_page_id);
-    const takeRowNums  = rowsIn.map(r => r.take_row_num);
-    const citationIxs  = rowsIn.map(r => r.citation_index);
+    const synthesisIds = rowsIn.map((r) => r.synthesis_page_id);
+    const takePageIds = rowsIn.map((r) => r.take_page_id);
+    const takeRowNums = rowsIn.map((r) => r.take_row_num);
+    const citationIxs = rowsIn.map((r) => r.citation_index);
     const result = await this.db.query(
       `INSERT INTO synthesis_evidence (synthesis_page_id, take_page_id, take_row_num, citation_index)
        SELECT v.synthesis_page_id::int, v.take_page_id::int, v.take_row_num::int, v.citation_index::int
@@ -2032,19 +2509,26 @@ export class PGLiteEngine implements BrainEngine {
          AS v(synthesis_page_id, take_page_id, take_row_num, citation_index)
        ON CONFLICT (synthesis_page_id, take_page_id, take_row_num) DO NOTHING
        RETURNING 1`,
-      [synthesisIds, takePageIds, takeRowNums, citationIxs]
+      [synthesisIds, takePageIds, takeRowNums, citationIxs],
     );
     return result.rows.length;
   }
 
   // Versions
-  async createVersion(slug: string): Promise<PageVersion> {
+  async createVersion(
+    slug: string,
+    opts?: { sourceId?: string },
+  ): Promise<PageVersion> {
+    const params: unknown[] = [slug];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
     const { rows } = await this.db.query(
       `INSERT INTO page_versions (page_id, compiled_truth, frontmatter)
        SELECT id, compiled_truth, frontmatter
-       FROM pages WHERE slug = $1
+       FROM pages WHERE slug = $1${sourceClause}
        RETURNING *`,
-      [slug]
+      params,
     );
     return rows[0] as unknown as PageVersion;
   }
@@ -2055,7 +2539,7 @@ export class PGLiteEngine implements BrainEngine {
        JOIN pages p ON p.id = pv.page_id
        WHERE p.slug = $1
        ORDER BY pv.snapshot_at DESC`,
-      [slug]
+      [slug],
     );
     return rows as unknown as PageVersion[];
   }
@@ -2068,13 +2552,15 @@ export class PGLiteEngine implements BrainEngine {
         updated_at = now()
       FROM page_versions pv
       WHERE pages.slug = $1 AND pv.id = $2 AND pv.page_id = pages.id`,
-      [slug, versionId]
+      [slug, versionId],
     );
   }
 
   // Stats + health
   async getStats(): Promise<BrainStats> {
-    const { rows: [stats] } = await this.db.query(`
+    const {
+      rows: [stats],
+    } = await this.db.query(`
       SELECT
         -- v0.26.5: exclude soft-deleted from page_count (mirrors postgres-engine).
         (SELECT count(*) FROM pages WHERE deleted_at IS NULL) as page_count,
@@ -2086,7 +2572,7 @@ export class PGLiteEngine implements BrainEngine {
     `);
 
     const { rows: types } = await this.db.query(
-      `SELECT type, count(*)::int as count FROM pages GROUP BY type ORDER BY count DESC`
+      `SELECT type, count(*)::int as count FROM pages GROUP BY type ORDER BY count DESC`,
     );
     const pages_by_type: Record<string, number> = {};
     for (const t of types as { type: string; count: number }[]) {
@@ -2110,7 +2596,9 @@ export class PGLiteEngine implements BrainEngine {
     // pages_with_timeline) and v0.10.3 graph layer (link_coverage, timeline_coverage,
     // most_connected). Both coexist: master's brain_score is the composite
     // dashboard, v0.10.3 metrics give entity-page-level granularity.
-    const { rows: [h] } = await this.db.query(`
+    const {
+      rows: [h],
+    } = await this.db.query(`
       WITH entity_pages AS (
         SELECT id, slug FROM pages WHERE type IN ('person', 'company')
       )
@@ -2160,17 +2648,26 @@ export class PGLiteEngine implements BrainEngine {
     const pagesWithTimeline = Number(r.pages_with_timeline);
 
     const linkDensity = pageCount > 0 ? Math.min(linkCount / pageCount, 1) : 0;
-    const timelineCoverageDensity = pageCount > 0 ? Math.min(pagesWithTimeline / pageCount, 1) : 0;
-    const noOrphans = pageCount > 0 ? 1 - (orphanPages / pageCount) : 1;
-    const noDeadLinks = pageCount > 0 ? 1 - Math.min(deadLinks / pageCount, 1) : 1;
+    const timelineCoverageDensity =
+      pageCount > 0 ? Math.min(pagesWithTimeline / pageCount, 1) : 0;
+    const noOrphans = pageCount > 0 ? 1 - orphanPages / pageCount : 1;
+    const noDeadLinks =
+      pageCount > 0 ? 1 - Math.min(deadLinks / pageCount, 1) : 1;
     // Bug 11 — per-component points. Sum equals brainScore by construction
     // so `doctor` can render a breakdown that adds up to the total.
-    const embedCoverageScore = pageCount === 0 ? 0 : Math.round(embedCoverage * 35);
+    const embedCoverageScore =
+      pageCount === 0 ? 0 : Math.round(embedCoverage * 35);
     const linkDensityScore = pageCount === 0 ? 0 : Math.round(linkDensity * 25);
-    const timelineCoverageScore = pageCount === 0 ? 0 : Math.round(timelineCoverageDensity * 15);
+    const timelineCoverageScore =
+      pageCount === 0 ? 0 : Math.round(timelineCoverageDensity * 15);
     const noOrphansScore = pageCount === 0 ? 0 : Math.round(noOrphans * 15);
     const noDeadLinksScore = pageCount === 0 ? 0 : Math.round(noDeadLinks * 10);
-    const brainScore = embedCoverageScore + linkDensityScore + timelineCoverageScore + noOrphansScore + noDeadLinksScore;
+    const brainScore =
+      embedCoverageScore +
+      linkDensityScore +
+      timelineCoverageScore +
+      noOrphansScore +
+      noDeadLinksScore;
 
     return {
       page_count: pageCount,
@@ -2182,10 +2679,12 @@ export class PGLiteEngine implements BrainEngine {
       dead_links: deadLinks,
       link_coverage: Number(r.link_coverage),
       timeline_coverage: Number(r.timeline_coverage),
-      most_connected: (connected as { slug: string; link_count: number }[]).map(c => ({
-        slug: c.slug,
-        link_count: Number(c.link_count),
-      })),
+      most_connected: (connected as { slug: string; link_count: number }[]).map(
+        (c) => ({
+          slug: c.slug,
+          link_count: Number(c.link_count),
+        }),
+      ),
       embed_coverage_score: embedCoverageScore,
       link_density_score: linkDensityScore,
       timeline_coverage_score: timelineCoverageScore,
@@ -2199,7 +2698,12 @@ export class PGLiteEngine implements BrainEngine {
     await this.db.query(
       `INSERT INTO ingest_log (source_type, source_ref, pages_updated, summary)
        VALUES ($1, $2, $3::jsonb, $4)`,
-      [entry.source_type, entry.source_ref, JSON.stringify(entry.pages_updated), entry.summary]
+      [
+        entry.source_type,
+        entry.source_ref,
+        JSON.stringify(entry.pages_updated),
+        entry.summary,
+      ],
     );
   }
 
@@ -2207,17 +2711,25 @@ export class PGLiteEngine implements BrainEngine {
     const limit = opts?.limit || 50;
     const { rows } = await this.db.query(
       `SELECT * FROM ingest_log ORDER BY created_at DESC LIMIT $1`,
-      [limit]
+      [limit],
     );
     return rows as unknown as IngestLogEntry[];
   }
 
   // Sync
-  async updateSlug(oldSlug: string, newSlug: string): Promise<void> {
+  async updateSlug(
+    oldSlug: string,
+    newSlug: string,
+    opts?: { sourceId?: string },
+  ): Promise<void> {
     newSlug = validateSlug(newSlug);
+    const params: unknown[] = [newSlug, oldSlug];
+    const sourceClause = opts?.sourceId
+      ? ` AND source_id = $${params.push(opts.sourceId)}`
+      : "";
     await this.db.query(
-      `UPDATE pages SET slug = $1, updated_at = now() WHERE slug = $2`,
-      [newSlug, oldSlug]
+      `UPDATE pages SET slug = $1, updated_at = now() WHERE slug = $2${sourceClause}`,
+      params,
     );
   }
 
@@ -2227,7 +2739,10 @@ export class PGLiteEngine implements BrainEngine {
 
   // Config
   async getConfig(key: string): Promise<string | null> {
-    const { rows } = await this.db.query('SELECT value FROM config WHERE key = $1', [key]);
+    const { rows } = await this.db.query(
+      "SELECT value FROM config WHERE key = $1",
+      [key],
+    );
     return rows.length > 0 ? (rows[0] as { value: string }).value : null;
   }
 
@@ -2235,7 +2750,7 @@ export class PGLiteEngine implements BrainEngine {
     await this.db.query(
       `INSERT INTO config (key, value) VALUES ($1, $2)
        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
-      [key, value]
+      [key, value],
     );
   }
 
@@ -2250,12 +2765,15 @@ export class PGLiteEngine implements BrainEngine {
        JOIN pages p ON p.id = cc.page_id
        WHERE p.slug = $1
        ORDER BY cc.chunk_index`,
-      [slug]
+      [slug],
     );
-    return (rows as Record<string, unknown>[]).map(r => rowToChunk(r, true));
+    return (rows as Record<string, unknown>[]).map((r) => rowToChunk(r, true));
   }
 
-  async executeRaw<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]> {
+  async executeRaw<T = Record<string, unknown>>(
+    sql: string,
+    params?: unknown[],
+  ): Promise<T[]> {
     const { rows } = await this.db.query(sql, params);
     return rows as T[];
   }
@@ -2268,23 +2786,30 @@ export class PGLiteEngine implements BrainEngine {
   // per-lang tree-sitter queries land in Layer 5/6.
   // ============================================================
 
-  async addCodeEdges(edges: import('./types.ts').CodeEdgeInput[]): Promise<number> {
+  async addCodeEdges(
+    edges: import("./types.ts").CodeEdgeInput[],
+  ): Promise<number> {
     if (edges.length === 0) return 0;
     let inserted = 0;
     // Split into resolved vs unresolved. Resolved rows carry to_chunk_id
     // (known target chunk); unresolved rows only know the qualified name.
-    const resolved = edges.filter(e => e.to_chunk_id != null);
-    const unresolved = edges.filter(e => e.to_chunk_id == null);
+    const resolved = edges.filter((e) => e.to_chunk_id != null);
+    const unresolved = edges.filter((e) => e.to_chunk_id == null);
 
     if (resolved.length > 0) {
       const rowParts: string[] = [];
       const params: unknown[] = [];
       let p = 1;
       for (const e of resolved) {
-        rowParts.push(`($${p++}, $${p++}, $${p++}, $${p++}, $${p++}, $${p++}::jsonb, $${p++})`);
+        rowParts.push(
+          `($${p++}, $${p++}, $${p++}, $${p++}, $${p++}, $${p++}::jsonb, $${p++})`,
+        );
         params.push(
-          e.from_chunk_id, e.to_chunk_id, e.from_symbol_qualified,
-          e.to_symbol_qualified, e.edge_type,
+          e.from_chunk_id,
+          e.to_chunk_id,
+          e.from_symbol_qualified,
+          e.to_symbol_qualified,
+          e.edge_type,
           JSON.stringify(e.edge_metadata ?? {}),
           e.source_id ?? null,
         );
@@ -2292,7 +2817,7 @@ export class PGLiteEngine implements BrainEngine {
       const res = await this.db.query(
         `INSERT INTO code_edges_chunk
            (from_chunk_id, to_chunk_id, from_symbol_qualified, to_symbol_qualified, edge_type, edge_metadata, source_id)
-         VALUES ${rowParts.join(', ')}
+         VALUES ${rowParts.join(", ")}
          ON CONFLICT (from_chunk_id, to_chunk_id, edge_type) DO NOTHING`,
         params,
       );
@@ -2303,9 +2828,14 @@ export class PGLiteEngine implements BrainEngine {
       const params: unknown[] = [];
       let p = 1;
       for (const e of unresolved) {
-        rowParts.push(`($${p++}, $${p++}, $${p++}, $${p++}, $${p++}::jsonb, $${p++})`);
+        rowParts.push(
+          `($${p++}, $${p++}, $${p++}, $${p++}, $${p++}::jsonb, $${p++})`,
+        );
         params.push(
-          e.from_chunk_id, e.from_symbol_qualified, e.to_symbol_qualified, e.edge_type,
+          e.from_chunk_id,
+          e.from_symbol_qualified,
+          e.to_symbol_qualified,
+          e.edge_type,
           JSON.stringify(e.edge_metadata ?? {}),
           e.source_id ?? null,
         );
@@ -2313,7 +2843,7 @@ export class PGLiteEngine implements BrainEngine {
       const res = await this.db.query(
         `INSERT INTO code_edges_symbol
            (from_chunk_id, from_symbol_qualified, to_symbol_qualified, edge_type, edge_metadata, source_id)
-         VALUES ${rowParts.join(', ')}
+         VALUES ${rowParts.join(", ")}
          ON CONFLICT (from_chunk_id, to_symbol_qualified, edge_type) DO NOTHING`,
         params,
       );
@@ -2339,11 +2869,12 @@ export class PGLiteEngine implements BrainEngine {
   async getCallersOf(
     qualifiedName: string,
     opts?: { sourceId?: string; allSources?: boolean; limit?: number },
-  ): Promise<import('./types.ts').CodeEdgeResult[]> {
+  ): Promise<import("./types.ts").CodeEdgeResult[]> {
     const limit = Math.min(opts?.limit ?? 100, 500);
-    const sourceClause = opts?.allSources || !opts?.sourceId
-      ? ''
-      : `AND source_id = '${opts.sourceId.replace(/'/g, "''")}'`;
+    const sourceClause =
+      opts?.allSources || !opts?.sourceId
+        ? ""
+        : `AND source_id = '${opts.sourceId.replace(/'/g, "''")}'`;
     const { rows } = await this.db.query(
       `SELECT id, from_chunk_id, to_chunk_id, from_symbol_qualified, to_symbol_qualified,
               edge_type, edge_metadata, source_id, true as resolved
@@ -2363,11 +2894,12 @@ export class PGLiteEngine implements BrainEngine {
   async getCalleesOf(
     qualifiedName: string,
     opts?: { sourceId?: string; allSources?: boolean; limit?: number },
-  ): Promise<import('./types.ts').CodeEdgeResult[]> {
+  ): Promise<import("./types.ts").CodeEdgeResult[]> {
     const limit = Math.min(opts?.limit ?? 100, 500);
-    const sourceClause = opts?.allSources || !opts?.sourceId
-      ? ''
-      : `AND source_id = '${opts.sourceId.replace(/'/g, "''")}'`;
+    const sourceClause =
+      opts?.allSources || !opts?.sourceId
+        ? ""
+        : `AND source_id = '${opts.sourceId.replace(/'/g, "''")}'`;
     const { rows } = await this.db.query(
       `SELECT id, from_chunk_id, to_chunk_id, from_symbol_qualified, to_symbol_qualified,
               edge_type, edge_metadata, source_id, true as resolved
@@ -2386,32 +2918,40 @@ export class PGLiteEngine implements BrainEngine {
 
   async getEdgesByChunk(
     chunkId: number,
-    opts?: { direction?: 'in' | 'out' | 'both'; edgeType?: string; limit?: number },
-  ): Promise<import('./types.ts').CodeEdgeResult[]> {
-    const direction = opts?.direction ?? 'both';
+    opts?: {
+      direction?: "in" | "out" | "both";
+      edgeType?: string;
+      limit?: number;
+    },
+  ): Promise<import("./types.ts").CodeEdgeResult[]> {
+    const direction = opts?.direction ?? "both";
     const limit = Math.min(opts?.limit ?? 50, 200);
-    const edgeTypeClause = opts?.edgeType ? `AND edge_type = '${opts.edgeType.replace(/'/g, "''")}'` : '';
+    const edgeTypeClause = opts?.edgeType
+      ? `AND edge_type = '${opts.edgeType.replace(/'/g, "''")}'`
+      : "";
     // Build the chunk-table filter based on direction. Unresolved edges
     // (code_edges_symbol) only carry from_chunk_id — there's no inbound
     // direction into them from a chunk ID, so we include them only when
     // direction is 'out' or 'both'.
-    let chunkFilter = '';
-    if (direction === 'in') chunkFilter = `WHERE to_chunk_id = $1`;
-    else if (direction === 'out') chunkFilter = `WHERE from_chunk_id = $1`;
+    let chunkFilter = "";
+    if (direction === "in") chunkFilter = `WHERE to_chunk_id = $1`;
+    else if (direction === "out") chunkFilter = `WHERE from_chunk_id = $1`;
     else chunkFilter = `WHERE from_chunk_id = $1 OR to_chunk_id = $1`;
 
-    let symbolFilter = '';
-    if (direction === 'out' || direction === 'both') {
+    let symbolFilter = "";
+    if (direction === "out" || direction === "both") {
       symbolFilter = `WHERE from_chunk_id = $1`;
     }
 
-    const unionClause = symbolFilter ? `
+    const unionClause = symbolFilter
+      ? `
       UNION ALL
       SELECT id, from_chunk_id, NULL as to_chunk_id, from_symbol_qualified, to_symbol_qualified,
              edge_type, edge_metadata, source_id, false as resolved
         FROM code_edges_symbol
         ${symbolFilter} ${edgeTypeClause}
-    ` : '';
+    `
+      : "";
 
     const { rows } = await this.db.query(
       `SELECT id, from_chunk_id, to_chunk_id, from_symbol_qualified, to_symbol_qualified,
@@ -2449,16 +2989,21 @@ export class PGLiteEngine implements BrainEngine {
         input.remote,
         input.job_id,
         input.subagent_id,
-      ]
+      ],
     );
     return rows[0]!.id;
   }
 
-  async listEvalCandidates(filter?: { since?: Date; limit?: number; tool?: 'query' | 'search' }): Promise<EvalCandidate[]> {
+  async listEvalCandidates(filter?: {
+    since?: Date;
+    limit?: number;
+    tool?: "query" | "search";
+  }): Promise<EvalCandidate[]> {
     const raw = filter?.limit;
-    const limit = (raw === undefined || raw === null || !Number.isFinite(raw) || raw <= 0)
-      ? 1000
-      : Math.min(Math.floor(raw), 100000);
+    const limit =
+      raw === undefined || raw === null || !Number.isFinite(raw) || raw <= 0
+        ? 1000
+        : Math.min(Math.floor(raw), 100000);
     const since = filter?.since ?? new Date(0);
     const tool = filter?.tool ?? null;
     // id DESC tiebreaker — see postgres-engine for rationale.
@@ -2467,13 +3012,13 @@ export class PGLiteEngine implements BrainEngine {
           `SELECT * FROM eval_candidates
            WHERE created_at >= $1 AND tool_name = $2
            ORDER BY created_at DESC, id DESC LIMIT $3`,
-          [since, tool, limit]
+          [since, tool, limit],
         )
       : await this.db.query(
           `SELECT * FROM eval_candidates
            WHERE created_at >= $1
            ORDER BY created_at DESC, id DESC LIMIT $2`,
-          [since, limit]
+          [since, limit],
         );
     return rows as unknown as EvalCandidate[];
   }
@@ -2481,7 +3026,7 @@ export class PGLiteEngine implements BrainEngine {
   async deleteEvalCandidatesBefore(date: Date): Promise<number> {
     const { rows } = await this.db.query(
       `DELETE FROM eval_candidates WHERE created_at < $1 RETURNING id`,
-      [date]
+      [date],
     );
     return rows.length;
   }
@@ -2489,15 +3034,17 @@ export class PGLiteEngine implements BrainEngine {
   async logEvalCaptureFailure(reason: EvalCaptureFailureReason): Promise<void> {
     await this.db.query(
       `INSERT INTO eval_capture_failures (reason) VALUES ($1)`,
-      [reason]
+      [reason],
     );
   }
 
-  async listEvalCaptureFailures(filter?: { since?: Date }): Promise<EvalCaptureFailure[]> {
+  async listEvalCaptureFailures(filter?: {
+    since?: Date;
+  }): Promise<EvalCaptureFailure[]> {
     const since = filter?.since ?? new Date(0);
     const { rows } = await this.db.query(
       `SELECT * FROM eval_capture_failures WHERE ts >= $1 ORDER BY ts DESC`,
-      [since]
+      [since],
     );
     return rows as unknown as EvalCaptureFailure[];
   }
@@ -2506,7 +3053,9 @@ export class PGLiteEngine implements BrainEngine {
   // v0.29 — Salience + Anomaly Detection
   // ============================================================
 
-  async batchLoadEmotionalInputs(slugs?: string[]): Promise<EmotionalWeightInputRow[]> {
+  async batchLoadEmotionalInputs(
+    slugs?: string[],
+  ): Promise<EmotionalWeightInputRow[]> {
     // Two CTEs avoid the N×M cartesian product (codex C4#4).
     const baseSql = `
       WITH page_tags AS (
@@ -2527,21 +3076,25 @@ export class PGLiteEngine implements BrainEngine {
         LEFT JOIN page_takes pk ON pk.page_id = p.id
     `;
     const { rows } = slugs
-      ? await this.db.query(`${baseSql} WHERE p.slug = ANY($1::text[])`, [slugs])
+      ? await this.db.query(`${baseSql} WHERE p.slug = ANY($1::text[])`, [
+          slugs,
+        ])
       : await this.db.query(baseSql);
-    return (rows as Record<string, unknown>[]).map(r => ({
+    return (rows as Record<string, unknown>[]).map((r) => ({
       slug: String(r.slug),
       source_id: String(r.source_id),
       tags: (r.tags as string[]) ?? [],
-      takes: (r.takes as EmotionalWeightInputRow['takes']) ?? [],
+      takes: (r.takes as EmotionalWeightInputRow["takes"]) ?? [],
     }));
   }
 
-  async setEmotionalWeightBatch(rows: EmotionalWeightWriteRow[]): Promise<number> {
+  async setEmotionalWeightBatch(
+    rows: EmotionalWeightWriteRow[],
+  ): Promise<number> {
     if (rows.length === 0) return 0;
-    const slugs = rows.map(r => r.slug);
-    const sourceIds = rows.map(r => r.source_id);
-    const weights = rows.map(r => r.weight);
+    const slugs = rows.map((r) => r.slug);
+    const sourceIds = rows.map((r) => r.source_id);
+    const weights = rows.map((r) => r.weight);
     // Composite-keyed UPDATE FROM unnest (codex C4#3).
     // v0.29.1: bump salience_touched_at when emotional_weight actually changes
     // so the salience query window picks up newly-salient old pages. Mirror
@@ -2557,7 +3110,7 @@ export class PGLiteEngine implements BrainEngine {
            AS u(slug, source_id, weight)
         WHERE pages.slug = u.slug AND pages.source_id = u.source_id
         RETURNING 1`,
-      [slugs, sourceIds, weights]
+      [slugs, sourceIds, weights],
     );
     return result.rows.length;
   }
@@ -2569,9 +3122,9 @@ export class PGLiteEngine implements BrainEngine {
     const boundaryIso = new Date(Date.now() - days * 86400000).toISOString();
 
     const params: unknown[] = [boundaryIso];
-    let prefixCondition = '';
+    let prefixCondition = "";
     if (slugPrefix) {
-      const escaped = slugPrefix.replace(/[\\%_]/g, (c) => '\\' + c) + '%';
+      const escaped = slugPrefix.replace(/[\\%_]/g, (c) => "\\" + c) + "%";
       params.push(escaped);
       prefixCondition = `AND p.slug LIKE $${params.length} ESCAPE '\\'`;
     }
@@ -2580,20 +3133,21 @@ export class PGLiteEngine implements BrainEngine {
 
     // v0.29.1: third score term via buildRecencyComponentSql. Default
     // 'flat' = v0.29.0 behavior. 'on' opts into per-prefix decay.
-    const recencyBias = opts.recency_bias ?? 'flat';
+    const recencyBias = opts.recency_bias ?? "flat";
     let recencySql: string;
-    if (recencyBias === 'on') {
-      const { resolveRecencyDecayMap, DEFAULT_FALLBACK } = await import('./search/recency-decay.ts');
+    if (recencyBias === "on") {
+      const { resolveRecencyDecayMap, DEFAULT_FALLBACK } =
+        await import("./search/recency-decay.ts");
       recencySql = buildRecencyComponentSql({
-        slugColumn: 'p.slug',
-        dateExpr: 'COALESCE(p.effective_date, p.updated_at)',
+        slugColumn: "p.slug",
+        dateExpr: "COALESCE(p.effective_date, p.updated_at)",
         decayMap: resolveRecencyDecayMap(),
         fallback: DEFAULT_FALLBACK,
       });
     } else {
       recencySql = buildRecencyComponentSql({
-        slugColumn: 'p.slug',
-        dateExpr: 'p.updated_at',
+        slugColumn: "p.slug",
+        dateExpr: "p.updated_at",
         decayMap: {},
         fallback: { halflifeDays: 1, coefficient: 1.0 },
       });
@@ -2613,13 +3167,13 @@ export class PGLiteEngine implements BrainEngine {
         GROUP BY p.id
         ORDER BY score DESC
         LIMIT ${limitParam}`,
-      params
+      params,
     );
-    return (rows as Record<string, unknown>[]).map(r => ({
+    return (rows as Record<string, unknown>[]).map((r) => ({
       slug: String(r.slug),
       source_id: String(r.source_id),
-      title: String(r.title ?? ''),
-      type: r.type as SalienceResult['type'],
+      title: String(r.title ?? ""),
+      type: r.type as SalienceResult["type"],
       updated_at: r.updated_at as Date,
       emotional_weight: Number(r.emotional_weight ?? 0),
       take_count: Number(r.take_count ?? 0),
@@ -2631,10 +3185,12 @@ export class PGLiteEngine implements BrainEngine {
   async findAnomalies(opts: AnomaliesOpts): Promise<AnomalyResult[]> {
     const sigma = opts.sigma ?? 3.0;
     const lookbackDays = Math.max(1, opts.lookback_days ?? 30);
-    const sinceIso = (opts.since ?? new Date().toISOString().slice(0, 10));
-    const sinceDate = new Date(sinceIso + 'T00:00:00Z');
+    const sinceIso = opts.since ?? new Date().toISOString().slice(0, 10);
+    const sinceDate = new Date(sinceIso + "T00:00:00Z");
     const sinceEnd = new Date(sinceDate.getTime() + 86400000);
-    const baselineStart = new Date(sinceDate.getTime() - lookbackDays * 86400000);
+    const baselineStart = new Date(
+      sinceDate.getTime() - lookbackDays * 86400000,
+    );
 
     const tagBaselineRes = await this.db.query(
       `WITH days AS (
@@ -2657,7 +3213,7 @@ export class PGLiteEngine implements BrainEngine {
        SELECT cd.tag AS cohort_value, d.day::text AS day, COALESCE(t.cnt, 0)::int AS count
          FROM cohort_keys cd CROSS JOIN days d
          LEFT JOIN touched t ON t.tag = cd.tag AND t.day = d.day`,
-      [baselineStart.toISOString(), sinceDate.toISOString()]
+      [baselineStart.toISOString(), sinceDate.toISOString()],
     );
 
     const typeBaselineRes = await this.db.query(
@@ -2681,7 +3237,7 @@ export class PGLiteEngine implements BrainEngine {
        SELECT cd.type AS cohort_value, d.day::text AS day, COALESCE(t.cnt, 0)::int AS count
          FROM cohort_keys cd CROSS JOIN days d
          LEFT JOIN touched t ON t.type = cd.type AND t.day = d.day`,
-      [baselineStart.toISOString(), sinceDate.toISOString()]
+      [baselineStart.toISOString(), sinceDate.toISOString()],
     );
 
     const tagTodayRes = await this.db.query(
@@ -2691,7 +3247,7 @@ export class PGLiteEngine implements BrainEngine {
          FROM tags t JOIN pages p ON p.id = t.page_id
         WHERE p.updated_at >= $1::timestamptz AND p.updated_at < $2::timestamptz
         GROUP BY 1`,
-      [sinceIso, sinceEnd.toISOString()]
+      [sinceIso, sinceEnd.toISOString()],
     );
 
     const typeTodayRes = await this.db.query(
@@ -2701,32 +3257,32 @@ export class PGLiteEngine implements BrainEngine {
          FROM pages p
         WHERE p.updated_at >= $1::timestamptz AND p.updated_at < $2::timestamptz
         GROUP BY 1`,
-      [sinceIso, sinceEnd.toISOString()]
+      [sinceIso, sinceEnd.toISOString()],
     );
 
     const baseline = [
-      ...(tagBaselineRes.rows as Record<string, unknown>[]).map(r => ({
-        cohort_kind: 'tag' as const,
+      ...(tagBaselineRes.rows as Record<string, unknown>[]).map((r) => ({
+        cohort_kind: "tag" as const,
         cohort_value: String(r.cohort_value),
         day: String(r.day),
         count: Number(r.count),
       })),
-      ...(typeBaselineRes.rows as Record<string, unknown>[]).map(r => ({
-        cohort_kind: 'type' as const,
+      ...(typeBaselineRes.rows as Record<string, unknown>[]).map((r) => ({
+        cohort_kind: "type" as const,
         cohort_value: String(r.cohort_value),
         day: String(r.day),
         count: Number(r.count),
       })),
     ];
     const today = [
-      ...(tagTodayRes.rows as Record<string, unknown>[]).map(r => ({
-        cohort_kind: 'tag' as const,
+      ...(tagTodayRes.rows as Record<string, unknown>[]).map((r) => ({
+        cohort_kind: "tag" as const,
         cohort_value: String(r.cohort_value),
         count: Number(r.count),
         page_slugs: (r.slugs as string[]) ?? [],
       })),
-      ...(typeTodayRes.rows as Record<string, unknown>[]).map(r => ({
-        cohort_kind: 'type' as const,
+      ...(typeTodayRes.rows as Record<string, unknown>[]).map((r) => ({
+        cohort_kind: "type" as const,
         cohort_value: String(r.cohort_value),
         count: Number(r.count),
         page_slugs: (r.slugs as string[]) ?? [],
@@ -2737,14 +3293,16 @@ export class PGLiteEngine implements BrainEngine {
   }
 }
 
-function rowToCodeEdge(row: Record<string, unknown>): import('./types.ts').CodeEdgeResult {
+function rowToCodeEdge(
+  row: Record<string, unknown>,
+): import("./types.ts").CodeEdgeResult {
   return {
     id: row.id as number,
     from_chunk_id: row.from_chunk_id as number,
     to_chunk_id: row.to_chunk_id == null ? null : (row.to_chunk_id as number),
-    from_symbol_qualified: (row.from_symbol_qualified as string) ?? '',
-    to_symbol_qualified: (row.to_symbol_qualified as string) ?? '',
-    edge_type: (row.edge_type as string) ?? '',
+    from_symbol_qualified: (row.from_symbol_qualified as string) ?? "",
+    to_symbol_qualified: (row.to_symbol_qualified as string) ?? "",
+    edge_type: (row.edge_type as string) ?? "",
     edge_metadata: (row.edge_metadata as Record<string, unknown>) ?? {},
     source_id: row.source_id == null ? null : (row.source_id as string),
     resolved: Boolean(row.resolved),

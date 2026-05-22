@@ -25,6 +25,12 @@ start here.
    agent-facing decision table: when to switch brain, when to switch source, how
    cross-brain federation works (latent-space only; the agent decides).
 5. [`./skills/RESOLVER.md`](./skills/RESOLVER.md) — skill dispatcher. Read before any task.
+6. [`./BRAIN_CONTEXT.md`](./BRAIN_CONTEXT.md), [`./SESSION_HANDOFF.md`](./SESSION_HANDOFF.md),
+   and [`./GBRAIN_DEV_WORKFLOW.md`](./GBRAIN_DEV_WORKFLOW.md) — local project memory,
+   current state, and source-sync commands for this checkout.
+7. [`./docs/architecture/project-operating-architecture.md`](./docs/architecture/project-operating-architecture.md)
+   — local operating architecture tying GBrain source routing, wiki maintenance,
+   source-scoped sync/import, and agent handoff together.
 
 ## Trust boundary (critical)
 

@@ -53,13 +53,14 @@ import { getCliOptions, cliOptsToProgressOptions } from './cli-options.ts';
 
 // ─── Types ─────────────────────────────────────────────────────────
 
-export type CyclePhase = 'lint' | 'backlinks' | 'sync' | 'synthesize' | 'extract' | 'patterns' | 'recompute_emotional_weight' | 'embed' | 'orphans' | 'purge';
+export type CyclePhase = 'lint' | 'backlinks' | 'sync' | 'synthesize' | 'wiki' | 'extract' | 'patterns' | 'recompute_emotional_weight' | 'embed' | 'orphans' | 'purge';
 
 export const ALL_PHASES: CyclePhase[] = [
   'lint',
   'backlinks',
   'sync',
   'synthesize',
+  'wiki',
   'extract',
   'patterns',
   // v0.29 — runs AFTER extract + synthesize so it sees the union of
@@ -85,6 +86,7 @@ const NEEDS_LOCK_PHASES: ReadonlySet<CyclePhase> = new Set([
   'backlinks',
   'sync',
   'synthesize',
+  'wiki',
   'extract',
   'patterns',
   // v0.29 — writes pages.emotional_weight column.
@@ -150,6 +152,10 @@ export interface CycleReport {
     synth_pages_written: number;
     /** v0.23: number of pattern pages written/updated by patterns phase. */
     patterns_written: number;
+    /** v1.0: number of source files the wiki phase processed. */
+    wiki_sources_ingested: number;
+    /** v1.0: number of new source/concept/synthesis pages written by wiki phase. */
+    wiki_pages_written: number;
     /** v0.29: number of pages whose emotional_weight was (re)computed. */
     pages_emotional_weight_recomputed: number;
     /** v0.26.5: number of source rows hard-deleted by the purge phase. */
@@ -958,6 +964,33 @@ export async function runCycle(
       await safeYield(opts.yieldBetweenPhases);
     }
 
+    // ── Phase 4b: wiki (v1.0) ──────────────────────────────────
+    // Automates the LLM Wiki Daily Workflow: scans raw/, ingests new
+    // sources, updates index.md and log.md.
+    if (phases.includes('wiki')) {
+      if (!engine) {
+        phaseResults.push({
+          phase: 'wiki',
+          status: 'skipped',
+          duration_ms: 0,
+          summary: 'no database connected',
+          details: { reason: 'no_database' },
+        });
+      } else {
+        progress.start('cycle.wiki');
+        const { runPhaseWiki } = await import('./cycle/wiki.ts');
+        const { result, duration_ms } = await timePhase(() => runPhaseWiki(engine, {
+          brainDir: opts.brainDir,
+          dryRun,
+          yieldDuringPhase: opts.yieldDuringPhase,
+        }));
+        result.duration_ms = duration_ms;
+        phaseResults.push(result);
+        progress.finish();
+      }
+      await safeYield(opts.yieldBetweenPhases);
+    }
+
     // ── Phase 5: extract (now picks up synthesize output) ───────
     if (phases.includes('extract')) {
       checkAborted(opts.signal);
@@ -1150,6 +1183,8 @@ function emptyTotals(): CycleReport['totals'] {
     transcripts_processed: 0,
     synth_pages_written: 0,
     patterns_written: 0,
+    wiki_sources_ingested: 0,
+    wiki_pages_written: 0,
     pages_emotional_weight_recomputed: 0,
     purged_sources_count: 0,
     purged_pages_count: 0,
@@ -1180,6 +1215,9 @@ function extractTotals(phases: PhaseResult[]): CycleReport['totals'] {
       t.synth_pages_written = Number(p.details.pages_written ?? 0);
     } else if (p.phase === 'patterns' && p.details) {
       t.patterns_written = Number(p.details.patterns_written ?? 0);
+    } else if (p.phase === 'wiki' && p.details) {
+      t.wiki_sources_ingested = Number(p.details.sources_ingested ?? 0);
+      t.wiki_pages_written = Number(p.details.pages_written ?? 0);
     } else if (p.phase === 'recompute_emotional_weight' && p.details) {
       t.pages_emotional_weight_recomputed = Number(p.details.pages_recomputed ?? 0);
     } else if (p.phase === 'purge' && p.details) {

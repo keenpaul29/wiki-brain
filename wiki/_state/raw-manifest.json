@@ -42,6 +42,12 @@
         "last_write_time":  "2026-05-05T18:35:39.7718755+05:30"
     },
     {
+        "path":  "raw/Don\u0027t Outsource the Learning.md",
+        "sha256":  "7e50ed3ca87cdcca9eabb4398e4869340a197dc0e1e3bb2a24fa6ebcf3c2a4e8",
+        "length":  9634,
+        "last_write_time":  "2026-05-19T16:39:51.0514287+05:30"
+    },
+    {
         "path":  "raw/Enhance productivity with AI + Remote Dev.md",
         "sha256":  "a193c5e4920616b875c8ba518e434f342ca0ed4263b45c3bf2ade841d1e6434d",
         "length":  12521,

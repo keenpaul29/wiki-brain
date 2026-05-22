@@ -188,6 +188,7 @@ export async function importFromContent(
   content: string,
   opts: {
     noEmbed?: boolean;
+    sourceId?: string;
     /**
      * v0.29.1: basename without extension for filename-date precedence on
      * `daily/`, `meetings/` slugs. importFromFile threads this from the
@@ -232,7 +233,8 @@ export async function importFromContent(
     tags: parsed.tags,
   };
 
-  const existing = await engine.getPage(slug);
+  const sourceOpts = opts.sourceId ? { sourceId: opts.sourceId } : undefined;
+  const existing = await engine.getPage(slug, sourceOpts);
   if (existing?.content_hash === hash) {
     return { slug, status: 'skipped', chunks: 0, parsedPage };
   }
@@ -270,7 +272,7 @@ export async function importFromContent(
 
   // Transaction wraps all DB writes
   await engine.transaction(async (tx) => {
-    if (existing) await tx.createVersion(slug);
+    if (existing) await tx.createVersion(slug, sourceOpts);
 
     // v0.29.1 — compute effective_date from frontmatter precedence chain.
     // Filename comes from importFromFile path (basename) or the slug tail
@@ -290,6 +292,7 @@ export async function importFromContent(
     });
 
     await tx.putPage(slug, {
+      source_id: opts.sourceId,
       type: parsed.type,
       title: parsed.title,
       compiled_truth: parsed.compiled_truth,
@@ -302,20 +305,20 @@ export async function importFromContent(
     });
 
     // Tag reconciliation: remove stale, add current
-    const existingTags = await tx.getTags(slug);
+    const existingTags = await tx.getTags(slug, sourceOpts);
     const newTags = new Set(parsed.tags);
     for (const old of existingTags) {
-      if (!newTags.has(old)) await tx.removeTag(slug, old);
+      if (!newTags.has(old)) await tx.removeTag(slug, old, sourceOpts);
     }
     for (const tag of parsed.tags) {
-      await tx.addTag(slug, tag);
+      await tx.addTag(slug, tag, sourceOpts);
     }
 
     if (chunks.length > 0) {
-      await tx.upsertChunks(slug, chunks);
+      await tx.upsertChunks(slug, chunks, sourceOpts);
     } else {
       // Content is empty — delete stale chunks so they don't ghost in search results
-      await tx.deleteChunks(slug);
+      await tx.deleteChunks(slug, sourceOpts);
     }
 
     // v0.19.0 E1 — doc↔impl linking: if this markdown page cites code paths
@@ -362,7 +365,7 @@ export async function importFromFile(
   engine: BrainEngine,
   filePath: string,
   relativePath: string,
-  opts: { noEmbed?: boolean; inferFrontmatter?: boolean } = {},
+  opts: { noEmbed?: boolean; inferFrontmatter?: boolean; sourceId?: string } = {},
 ): Promise<ImportResult> {
   // Defense-in-depth: reject symlinks before reading content.
   const lstat = lstatSync(filePath);
@@ -431,7 +434,7 @@ export async function importCodeFile(
   engine: BrainEngine,
   relativePath: string,
   content: string,
-  opts: { noEmbed?: boolean; force?: boolean } = {},
+  opts: { noEmbed?: boolean; force?: boolean; sourceId?: string } = {},
 ): Promise<ImportResult> {
   const slug = slugifyCodePath(relativePath);
   const lang = detectCodeLanguage(relativePath) || 'unknown';
@@ -448,7 +451,8 @@ export async function importCodeFile(
     .update(JSON.stringify({ title, type: 'code', content, lang, chunker_version: CHUNKER_VERSION }))
     .digest('hex');
 
-  const existing = await engine.getPage(slug);
+  const sourceOpts = opts.sourceId ? { sourceId: opts.sourceId } : undefined;
+  const existing = await engine.getPage(slug, sourceOpts);
   if (!opts.force && existing?.content_hash === hash) {
     return { slug, status: 'skipped', chunks: 0 };
   }
@@ -486,7 +490,7 @@ export async function importCodeFile(
   // OpenAI API. Order matters: our chunk_index is semantic (tree-sitter
   // order), so a matching (chunk_index, text_hash) means a verbatim
   // preserved symbol.
-  const existingChunks = existing ? await engine.getChunks(slug) : [];
+  const existingChunks = existing ? await engine.getChunks(slug, sourceOpts) : [];
   const existingByKey = new Map<string, typeof existingChunks[number]>();
   for (const ec of existingChunks) {
     existingByKey.set(`${ec.chunk_index}:${ec.chunk_text}`, ec);
@@ -521,9 +525,10 @@ export async function importCodeFile(
 
   // Store
   await engine.transaction(async (tx) => {
-    if (existing) await tx.createVersion(slug);
+    if (existing) await tx.createVersion(slug, sourceOpts);
 
     await tx.putPage(slug, {
+      source_id: opts.sourceId,
       type: 'code' as PageType,
       page_kind: 'code',
       title,
@@ -533,13 +538,13 @@ export async function importCodeFile(
       content_hash: hash,
     });
 
-    await tx.addTag(slug, 'code');
-    await tx.addTag(slug, lang);
+    await tx.addTag(slug, 'code', sourceOpts);
+    await tx.addTag(slug, lang, sourceOpts);
 
     if (chunks.length > 0) {
-      await tx.upsertChunks(slug, chunks);
+      await tx.upsertChunks(slug, chunks, sourceOpts);
     } else {
-      await tx.deleteChunks(slug);
+      await tx.deleteChunks(slug, sourceOpts);
     }
   });
 
@@ -641,6 +646,7 @@ const NEEDS_DECODE = new Set(['.heic', '.heif', '.avif']);
  */
 export interface ImportTransactionSpec {
   slug: string;
+  sourceId?: string;
   hadExisting: boolean;
   page: PageInput;
   /** When undefined, no chunk write happens. When [], deletes any prior chunks. */
@@ -655,12 +661,13 @@ export async function withImportTransaction(
   engine: BrainEngine,
   spec: ImportTransactionSpec,
 ): Promise<void> {
+  const sourceOpts = spec.sourceId ? { sourceId: spec.sourceId } : undefined;
   await engine.transaction(async (tx) => {
-    if (spec.hadExisting) await tx.createVersion(spec.slug);
+    if (spec.hadExisting) await tx.createVersion(spec.slug, sourceOpts);
     await tx.putPage(spec.slug, spec.page);
     if (spec.file) {
       // page_id resolution after putPage so the new row's id is available.
-      const stored = await tx.getPage(spec.slug);
+      const stored = await tx.getPage(spec.slug, sourceOpts);
       await tx.upsertFile({
         ...spec.file,
         page_slug: spec.slug,
@@ -669,9 +676,9 @@ export async function withImportTransaction(
     }
     if (spec.chunks !== undefined) {
       if (spec.chunks.length > 0) {
-        await tx.upsertChunks(spec.slug, spec.chunks);
+        await tx.upsertChunks(spec.slug, spec.chunks, sourceOpts);
       } else {
-        await tx.deleteChunks(spec.slug);
+        await tx.deleteChunks(spec.slug, sourceOpts);
       }
     }
     if (spec.after) await spec.after(tx);
@@ -857,6 +864,8 @@ export interface ImportImageOptions {
   ocrConcurrency?: number;
   /** Skip the embed call (for tests that want fast metadata-only inserts). */
   noEmbed?: boolean;
+  /** Source-scoped image imports, threaded by sync/import. */
+  sourceId?: string;
 }
 
 /** Module-level limiter so concurrent imports across files share the budget. */
@@ -898,7 +907,8 @@ export async function importImageFile(
   const buf = readFileSync(filePath);
   const hash = createHash('sha256').update(buf).digest('hex');
 
-  const existing = await engine.getPage(imageSlug);
+  const sourceOpts = opts.sourceId ? { sourceId: opts.sourceId } : undefined;
+  const existing = await engine.getPage(imageSlug, sourceOpts);
   if (existing?.content_hash === hash) {
     return { slug: imageSlug, status: 'skipped', chunks: 0 };
   }
@@ -964,6 +974,7 @@ export async function importImageFile(
   };
 
   const fileSpec: FileSpec = {
+    source_id: opts.sourceId,
     filename,
     storage_path: relativePath.replace(/[\\\/]/g, '/'),
     mime_type: decoded.mime,
@@ -973,8 +984,10 @@ export async function importImageFile(
 
   await withImportTransaction(engine, {
     slug: imageSlug,
+    sourceId: opts.sourceId,
     hadExisting: !!existing,
     page: {
+      source_id: opts.sourceId,
       type: 'image',
       page_kind: 'image',
       title: filename,
@@ -991,7 +1004,7 @@ export async function importImageFile(
       // throws when the target doesn't exist; we silently skip for now and
       // let `gbrain reconcile-links` pick up later additions.
       for (const candidate of imageOfCandidates(imageSlug)) {
-        const sibling = await tx.getPage(candidate);
+        const sibling = await tx.getPage(candidate, sourceOpts);
         if (sibling) {
           try {
             await tx.addLink(

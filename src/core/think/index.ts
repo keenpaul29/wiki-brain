@@ -45,6 +45,8 @@ export interface RunThinkOpts {
   /** Optional time window for temporal questions. */
   since?: string;
   until?: string;
+  /** Filter retrieval to this source (v0.18). */
+  sourceId?: string;
   /** When set, MCP-bound calls forward this to the gather phase (server-side filter). */
   takesHoldersAllowList?: string[];
   /** Inject an LLM client (for tests). Defaults to a fresh Anthropic SDK client. */
@@ -120,6 +122,7 @@ async function persistCitations(
   engine: BrainEngine,
   synthesisPageId: number,
   citations: ParsedCitation[],
+  opts?: { sourceId?: string },
 ): Promise<{ inserted: number; warnings: string[] }> {
   const warnings: string[] = [];
   // Resolve unique slugs to page_ids
@@ -127,9 +130,13 @@ async function persistCitations(
   for (const c of citations) {
     if (c.row_num === null) continue;  // page-level, skip
     if (slugToPageId.has(c.page_slug)) continue;
+    const params: unknown[] = [c.page_slug];
+    const sourceClause = opts?.sourceId ? ` AND source_id = $2` : '';
+    if (opts?.sourceId) params.push(opts.sourceId);
+
     const rows = await engine.executeRaw<{ id: number }>(
-      `SELECT id FROM pages WHERE slug = $1 LIMIT 1`,
-      [c.page_slug],
+      `SELECT id FROM pages WHERE slug = $1${sourceClause} LIMIT 1`,
+      params,
     );
     if (rows[0]) slugToPageId.set(c.page_slug, rows[0].id);
   }
@@ -188,6 +195,7 @@ export async function runThink(
     anchor: opts.anchor,
     questionEmbedding,
     takesHoldersAllowList: opts.takesHoldersAllowList,
+    sourceId: opts.sourceId,
   });
 
   // Render evidence blocks for the prompt
@@ -310,6 +318,7 @@ export async function runThink(
 export async function persistSynthesis(
   engine: BrainEngine,
   result: ThinkResult,
+  opts?: { sourceId?: string },
 ): Promise<{ slug: string; evidenceInserted: number; warnings: string[] }> {
   const today = new Date().toISOString().slice(0, 10);
   const slugSafe = result.question
@@ -333,6 +342,7 @@ export async function persistSynthesis(
     title: result.question.slice(0, 200),
     type: 'synthesis',
     compiled_truth: body,
+    sourceId: opts?.sourceId,
     frontmatter: {
       type: 'synthesis',
       question: result.question,
@@ -343,6 +353,7 @@ export async function persistSynthesis(
     },
   });
 
-  const persisted = await persistCitations(engine, page.id, result.citations);
+  const persisted = await persistCitations(engine, page.id, result.citations, { sourceId: opts?.sourceId });
+
   return { slug, evidenceInserted: persisted.inserted, warnings: persisted.warnings };
 }

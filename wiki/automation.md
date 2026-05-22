@@ -22,6 +22,7 @@ This page defines the automated daily workflow for keeping the wiki current.
 6. Update [[index]] and append a dated entry to [[log]].
 7. Run the wiki link check and lint check.
 8. After successful ingest, run `powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1 -CommitState`.
+9. Sync the project source into local GBrain with `bun run src/cli.ts sync --source brain --no-embed --no-pull`.
 
 ## Ingest Rules
 
@@ -31,6 +32,7 @@ This page defines the automated daily workflow for keeping the wiki current.
 - Add new concept pages when a repeated or central idea needs its own home.
 - Log every ingest, lint pass, or durable query result.
 - If no raw files changed, append nothing unless a lint issue was fixed.
+- GBrain recall augments the wiki; it does not replace the raw-to-wiki maintenance workflow.
 
 ## Link Check
 

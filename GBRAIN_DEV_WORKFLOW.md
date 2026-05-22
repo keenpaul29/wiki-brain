@@ -2,7 +2,7 @@
 title: GBrain Development Workflow
 type: guide
 created: 2026-05-09
-updated: 2026-05-09
+updated: 2026-05-14
 ---
 
 # GBrain Development Workflow
@@ -48,9 +48,15 @@ Expected state after the 2026-05-09 integration:
 
 - Source `brain` is federated.
 - Source `brain` is attached via `.gbrain-source`.
-- 280 markdown pages are imported.
-- 2427 chunks are present.
+- 282+ markdown pages are imported.
+- 2429+ chunks are present.
 - Embeddings are pending until provider credentials are configured.
+
+## Architecture Notes
+
+- Source-scoped sync should always keep project pages under source `brain`; source `default` should remain empty for this checkout.
+- The sync/import path now carries `sourceId` into page, version, tag, and chunk writes.
+- See `docs/architecture/project-operating-architecture.md` for the full operating model.
 
 ## Wiki Workflow Still Applies
 
@@ -63,4 +69,3 @@ powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
 ```
 
 Then follow `AGENTS.md` and `wiki/automation.md`.
-

@@ -46,6 +46,8 @@ Codemods and AI-generated edits both reduce the cost of broad code changes, but 
 
 AI leverage has different cognitive costs depending on how it is used. Explanation, critique, tradeoff exploration, and assumption testing can expand engineering judgment. Blindly accepting generated solutions, delegating architecture too early, or outsourcing debugging without understanding the root cause can erode ownership. The durable skill is choosing the right mode for the task and being able to explain the result afterward.
 
+AI coding should preserve skill formation as well as delivery speed. A useful guardrail is to form a diagnosis before asking the model, request explanation and tradeoffs before code when the area is unfamiliar, and review generated output like a pull request. Shipping without learning can accumulate cognitive debt even when the immediate task succeeds.
+
 ## Tool and Model Fit
 
 There is no single "best" LLM for all work. Model choice should follow the cognitive demand of the task, and some tasks should stay outside the trust boundary without heavy verification: visual counting, diagram interpretation, scanned multi-column documents, long-tail factual precision, and long reasoning chains with self-references. Compound workflows may need multiple tools or agents routed by step.
@@ -98,3 +100,4 @@ Once an AI feature ships, the hard work moves to grounding, retrieval quality, i
 - [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]]
 - [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]]
 - [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]
+- [[sources/dont-outsource-learning|Don't Outsource the Learning]]

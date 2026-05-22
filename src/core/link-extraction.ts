@@ -660,7 +660,7 @@ export interface SlugResolver {
  */
 export function makeResolver(
   engine: BrainEngine,
-  opts: { mode: 'batch' | 'live' } = { mode: 'live' },
+  opts: { mode: 'batch' | 'live'; sourceId?: string } = { mode: 'live' },
 ): SlugResolver {
   const cache = new Map<string, string | null>();
 
@@ -679,7 +679,7 @@ export function makeResolver(
 
       // Step 1: already a slug? (dir/name shape, lowercase, hyphenated)
       if (/^[a-z][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/.test(trimmed)) {
-        const page = await engine.getPage(trimmed);
+        const page = await engine.getPage(trimmed, { sourceId: opts.sourceId });
         if (page) {
           cache.set(cacheKey, trimmed);
           return trimmed;
@@ -691,7 +691,7 @@ export function makeResolver(
       for (const hint of hints) {
         if (!hint) continue;
         const candidate = `${hint}/${slugified}`;
-        const page = await engine.getPage(candidate);
+        const page = await engine.getPage(candidate, { sourceId: opts.sourceId });
         if (page) {
           cache.set(cacheKey, candidate);
           return candidate;
@@ -703,7 +703,7 @@ export function makeResolver(
       // try the whole pages table.
       const searchHints = hints.length > 0 ? hints : [undefined];
       for (const hint of searchHints) {
-        const match = await engine.findByTitleFuzzy(trimmed, hint, 0.55);
+        const match = await engine.findByTitleFuzzy(trimmed, hint, 0.55, { sourceId: opts.sourceId });
         if (match) {
           cache.set(cacheKey, match.slug);
           return match.slug;
@@ -715,7 +715,7 @@ export function makeResolver(
       // mode skips this step entirely to keep migration deterministic.
       if (opts.mode === 'live') {
         try {
-          const results = await engine.searchKeyword(trimmed, { limit: 3 });
+          const results = await engine.searchKeyword(trimmed, { limit: 3, sourceId: opts.sourceId });
           if (results.length > 0 && results[0].score >= 0.8) {
             // Filter by dir hint if provided.
             const top = hints.length > 0

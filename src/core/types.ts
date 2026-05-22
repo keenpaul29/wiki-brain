@@ -108,6 +108,8 @@ export type EffectiveDateSource =
 export type PageKind = 'markdown' | 'code' | 'image';
 
 export interface PageInput {
+  /** v0.18+: source-scoped writes. Defaults to the legacy `default` source. */
+  source_id?: string;
   type: PageType;
   title: string;
   compiled_truth: string;
@@ -163,7 +165,10 @@ export interface PageFilters {
    * Whitelisted enum — no SQL-injection risk; engines map to literal SQL fragments.
    */
   sort?: 'updated_desc' | 'updated_asc' | 'created_desc' | 'slug';
+  /** Filter to a specific source. */
+  sourceId?: string;
 }
+
 
 /** v0.26.5 — opts for getPage / softDeletePage / restorePage. */
 export interface GetPageOpts {

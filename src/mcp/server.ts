@@ -51,12 +51,13 @@ export async function handleToolCall(
   const op = operations.find(o => o.name === tool);
   if (!op) throw new Error(`Unknown tool: ${tool}`);
 
-  const validationError = validateParams(op, params);
-  if (validationError) throw new Error(validationError);
+  const { resolveSourceId } = await import('../core/source-resolver.ts');
+  const sourceId = await resolveSourceId(engine, params.source as string || null);
 
   const ctx = buildOperationContext(engine, params, {
     remote: false,
     logger: { info: console.log, warn: console.warn, error: console.error },
+    sourceId,
   });
 
   return op.handler(ctx, params);

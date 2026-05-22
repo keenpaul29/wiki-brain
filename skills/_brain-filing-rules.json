@@ -141,6 +141,11 @@
       "wiki/originals/*",
       "wiki/personal/patterns/*",
       "wiki/people/*",
+      "wiki/sources/*",
+      "wiki/concepts/*",
+      "wiki/synthesis/*",
+      "wiki/index.md",
+      "wiki/log.md",
       "dream-cycle-summaries/*"
     ]
   }
