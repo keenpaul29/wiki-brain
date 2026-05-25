@@ -1,0 +1,5 @@
+﻿Project,Area,Created,Due Date,Effort,Health,Impact,Outcome,Priority Score,Repo URL,Review Date,Stage,Status,Urgency
+GitHub Hygiene,Work,"April 14, 2026 12:06 AM",,2,At Risk,4,Reach inbox zero for open issues and PR comments,4,,"April 20, 2026",Build,Backlog,4
+Second Brain Launch,Learning,"April 14, 2026 12:06 AM",,3,Strong,5,Build a reliable capture-process-review system in Notion,4.35,,"April 20, 2026",Build,Active,4
+Agent Interop Across Repos,Learning,"April 14, 2026 12:13 AM",,3,Strong,5,"Make Codex, Claude Code, and OpenCode use a shared Notion workflow",4.35,,"April 20, 2026",Build,Active,4
+GitHub Portfolio Operating System,Work,"April 14, 2026 12:13 AM",,3,Strong,5,Manage top repositories through a single tracker and weekly maintenance cycle,4.7,,"April 20, 2026",Scale,Active,5
