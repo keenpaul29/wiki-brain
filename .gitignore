@@ -43,3 +43,8 @@ test/fixtures/pglite-snapshot.version
 media/x/
 media/articles/
 meetings/transcripts/
+
+# OpenMemory - IDE/Assistant specific rules
+.windsurf\rules\openmemory.md
+CLAUDE.md
+AGENTS.md

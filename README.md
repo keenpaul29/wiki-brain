@@ -144,75 +144,76 @@ GBrain ships 34 skills organized by `skills/RESOLVER.md` (or your OpenClaw's `AG
 
 ### Always-on
 
-| Skill | What it does |
-|-------|-------------|
+| Skill               | What it does                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | **signal-detector** | Fires on every message. Spawns a cheap model in parallel to capture original thinking and entity mentions. The brain compounds on autopilot. |
-| **brain-ops** | Brain-first lookup before any external API. The read-enrich-write loop that makes every response smarter. |
+| **brain-ops**       | Brain-first lookup before any external API. The read-enrich-write loop that makes every response smarter.                                    |
 
 ### Content ingestion
 
-| Skill | What it does |
-|-------|-------------|
-| **ingest** | Thin router. Detects input type and delegates to the right ingestion skill. |
-| **idea-ingest** | Links, articles, tweets become brain pages with analysis, author people pages, and cross-linking. |
-| **media-ingest** | Video, audio, PDF, books, screenshots, GitHub repos. Transcripts, entity extraction, backlink propagation. |
-| **meeting-ingestion** | Transcripts become brain pages. Every attendee gets enriched. Every company gets a timeline entry. |
-| **voice-note-ingest** | Voice notes captured verbatim — exact phrasing preserved, never paraphrased. Routes to originals/concepts/people/companies/ideas/personal/voice-notes based on content. |
-| **article-enrichment** | Raw article dumps become structured pages with executive summary, verbatim quotes, key insights, and why-it-matters. |
+| Skill                  | What it does                                                                                                                                                            |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ingest**             | Thin router. Detects input type and delegates to the right ingestion skill.                                                                                             |
+| **idea-ingest**        | Links, articles, tweets become brain pages with analysis, author people pages, and cross-linking.                                                                       |
+| **media-ingest**       | Video, audio, PDF, books, screenshots, GitHub repos. Transcripts, entity extraction, backlink propagation.                                                              |
+| **meeting-ingestion**  | Transcripts become brain pages. Every attendee gets enriched. Every company gets a timeline entry.                                                                      |
+| **voice-note-ingest**  | Voice notes captured verbatim — exact phrasing preserved, never paraphrased. Routes to originals/concepts/people/companies/ideas/personal/voice-notes based on content. |
+| **article-enrichment** | Raw article dumps become structured pages with executive summary, verbatim quotes, key insights, and why-it-matters.                                                    |
 
 ### Research and synthesis (v0.25.1)
 
-| Skill | What it does |
-|-------|-------------|
-| **book-mirror** | Flagship. Hand the agent a book, get a personalized two-column chapter-by-chapter analysis. Left column preserves the chapter's actual content; right column maps every idea to your life using your words from the brain. ~$6 for a 20-chapter book at Opus. Pairs with `gbrain book-mirror` CLI for the trusted runtime. |
-| **strategic-reading** | Read a book / article / case study through ONE specific problem-lens. Output: applied playbook with do / avoid / watch-for and short / medium / long-term recommendations. |
-| **concept-synthesis** | Deduplicate thousands of concept stubs into a tiered intellectual map (T1 Canon to T4 Riff). Trace how ideas evolved across years of notes. |
-| **perplexity-research** | Brain-augmented web research. Sends brain context to Perplexity so the search focuses on what's NEW vs already-known. Output: Executive Summary + Key New Developments + Confirming Signals + Contradictions or Updates + Recommended Brain Updates + Citations. |
-| **archive-crawler** | Universal archivist for personal file archives (Dropbox / Backblaze / Gmail-takeout / hard-drive dumps). REFUSES to run unless `archive-crawler.scan_paths:` is set in `gbrain.yml`. Safe-by-default safety fence. |
-| **academic-verify** | Trace a research claim through publication → methodology → raw data → independent replication. Routes through perplexity-research; produces a verdict (verified / partial / unverifiable / misattributed / retracted). |
-| **brain-pdf** | Render any brain page to publication-quality PDF via the gstack `make-pdf` binary. Strips frontmatter, sanitizes emoji, applies running headers. |
+| Skill                   | What it does                                                                                                                                                                                                                                                                                                               |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **book-mirror**         | Flagship. Hand the agent a book, get a personalized two-column chapter-by-chapter analysis. Left column preserves the chapter's actual content; right column maps every idea to your life using your words from the brain. ~$6 for a 20-chapter book at Opus. Pairs with `gbrain book-mirror` CLI for the trusted runtime. |
+| **strategic-reading**   | Read a book / article / case study through ONE specific problem-lens. Output: applied playbook with do / avoid / watch-for and short / medium / long-term recommendations.                                                                                                                                                 |
+| **concept-synthesis**   | Deduplicate thousands of concept stubs into a tiered intellectual map (T1 Canon to T4 Riff). Trace how ideas evolved across years of notes.                                                                                                                                                                                |
+| **perplexity-research** | Brain-augmented web research. Sends brain context to Perplexity so the search focuses on what's NEW vs already-known. Output: Executive Summary + Key New Developments + Confirming Signals + Contradictions or Updates + Recommended Brain Updates + Citations.                                                           |
+| **archive-crawler**     | Universal archivist for personal file archives (Dropbox / Backblaze / Gmail-takeout / hard-drive dumps). REFUSES to run unless `archive-crawler.scan_paths:` is set in `gbrain.yml`. Safe-by-default safety fence.                                                                                                         |
+| **academic-verify**     | Trace a research claim through publication → methodology → raw data → independent replication. Routes through perplexity-research; produces a verdict (verified / partial / unverifiable / misattributed / retracted).                                                                                                     |
+| **brain-pdf**           | Render any brain page to publication-quality PDF via the gstack `make-pdf` binary. Strips frontmatter, sanitizes emoji, applies running headers.                                                                                                                                                                           |
 
 ### Brain operations
 
-| Skill | What it does |
-|-------|-------------|
-| **enrich** | Tiered enrichment (Tier 1/2/3). Creates and updates person/company pages with compiled truth and timelines. |
-| **query** | 3-layer search with synthesis and citations. Says "the brain doesn't have info on X" instead of hallucinating. |
-| **maintain** | Periodic health: stale pages, orphans, dead links, citation audit, back-link enforcement, tag consistency. v0.23 adds the dream cycle's synthesize + patterns phases ... overnight conversation transcripts become reflections, originals, and 25-year patterns. |
-| **citation-fixer** | Scans pages for missing or malformed citations. Fixes format to match the standard. |
-| **repo-architecture** | Where new brain files go. Decision protocol: primary subject determines directory, not format. |
-| **publish** | Share brain pages as password-protected HTML. Zero LLM calls. |
-| **data-research** | Structured data research with parameterized YAML recipes. Extract investor updates, expenses, company metrics from email. |
+| Skill                 | What it does                                                                                                                                                                                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **enrich**            | Tiered enrichment (Tier 1/2/3). Creates and updates person/company pages with compiled truth and timelines.                                                                                                                                                      |
+| **query**             | 3-layer search with synthesis and citations. Says "the brain doesn't have info on X" instead of hallucinating.                                                                                                                                                   |
+| **maintain**          | Periodic health: stale pages, orphans, dead links, citation audit, back-link enforcement, tag consistency. v0.23 adds the dream cycle's synthesize + patterns phases ... overnight conversation transcripts become reflections, originals, and 25-year patterns. |
+| **citation-fixer**    | Scans pages for missing or malformed citations. Fixes format to match the standard.                                                                                                                                                                              |
+| **repo-architecture** | Where new brain files go. Decision protocol: primary subject determines directory, not format.                                                                                                                                                                   |
+| **publish**           | Share brain pages as password-protected HTML. Zero LLM calls.                                                                                                                                                                                                    |
+| **data-research**     | Structured data research with parameterized YAML recipes. Extract investor updates, expenses, company metrics from email.                                                                                                                                        |
 
 ### Operational
 
-| Skill | What it does |
-|-------|-------------|
-| **daily-task-manager** | Task lifecycle with priority levels (P0-P3). Stored as searchable brain pages. |
-| **daily-task-prep** | Morning prep: calendar lookahead with brain context per attendee, open threads, task review. |
-| **cron-scheduler** | Schedule staggering (5-min offsets), quiet hours (timezone-aware with wake-up override), idempotency. |
-| **reports** | Timestamped reports with keyword routing. "What's the latest briefing?" finds it instantly. |
-| **cross-modal-review** | Quality gate via second model. Refusal routing: if one model refuses, silently switch. |
-| **webhook-transforms** | External events (SMS, meetings, social mentions) converted into brain pages with entity extraction. |
-| **testing** | Validates every skill has SKILL.md with frontmatter, manifest coverage, resolver coverage. |
-| **skill-creator** | Create new skills following the conformance standard. MECE check against existing skills. |
-| **skillify** | The "skillify it!" meta-skill. Orchestrates the 10-step loop so failures become durable skills: scaffold the stubs via `gbrain skillify scaffold`, write the real logic, gate with `gbrain skillify check` + `gbrain check-resolvable`. |
-| **skillpack-check** | Agent-readable gbrain health report. Exit code for CI; JSON for debugging. Cron-friendly. |
-| **smoke-test** | 8 post-restart health checks with auto-fix (Bun, CLI, DB, worker, Zod CJS, gateway, API key, brain repo). Drop-in user tests at `~/.gbrain/smoke-tests.d/*.sh`. |
-| **minion-orchestrator** | Background work in one skill. Shell jobs via `gbrain jobs submit shell` (operator/CLI, MCP blocks protected names) and LLM subagents via `gbrain agent run`. Parent-child DAGs, `child_done` inbox, durability across worker restarts. |
+| Skill                   | What it does                                                                                                                                                                                                                            |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **daily-task-manager**  | Task lifecycle with priority levels (P0-P3). Stored as searchable brain pages.                                                                                                                                                          |
+| **daily-task-prep**     | Morning prep: calendar lookahead with brain context per attendee, open threads, task review.                                                                                                                                            |
+| **cron-scheduler**      | Schedule staggering (5-min offsets), quiet hours (timezone-aware with wake-up override), idempotency.                                                                                                                                   |
+| **reports**             | Timestamped reports with keyword routing. "What's the latest briefing?" finds it instantly.                                                                                                                                             |
+| **cross-modal-review**  | Quality gate via second model. Refusal routing: if one model refuses, silently switch.                                                                                                                                                  |
+| **webhook-transforms**  | External events (SMS, meetings, social mentions) converted into brain pages with entity extraction.                                                                                                                                     |
+| **testing**             | Validates every skill has SKILL.md with frontmatter, manifest coverage, resolver coverage.                                                                                                                                              |
+| **skill-creator**       | Create new skills following the conformance standard. MECE check against existing skills.                                                                                                                                               |
+| **skillify**            | The "skillify it!" meta-skill. Orchestrates the 10-step loop so failures become durable skills: scaffold the stubs via `gbrain skillify scaffold`, write the real logic, gate with `gbrain skillify check` + `gbrain check-resolvable`. |
+| **skillpack-check**     | Agent-readable gbrain health report. Exit code for CI; JSON for debugging. Cron-friendly.                                                                                                                                               |
+| **smoke-test**          | 8 post-restart health checks with auto-fix (Bun, CLI, DB, worker, Zod CJS, gateway, API key, brain repo). Drop-in user tests at `~/.gbrain/smoke-tests.d/*.sh`.                                                                         |
+| **minion-orchestrator** | Background work in one skill. Shell jobs via `gbrain jobs submit shell` (operator/CLI, MCP blocks protected names) and LLM subagents via `gbrain agent run`. Parent-child DAGs, `child_done` inbox, durability across worker restarts.  |
 
 ### Identity and setup
 
-| Skill | What it does |
-|-------|-------------|
+| Skill          | What it does                                                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **soul-audit** | 6-phase interview generating SOUL.md (agent identity), USER.md (user profile), ACCESS_POLICY.md (4-tier privacy), HEARTBEAT.md (operational cadence). |
-| **setup** | Auto-provision PGLite or Supabase. First import. GStack detection. |
-| **migrate** | Universal migration from Obsidian, Notion, Logseq, markdown, CSV, JSON, Roam. |
-| **briefing** | Daily briefing with meeting context, active deals, and citation tracking. |
+| **setup**      | Auto-provision PGLite or Supabase. First import. GStack detection.                                                                                    |
+| **migrate**    | Universal migration from Obsidian, Notion, Logseq, markdown, CSV, JSON, Roam.                                                                         |
+| **briefing**   | Daily briefing with meeting context, active deals, and citation tracking.                                                                             |
 
 ### Conventions
 
 Cross-cutting rules in `skills/conventions/`:
+
 - **quality.md** ... citations, back-links, notability gate, source attribution
 - **brain-first.md** ... 5-step lookup before any external API call
 - **model-routing.md** ... which model for which task
@@ -249,12 +250,12 @@ A durable, Postgres-native job queue built into the brain. Every long-running ag
 
 Here's my personal OpenClaw deployment: one Render container. Supabase Postgres holding a 45,000-page brain. 19 cron jobs firing on schedule. Real gateway load from real daily work. The task: pull a month of my social posts from an external API and ingest them end-to-end into the brain as a structured page.
 
-|              | Minions   | `sessions_spawn`               |
-|---           |---        |---                             |
+|              | Minions   | `sessions_spawn`                |
+| ------------ | --------- | ------------------------------- |
 | Wall time    | **753ms** | **>10,000ms** (gateway timeout) |
-| Token cost   | **$0.00** | ~$0.03 per run                 |
-| Success rate | **100%**  | **0%** (couldn't even spawn)   |
-| Memory/job   | ~2 MB     | ~80 MB                         |
+| Token cost   | **$0.00** | ~$0.03 per run                  |
+| Success rate | **100%**  | **0%** (couldn't even spawn)    |
+| Memory/job   | ~2 MB     | ~80 MB                          |
 
 Under that 19-cron load, sub-agent spawn couldn't clear the 10-second gateway wall. Minions landed it in under a second for zero tokens. **Scaling:** 19,240 posts across 36 months, single bash loop, ~15 min total, $0.00. Sub-agents: ~9 min best case, ~$1.08 in tokens, ~40% spawn failure. **Lab:** durability ∞ (SIGKILL mid-flight, 10/10 rescued), throughput ~10× faster, fan-out ~21× with no failure wall, memory ~400× less.
 
@@ -440,16 +441,16 @@ Full guide: [docs/storage-tiering.md](docs/storage-tiering.md).
 
 GBrain ships integration recipes that your agent sets up for you. Each recipe tells the agent what credentials to ask for, how to validate, and what cron to register.
 
-| Recipe | Requires | What It Does |
-|--------|----------|-------------|
-| [Public Tunnel](recipes/ngrok-tunnel.md) | — | Fixed URL for MCP + voice (ngrok Hobby $8/mo) |
-| [Credential Gateway](recipes/credential-gateway.md) | — | Gmail + Calendar access |
-| [Voice-to-Brain](recipes/twilio-voice-brain.md) | ngrok-tunnel | Phone calls to brain pages (Twilio + OpenAI Realtime) |
-| [Email-to-Brain](recipes/email-to-brain.md) | credential-gateway | Gmail to entity pages |
-| [X-to-Brain](recipes/x-to-brain.md) | — | Twitter timeline + mentions + deletions |
-| [Calendar-to-Brain](recipes/calendar-to-brain.md) | credential-gateway | Google Calendar to searchable daily pages |
-| [Meeting Sync](recipes/meeting-sync.md) | — | Circleback transcripts to brain pages with attendees |
-| [Restart Sweep](recipes/restart-sweep.md) | OpenClaw + Telegram | Detect dropped Telegram messages after OpenClaw gateway restarts |
+| Recipe                                              | Requires            | What It Does                                                     |
+| --------------------------------------------------- | ------------------- | ---------------------------------------------------------------- |
+| [Public Tunnel](recipes/ngrok-tunnel.md)            | —                   | Fixed URL for MCP + voice (ngrok Hobby $8/mo)                    |
+| [Credential Gateway](recipes/credential-gateway.md) | —                   | Gmail + Calendar access                                          |
+| [Voice-to-Brain](recipes/twilio-voice-brain.md)     | ngrok-tunnel        | Phone calls to brain pages (Twilio + OpenAI Realtime)            |
+| [Email-to-Brain](recipes/email-to-brain.md)         | credential-gateway  | Gmail to entity pages                                            |
+| [X-to-Brain](recipes/x-to-brain.md)                 | —                   | Twitter timeline + mentions + deletions                          |
+| [Calendar-to-Brain](recipes/calendar-to-brain.md)   | credential-gateway  | Google Calendar to searchable daily pages                        |
+| [Meeting Sync](recipes/meeting-sync.md)             | —                   | Circleback transcripts to brain pages with attendees             |
+| [Restart Sweep](recipes/restart-sweep.md)           | OpenClaw + Telegram | Detect dropped Telegram messages after OpenClaw gateway restarts |
 
 **Data research recipes** extract structured data from email into tracked brain pages. Built-in recipes for investor updates (MRR, ARR, runway, headcount), expense tracking, and company metrics. Create your own with `gbrain research init`.
 
@@ -607,12 +608,12 @@ Question
 
 End-to-end on the BrainBench v1 corpus (240 rich-prose pages, before/after PR #188):
 
-| Metric                  | BEFORE PR #188 | AFTER PR #188 | Δ           |
-|-------------------------|----------------|---------------|-------------|
-| **Precision@5**         | 39.2%          | **44.7%**     | **+5.4 pts**|
-| **Recall@5**            | 83.1%          | **94.6%**     | **+11.5 pts**|
-| Correct in top-5        | 217            | 247           | **+30**     |
-| Graph-only F1 (ablation)| 57.8% (grep)   | **86.6%**     | **+28.8 pts**|
+| Metric                   | BEFORE PR #188 | AFTER PR #188 | Δ             |
+| ------------------------ | -------------- | ------------- | ------------- |
+| **Precision@5**          | 39.2%          | **44.7%**     | **+5.4 pts**  |
+| **Recall@5**             | 83.1%          | **94.6%**     | **+11.5 pts** |
+| Correct in top-5         | 217            | 247           | **+30**       |
+| Graph-only F1 (ablation) | 57.8% (grep)   | **86.6%**     | **+28.8 pts** |
 
 Plus 5 orthogonal capability checks (identity resolution, temporal queries,
 performance at 10K-page scale, robustness to malformed input, MCP operation
@@ -796,6 +797,7 @@ The skills in this repo are those patterns, generalized. What took 11 days to bu
 ## Docs
 
 **For agents:**
+
 - **[skills/RESOLVER.md](skills/RESOLVER.md)** ... Start here. The skill dispatcher.
 - [Individual skill files](skills/) ... 28 standalone instruction sets (25 ship in the curated `gbrain skillpack install` bundle)
 - [GBRAIN_SKILLPACK.md](docs/GBRAIN_SKILLPACK.md) ... Legacy reference architecture
@@ -803,15 +805,18 @@ The skills in this repo are those patterns, generalized. What took 11 days to bu
 - [GBRAIN_VERIFY.md](docs/GBRAIN_VERIFY.md) ... Installation verification
 
 **For humans:**
+
 - [GBRAIN_RECOMMENDED_SCHEMA.md](docs/GBRAIN_RECOMMENDED_SCHEMA.md) ... Brain repo directory structure
 - [Thin Harness, Fat Skills](docs/ethos/THIN_HARNESS_FAT_SKILLS.md) ... Architecture philosophy
 - [ENGINES.md](docs/ENGINES.md) ... Pluggable engine interface
 
 **Reference:**
+
 - [GBRAIN_V0.md](docs/GBRAIN_V0.md) ... Full product spec
 - [CHANGELOG.md](CHANGELOG.md) ... Version history
 
 **Benchmarks:**
+
 - [gbrain-evals](https://github.com/garrytan/gbrain-evals) ... BrainBench, the sibling repo that holds the eval harness, corpus, scorecards, and 4-adapter comparisons. Depends on gbrain; not installed alongside gbrain.
 
 ## Contributing

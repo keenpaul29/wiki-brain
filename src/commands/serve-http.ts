@@ -10,28 +10,37 @@
  * - Health check at /health
  */
 
-import express from 'express';
-import type { Request, Response, NextFunction } from 'express';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
-import { randomBytes, createHash, timingSafeEqual } from 'crypto';
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { mcpAuthRouter } from '@modelcontextprotocol/sdk/server/auth/router.js';
-import { requireBearerAuth } from '@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js';
-import type { BrainEngine } from '../core/engine.ts';
-import { operations, OperationError } from '../core/operations.ts';
-import type { OperationContext, AuthInfo } from '../core/operations.ts';
-import { GBrainOAuthProvider } from '../core/oauth-provider.ts';
-import type { SqlQuery } from '../core/oauth-provider.ts';
-import { hasScope, ALLOWED_SCOPES_LIST } from '../core/scope.ts';
-import { summarizeMcpParams } from '../mcp/dispatch.ts';
-import { loadConfig } from '../core/config.ts';
-import { buildError, serializeError } from '../core/errors.ts';
-import { VERSION } from '../version.ts';
-import * as db from '../core/db.ts';
+import express from "express";
+import type { Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
+import { randomBytes, createHash, timingSafeEqual } from "crypto";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import {
+  ListToolsRequestSchema,
+  CallToolRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
+import { mcpAuthRouter } from "@modelcontextprotocol/sdk/server/auth/router.js";
+import { requireBearerAuth } from "@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js";
+import type { BrainEngine } from "../core/engine.ts";
+import { operations, OperationError } from "../core/operations.ts";
+import type { OperationContext, AuthInfo } from "../core/operations.ts";
+import { GBrainOAuthProvider } from "../core/oauth-provider.ts";
+import type { SqlQuery } from "../core/oauth-provider.ts";
+import { hasScope, ALLOWED_SCOPES_LIST } from "../core/scope.ts";
+import { summarizeMcpParams } from "../mcp/dispatch.ts";
+import { loadConfig } from "../core/config.ts";
+import { buildError, serializeError } from "../core/errors.ts";
+import { VERSION } from "../version.ts";
+import {
+  chat,
+  embed,
+  getChatModel,
+  getEmbeddingModel,
+} from "../core/ai/gateway.ts";
+import * as db from "../core/db.ts";
 
 /**
  * /health endpoint timeout. 3s rather than 5s: Fly.io's default
@@ -42,8 +51,21 @@ import * as db from '../core/db.ts';
 export const HEALTH_TIMEOUT_MS = 3000;
 
 export type ProbeHealthResult =
-  | { ok: true; status: 200; body: { status: 'ok'; version: string; engine: string; [k: string]: unknown } }
-  | { ok: false; status: 503; body: { error: 'service_unavailable'; error_description: string } };
+  | {
+      ok: true;
+      status: 200;
+      body: {
+        status: "ok";
+        version: string;
+        engine: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      ok: false;
+      status: 503;
+      body: { error: "service_unavailable"; error_description: string };
+    };
 
 /**
  * Pure async health probe. Races `engine.getStats()` against a timeout,
@@ -66,24 +88,28 @@ export async function probeHealth(
     const stats = await Promise.race([
       engine.getStats(),
       new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error('health_timeout')), timeoutMs);
+        timer = setTimeout(
+          () => reject(new Error("health_timeout")),
+          timeoutMs,
+        );
       }),
     ]);
     return {
       ok: true,
       status: 200,
-      body: { status: 'ok', version, engine: engineName, ...stats },
+      body: { status: "ok", version, engine: engineName, ...stats },
     };
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'unknown';
+    const msg = e instanceof Error ? e.message : "unknown";
     return {
       ok: false,
       status: 503,
       body: {
-        error: 'service_unavailable',
-        error_description: msg === 'health_timeout'
-          ? 'Health check timed out (database pool may be saturated)'
-          : 'Database connection failed',
+        error: "service_unavailable",
+        error_description:
+          msg === "health_timeout"
+            ? "Health check timed out (database pool may be saturated)"
+            : "Database connection failed",
       },
     };
   } finally {
@@ -113,24 +139,28 @@ export async function probeLiveness(
     await Promise.race([
       sql`SELECT 1`,
       new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error('health_timeout')), timeoutMs);
+        timer = setTimeout(
+          () => reject(new Error("health_timeout")),
+          timeoutMs,
+        );
       }),
     ]);
     return {
       ok: true,
       status: 200,
-      body: { status: 'ok', version, engine: engineName },
+      body: { status: "ok", version, engine: engineName },
     };
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'unknown';
+    const msg = e instanceof Error ? e.message : "unknown";
     return {
       ok: false,
       status: 503,
       body: {
-        error: 'service_unavailable',
-        error_description: msg === 'health_timeout'
-          ? 'Health check timed out (database pool may be saturated)'
-          : 'Database connection failed',
+        error: "service_unavailable",
+        error_description:
+          msg === "health_timeout"
+            ? "Health check timed out (database pool may be saturated)"
+            : "Database connection failed",
       },
     };
   } finally {
@@ -162,13 +192,16 @@ interface ServeHttpOptions {
   logFullParams?: boolean;
 }
 
-export async function runServeHttp(engine: BrainEngine, options: ServeHttpOptions) {
+export async function runServeHttp(
+  engine: BrainEngine,
+  options: ServeHttpOptions,
+) {
   const { port, tokenTtl, enableDcr, publicUrl, logFullParams } = options;
-  const config = loadConfig() || { engine: 'pglite' as const };
+  const config = loadConfig() || { engine: "pglite" as const };
 
   if (logFullParams) {
     console.error(
-      '[serve-http] WARNING: --log-full-params writes raw request payloads to mcp_request_log + SSE feed. Disable for shared dashboards or production.',
+      "[serve-http] WARNING: --log-full-params writes raw request payloads to mcp_request_log + SSE feed. Disable for shared dashboards or production.",
     );
   }
 
@@ -190,12 +223,17 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
     const swept = await oauthProvider.sweepExpiredTokens();
     if (swept > 0) console.error(`Swept ${swept} expired tokens`);
   } catch (e) {
-    console.error('Token sweep failed (non-blocking):', e instanceof Error ? e.message : e);
+    console.error(
+      "Token sweep failed (non-blocking):",
+      e instanceof Error ? e.message : e,
+    );
   }
 
   // Generate bootstrap token for admin dashboard
-  const bootstrapToken = randomBytes(32).toString('hex');
-  const bootstrapHash = createHash('sha256').update(bootstrapToken).digest('hex');
+  const bootstrapToken = randomBytes(32).toString("hex");
+  const bootstrapHash = createHash("sha256")
+    .update(bootstrapToken)
+    .digest("hex");
   const adminSessions = new Map<string, number>(); // sessionId → expiresAt
 
   // SSE clients for live activity feed
@@ -205,13 +243,17 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   function broadcastEvent(event: Record<string, unknown>) {
     const data = `data: ${JSON.stringify(event)}\n\n`;
     for (const client of sseClients) {
-      try { client.write(data); } catch { sseClients.delete(client); }
+      try {
+        client.write(data);
+      } catch {
+        sseClients.delete(client);
+      }
     }
   }
 
   // Express 5 app
   const app = express();
-  app.set('trust proxy', 'loopback'); // Caddy/Tailscale reverse proxy on localhost
+  app.set("trust proxy", "loopback"); // Caddy/Tailscale reverse proxy on localhost
 
   // ---------------------------------------------------------------------------
   // Cookie parsing — required for /admin auth (express 5 has no built-in)
@@ -221,11 +263,11 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   // ---------------------------------------------------------------------------
   // CORS
   // ---------------------------------------------------------------------------
-  app.use('/mcp', cors());
-  app.use('/token', cors());
-  app.use('/authorize', cors());
-  app.use('/register', cors());
-  app.use('/revoke', cors());
+  app.use("/mcp", cors());
+  app.use("/token", cors());
+  app.use("/authorize", cors());
+  app.use("/register", cors());
+  app.use("/revoke", cors());
 
   // ---------------------------------------------------------------------------
   // Custom client_credentials handler (before mcpAuthRouter)
@@ -236,7 +278,10 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
     max: 50,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: 'too_many_requests', error_description: 'Rate limit exceeded. Try again in 15 minutes.' },
+    message: {
+      error: "too_many_requests",
+      error_description: "Rate limit exceeded. Try again in 15 minutes.",
+    },
   });
 
   // Magic-link rate limiter: 10 requests/min/IP. The bootstrap token is
@@ -249,28 +294,44 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
-    message: 'Too many magic-link attempts. Wait a minute before trying again.',
+    message: "Too many magic-link attempts. Wait a minute before trying again.",
   });
 
-  app.post('/token', ccRateLimiter, express.urlencoded({ extended: false }), async (req, res, next) => {
-    if (req.body?.grant_type !== 'client_credentials') {
-      return next(); // Fall through to SDK's token handler
-    }
-
-    try {
-      const { client_id, client_secret, scope } = req.body;
-      if (!client_id || !client_secret) {
-        res.status(400).json({ error: 'invalid_request', error_description: 'client_id and client_secret required' });
-        return;
+  app.post(
+    "/token",
+    ccRateLimiter,
+    express.urlencoded({ extended: false }),
+    async (req, res, next) => {
+      if (req.body?.grant_type !== "client_credentials") {
+        return next(); // Fall through to SDK's token handler
       }
 
-      const tokens = await oauthProvider.exchangeClientCredentials(client_id, client_secret, scope);
-      res.json(tokens);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Unknown error';
-      res.status(400).json({ error: 'invalid_grant', error_description: msg });
-    }
-  });
+      try {
+        const { client_id, client_secret, scope } = req.body;
+        if (!client_id || !client_secret) {
+          res
+            .status(400)
+            .json({
+              error: "invalid_request",
+              error_description: "client_id and client_secret required",
+            });
+          return;
+        }
+
+        const tokens = await oauthProvider.exchangeClientCredentials(
+          client_id,
+          client_secret,
+          scope,
+        );
+        res.json(tokens);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Unknown error";
+        res
+          .status(400)
+          .json({ error: "invalid_grant", error_description: msg });
+      }
+    },
+  );
 
   // ---------------------------------------------------------------------------
   // MCP SDK Auth Router (OAuth endpoints)
@@ -289,10 +350,10 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   // the network path could MITM the admin cookie over plaintext.
   const adminCookie = (req: Request, maxAge: number) => ({
     httpOnly: true,
-    sameSite: 'strict' as const,
-    secure: req.secure || issuerUrl.protocol === 'https:',
+    sameSite: "strict" as const,
+    secure: req.secure || issuerUrl.protocol === "https:",
     maxAge,
-    path: '/admin',
+    path: "/admin",
   });
 
   const authRouterOptions: any = {
@@ -303,7 +364,7 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
     // users_admin via /.well-known/oauth-authorization-server. The legacy
     // ['read','write','admin'] list left those new scopes invisible.
     scopesSupported: [...ALLOWED_SCOPES_LIST],
-    resourceName: 'GBrain MCP Server',
+    resourceName: "GBrain MCP Server",
   };
 
   // F12: DCR disable lives on the provider's constructor option above. The
@@ -317,11 +378,17 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   // The SDK hardcodes ['authorization_code', 'refresh_token'] — we intercept
   // the response and add client_credentials before it reaches the client.
   app.use((req, res, next) => {
-    if (req.path === '/.well-known/oauth-authorization-server' && req.method === 'GET') {
+    if (
+      req.path === "/.well-known/oauth-authorization-server" &&
+      req.method === "GET"
+    ) {
       const origJson = res.json.bind(res);
       (res as any).json = (body: any) => {
-        if (body?.grant_types_supported && !body.grant_types_supported.includes('client_credentials')) {
-          body.grant_types_supported.push('client_credentials');
+        if (
+          body?.grant_types_supported &&
+          !body.grant_types_supported.includes("client_credentials")
+        ) {
+          body.grant_types_supported.push("client_credentials");
         }
         return origJson(body);
       };
@@ -335,8 +402,8 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   // Health check — liveness only. Full engine stats live at
   // /admin/api/full-stats (requireAdmin). See probeLiveness above for the why.
   // ---------------------------------------------------------------------------
-  app.get('/health', async (_req, res) => {
-    const result = await probeLiveness(sql, config.engine || 'pglite', VERSION);
+  app.get("/health", async (_req, res) => {
+    const result = await probeLiveness(sql, config.engine || "pglite", VERSION);
     res.status(result.status).json(result.body);
   });
 
@@ -351,28 +418,34 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   // (defense-in-depth on the hash bits).
   function safeHexEqual(a: string, b: string): boolean {
     if (a.length !== b.length) return false;
-    return timingSafeEqual(Buffer.from(a, 'hex'), Buffer.from(b, 'hex'));
+    return timingSafeEqual(Buffer.from(a, "hex"), Buffer.from(b, "hex"));
   }
 
-  app.post('/admin/login', express.json(), (req, res) => {
+  app.post("/admin/login", express.json(), (req, res) => {
     const token = req.body?.token;
-    if (!token || typeof token !== 'string') {
-      res.status(400).json({ error: 'Token required' });
+    if (!token || typeof token !== "string") {
+      res.status(400).json({ error: "Token required" });
       return;
     }
 
-    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const tokenHash = createHash("sha256").update(token).digest("hex");
     if (!safeHexEqual(tokenHash, bootstrapHash)) {
-      res.status(401).json({ error: 'Invalid token. Check your terminal output.' });
+      res
+        .status(401)
+        .json({ error: "Invalid token. Check your terminal output." });
       return;
     }
 
-    const sessionId = randomBytes(32).toString('hex');
+    const sessionId = randomBytes(32).toString("hex");
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
     adminSessions.set(sessionId, expiresAt);
 
-    res.cookie('gbrain_admin', sessionId, adminCookie(req, 24 * 60 * 60 * 1000));
-    res.json({ status: 'authenticated' });
+    res.cookie(
+      "gbrain_admin",
+      sessionId,
+      adminCookie(req, 24 * 60 * 60 * 1000),
+    );
+    res.json({ status: "authenticated" });
   });
 
   // ---------------------------------------------------------------------------
@@ -412,50 +485,68 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
     if (magicLinkNonces.size > NONCE_LRU_CAP) {
       const drop = magicLinkNonces.size - NONCE_LRU_CAP;
       const it = magicLinkNonces.keys();
-      for (let i = 0; i < drop; i++) magicLinkNonces.delete(it.next().value as string);
+      for (let i = 0; i < drop; i++)
+        magicLinkNonces.delete(it.next().value as string);
     }
     // Cap consumedNonces growth — drop oldest entries past the LRU cap.
     if (consumedNonces.size > NONCE_LRU_CAP) {
       const drop = consumedNonces.size - NONCE_LRU_CAP;
       const it = consumedNonces.values();
-      for (let i = 0; i < drop; i++) consumedNonces.delete(it.next().value as string);
+      for (let i = 0; i < drop; i++)
+        consumedNonces.delete(it.next().value as string);
     }
   }
 
   // POST /admin/api/issue-magic-link — agent-callable mint endpoint.
   // Auth: Authorization: Bearer <bootstrapToken>. Returns one-time nonce.
-  app.post('/admin/api/issue-magic-link', express.json(), (req: Request, res: Response) => {
-    const auth = (req.headers.authorization || '') as string;
-    const m = auth.match(/^Bearer\s+(\S+)$/i);
-    if (!m) {
-      res.status(401).json({ error: 'Authorization: Bearer <bootstrap-token> required' });
-      return;
-    }
-    const tokenHash = createHash('sha256').update(m[1]).digest('hex');
-    if (!safeHexEqual(tokenHash, bootstrapHash)) {
-      res.status(401).json({ error: 'Invalid bootstrap token' });
-      return;
-    }
-    pruneExpiredNonces();
-    const nonce = randomBytes(32).toString('hex');
-    magicLinkNonces.set(nonce, Date.now() + NONCE_TTL_MS);
-    const baseUrl = publicUrl || `http://localhost:${port}`;
-    res.json({ url: `${baseUrl}/admin/auth/${nonce}`, expires_in: NONCE_TTL_MS / 1000 });
-  });
+  app.post(
+    "/admin/api/issue-magic-link",
+    express.json(),
+    (req: Request, res: Response) => {
+      const auth = (req.headers.authorization || "") as string;
+      const m = auth.match(/^Bearer\s+(\S+)$/i);
+      if (!m) {
+        res
+          .status(401)
+          .json({ error: "Authorization: Bearer <bootstrap-token> required" });
+        return;
+      }
+      const tokenHash = createHash("sha256").update(m[1]).digest("hex");
+      if (!safeHexEqual(tokenHash, bootstrapHash)) {
+        res.status(401).json({ error: "Invalid bootstrap token" });
+        return;
+      }
+      pruneExpiredNonces();
+      const nonce = randomBytes(32).toString("hex");
+      magicLinkNonces.set(nonce, Date.now() + NONCE_TTL_MS);
+      const baseUrl = publicUrl || `http://localhost:${port}`;
+      res.json({
+        url: `${baseUrl}/admin/auth/${nonce}`,
+        expires_in: NONCE_TTL_MS / 1000,
+      });
+    },
+  );
 
   // GET /admin/auth/:nonce — single-use magic link redemption.
   // Browser hits it, server validates the nonce (exists + unconsumed +
   // unexpired), marks consumed, sets cookie, redirects to dashboard.
   // Rate-limited at 10/min/IP to harden against DoS via bad-token loops.
-  app.get('/admin/auth/:token', adminAuthRateLimiter, (req: Request, res: Response) => {
-    const nonce = String(req.params.token ?? '');
-    pruneExpiredNonces();
+  app.get(
+    "/admin/auth/:token",
+    adminAuthRateLimiter,
+    (req: Request, res: Response) => {
+      const nonce = String(req.params.token ?? "");
+      pruneExpiredNonces();
 
-    const expiresAt = magicLinkNonces.get(nonce);
-    const isValid = !!nonce && !!expiresAt && expiresAt > Date.now() && !consumedNonces.has(nonce);
+      const expiresAt = magicLinkNonces.get(nonce);
+      const isValid =
+        !!nonce &&
+        !!expiresAt &&
+        expiresAt > Date.now() &&
+        !consumedNonces.has(nonce);
 
-    if (!isValid) {
-      res.status(401).send(`<!DOCTYPE html>
+      if (!isValid) {
+        res.status(401).send(`<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GBrain</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;display:flex;align-items:center;justify-content:center}
@@ -471,32 +562,41 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
 <div class="hint"><b>Get a fresh link from your AI agent:</b>
 <div class="prompt">&ldquo;Give me the GBrain admin login link&rdquo;</div>
 </div></div></body></html>`);
-      return;
-    }
+        return;
+      }
 
-    // Consume the nonce — it's single-use, second click will fail.
-    magicLinkNonces.delete(nonce);
-    consumedNonces.add(nonce);
+      // Consume the nonce — it's single-use, second click will fail.
+      magicLinkNonces.delete(nonce);
+      consumedNonces.add(nonce);
 
-    const sessionId = randomBytes(32).toString('hex');
-    const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days for magic link
-    adminSessions.set(sessionId, sessionExpiresAt);
+      const sessionId = randomBytes(32).toString("hex");
+      const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days for magic link
+      adminSessions.set(sessionId, sessionExpiresAt);
 
-    res.cookie('gbrain_admin', sessionId, adminCookie(req, 7 * 24 * 60 * 60 * 1000));
-    res.redirect('/admin/');
-  });
+      res.cookie(
+        "gbrain_admin",
+        sessionId,
+        adminCookie(req, 7 * 24 * 60 * 60 * 1000),
+      );
+      res.redirect("/admin/");
+    },
+  );
 
   // Admin auth middleware
-  function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  function requireAdmin(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) {
     const sessionId = (req.cookies as Record<string, string>)?.gbrain_admin;
     if (!sessionId || !adminSessions.has(sessionId)) {
-      res.status(401).json({ error: 'Admin authentication required' });
+      res.status(401).json({ error: "Admin authentication required" });
       return;
     }
     const expiresAt = adminSessions.get(sessionId)!;
     if (Date.now() > expiresAt) {
       adminSessions.delete(sessionId);
-      res.status(401).json({ error: 'Session expired' });
+      res.status(401).json({ error: "Session expired" });
       return;
     }
     next();
@@ -510,16 +610,23 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
   // browser/tab fails its next request, gets 401, redirects to login.
   // The bootstrap token itself is unaffected (still valid for new
   // magic-link mints) — this only revokes existing cookie sessions.
-  app.post('/admin/api/sign-out-everywhere', requireAdmin, (_req: Request, res: Response) => {
-    const count = adminSessions.size;
-    adminSessions.clear();
-    res.json({ revoked_sessions: count });
-  });
+  app.post(
+    "/admin/api/sign-out-everywhere",
+    requireAdmin,
+    (_req: Request, res: Response) => {
+      const count = adminSessions.size;
+      adminSessions.clear();
+      res.json({ revoked_sessions: count });
+    },
+  );
 
-  app.get('/admin/api/agents', requireAdmin, async (_req: Request, res: Response) => {
-    try {
-      // Unified view: OAuth clients + legacy API keys
-      const oauthClients = await sql`
+  app.get(
+    "/admin/api/agents",
+    requireAdmin,
+    async (_req: Request, res: Response) => {
+      try {
+        // Unified view: OAuth clients + legacy API keys
+        const oauthClients = await sql`
         SELECT c.client_id as id, c.client_name as name, 'oauth' as auth_type,
           c.grant_types, c.scope, c.created_at, c.token_ttl,
           CASE WHEN c.deleted_at IS NOT NULL THEN 'revoked' ELSE 'active' END as status,
@@ -528,7 +635,7 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
           (SELECT count(*)::int FROM mcp_request_log WHERE token_name = c.client_id AND created_at > now() - interval '24 hours') as requests_today
         FROM oauth_clients c ORDER BY c.created_at DESC
       `;
-      const legacyKeys = await sql`
+        const legacyKeys = await sql`
         SELECT a.id, a.name, 'api_key' as auth_type,
           '{"bearer"}' as grant_types, 'read write admin' as scope, a.created_at, null as token_ttl,
           CASE WHEN a.revoked_at IS NOT NULL THEN 'revoked' ELSE 'active' END as status,
@@ -537,441 +644,749 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
           (SELECT count(*)::int FROM mcp_request_log WHERE token_name = a.name AND created_at > now() - interval '24 hours') as requests_today
         FROM access_tokens a ORDER BY a.created_at DESC
       `;
-      res.json([...oauthClients, ...legacyKeys]);
-    } catch (e) {
-      res.status(503).json({ error: 'service_unavailable' });
-    }
-  });
+        res.json([...oauthClients, ...legacyKeys]);
+      } catch (e) {
+        res.status(503).json({ error: "service_unavailable" });
+      }
+    },
+  );
 
-  app.get('/admin/api/stats', requireAdmin, async (_req: Request, res: Response) => {
-    try {
-      const [clients] = await sql`SELECT count(*)::int as count FROM oauth_clients`;
-      const [tokens] = await sql`SELECT count(*)::int as count FROM oauth_tokens WHERE token_type = 'access' AND expires_at > ${Math.floor(Date.now() / 1000)}`;
-      const [requests] = await sql`SELECT count(*)::int as count FROM mcp_request_log WHERE created_at > now() - interval '24 hours'`;
-      const [apiKeys] = await sql`SELECT count(*)::int as count FROM access_tokens WHERE revoked_at IS NULL`;
-      res.json({
-        connected_agents: (clients as any).count,
-        active_tokens: (tokens as any).count,
-        active_api_keys: (apiKeys as any).count,
-        requests_today: (requests as any).count,
-      });
-    } catch {
-      res.status(503).json({ error: 'service_unavailable' });
-    }
-  });
+  app.get(
+    "/admin/api/stats",
+    requireAdmin,
+    async (_req: Request, res: Response) => {
+      try {
+        const [clients] =
+          await sql`SELECT count(*)::int as count FROM oauth_clients`;
+        const [tokens] =
+          await sql`SELECT count(*)::int as count FROM oauth_tokens WHERE token_type = 'access' AND expires_at > ${Math.floor(Date.now() / 1000)}`;
+        const [requests] =
+          await sql`SELECT count(*)::int as count FROM mcp_request_log WHERE created_at > now() - interval '24 hours'`;
+        const [apiKeys] =
+          await sql`SELECT count(*)::int as count FROM access_tokens WHERE revoked_at IS NULL`;
+        res.json({
+          connected_agents: (clients as any).count,
+          active_tokens: (tokens as any).count,
+          active_api_keys: (apiKeys as any).count,
+          requests_today: (requests as any).count,
+        });
+      } catch {
+        res.status(503).json({ error: "service_unavailable" });
+      }
+    },
+  );
 
-  app.get('/admin/api/health-indicators', requireAdmin, async (_req: Request, res: Response) => {
-    try {
-      const now = Math.floor(Date.now() / 1000);
-      const [expiring] = await sql`SELECT count(*)::int as count FROM oauth_tokens WHERE token_type = 'access' AND expires_at BETWEEN ${now} AND ${now + 86400}`;
-      const [errors] = await sql`SELECT count(*)::int as count FROM mcp_request_log WHERE status != 'success' AND created_at > now() - interval '24 hours'`;
-      const [total] = await sql`SELECT count(*)::int as count FROM mcp_request_log WHERE created_at > now() - interval '24 hours'`;
-      const errorRate = (total as any).count > 0 ? ((errors as any).count / (total as any).count * 100).toFixed(1) : '0';
-      res.json({
-        expiring_soon: (expiring as any).count,
-        error_rate: `${errorRate}%`,
-      });
-    } catch {
-      res.status(503).json({ error: 'service_unavailable' });
-    }
-  });
+  app.get(
+    "/admin/api/health-indicators",
+    requireAdmin,
+    async (_req: Request, res: Response) => {
+      try {
+        const now = Math.floor(Date.now() / 1000);
+        const [expiring] =
+          await sql`SELECT count(*)::int as count FROM oauth_tokens WHERE token_type = 'access' AND expires_at BETWEEN ${now} AND ${now + 86400}`;
+        const [errors] =
+          await sql`SELECT count(*)::int as count FROM mcp_request_log WHERE status != 'success' AND created_at > now() - interval '24 hours'`;
+        const [total] =
+          await sql`SELECT count(*)::int as count FROM mcp_request_log WHERE created_at > now() - interval '24 hours'`;
+        const errorRate =
+          (total as any).count > 0
+            ? (((errors as any).count / (total as any).count) * 100).toFixed(1)
+            : "0";
+        res.json({
+          expiring_soon: (expiring as any).count,
+          error_rate: `${errorRate}%`,
+        });
+      } catch {
+        res.status(503).json({ error: "service_unavailable" });
+      }
+    },
+  );
 
   // Full engine stats. v0.28.10 moved this off /health (which is now liveness
   // only — see probeLiveness) so dashboards needing page_count / chunk_count
   // / etc. authenticate as admin and call this endpoint. probeHealth races
   // engine.getStats() against HEALTH_TIMEOUT_MS so a saturated pool returns
   // 503 rather than hanging.
-  app.get('/admin/api/full-stats', requireAdmin, async (_req: Request, res: Response) => {
-    const result = await probeHealth(engine, config.engine || 'pglite', VERSION);
-    res.status(result.status).json(result.body);
-  });
+  app.get(
+    "/admin/api/full-stats",
+    requireAdmin,
+    async (_req: Request, res: Response) => {
+      const result = await probeHealth(
+        engine,
+        config.engine || "pglite",
+        VERSION,
+      );
+      res.status(result.status).json(result.body);
+    },
+  );
 
-  app.get('/admin/api/requests', requireAdmin, async (req: Request, res: Response) => {
-    try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = 50;
-      const offset = (page - 1) * limit;
-      const agent = req.query.agent as string;
-      const operation = req.query.operation as string;
-      const status = req.query.status as string;
+  app.get(
+    "/admin/api/requests",
+    requireAdmin,
+    async (req: Request, res: Response) => {
+      try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = 50;
+        const offset = (page - 1) * limit;
+        const agent = req.query.agent as string;
+        const operation = req.query.operation as string;
+        const status = req.query.status as string;
 
-      // Dynamic filtering via postgres.js tagged-template fragments.
-      // Each filter expands to either `AND col = $N` (parameterized) or
-      // an empty fragment. `WHERE 1=1` lets us always have a WHERE clause
-      // and unconditionally append AND-prefixed fragments — no string
-      // interpolation, no manual escaping, no sql.unsafe.
-      const agentFilter = agent && agent !== 'all' ? sql`AND token_name = ${agent}` : sql``;
-      const opFilter = operation && operation !== 'all' ? sql`AND operation = ${operation}` : sql``;
-      const statusFilter = status && status !== 'all' ? sql`AND status = ${status}` : sql``;
+        // Dynamic filtering via postgres.js tagged-template fragments.
+        // Each filter expands to either `AND col = $N` (parameterized) or
+        // an empty fragment. `WHERE 1=1` lets us always have a WHERE clause
+        // and unconditionally append AND-prefixed fragments — no string
+        // interpolation, no manual escaping, no sql.unsafe.
+        const agentFilter =
+          agent && agent !== "all" ? sql`AND token_name = ${agent}` : sql``;
+        const opFilter =
+          operation && operation !== "all"
+            ? sql`AND operation = ${operation}`
+            : sql``;
+        const statusFilter =
+          status && status !== "all" ? sql`AND status = ${status}` : sql``;
 
-      const rows = await sql`
+        const rows = await sql`
         SELECT id, token_name, COALESCE(agent_name, token_name) as agent_name,
                operation, latency_ms, status, params, error_message, created_at
         FROM mcp_request_log
         WHERE 1=1 ${agentFilter} ${opFilter} ${statusFilter}
         ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
       `;
-      const [countResult] = await sql`
+        const [countResult] = await sql`
         SELECT count(*)::int as total FROM mcp_request_log
         WHERE 1=1 ${agentFilter} ${opFilter} ${statusFilter}
       `;
-      res.json({ rows, total: (countResult as any).total, page, pages: Math.ceil((countResult as any).total / limit) });
-    } catch {
-      res.status(503).json({ error: 'service_unavailable' });
-    }
-  });
+        res.json({
+          rows,
+          total: (countResult as any).total,
+          page,
+          pages: Math.ceil((countResult as any).total / limit),
+        });
+      } catch {
+        res.status(503).json({ error: "service_unavailable" });
+      }
+    },
+  );
 
   // Legacy API keys (access_tokens table)
-  app.get('/admin/api/api-keys', requireAdmin, async (_req: Request, res: Response) => {
-    try {
-      const keys = await sql`
+  app.get(
+    "/admin/api/api-keys",
+    requireAdmin,
+    async (_req: Request, res: Response) => {
+      try {
+        const keys = await sql`
         SELECT id, name, created_at, last_used_at,
           CASE WHEN revoked_at IS NOT NULL THEN 'revoked' ELSE 'active' END as status
         FROM access_tokens ORDER BY created_at DESC
       `;
-      res.json(keys);
-    } catch (e) {
-      res.status(503).json({ error: 'service_unavailable' });
-    }
-  });
+        res.json(keys);
+      } catch (e) {
+        res.status(503).json({ error: "service_unavailable" });
+      }
+    },
+  );
 
-  app.post('/admin/api/api-keys', requireAdmin, express.json(), async (req: Request, res: Response) => {
-    try {
-      const { name } = req.body;
-      if (!name) { res.status(400).json({ error: 'Name required' }); return; }
-      const { generateToken, hashToken } = await import('../core/utils.ts');
-      const token = generateToken('gbrain_');
-      const hash = hashToken(token);
-      const id = (await import('crypto')).randomUUID();
-      await sql`INSERT INTO access_tokens (id, name, token_hash) VALUES (${id}, ${name}, ${hash})`;
-      res.json({ name, token, id });
-    } catch (e) {
-      res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to create API key' });
-    }
-  });
+  app.post(
+    "/admin/api/api-keys",
+    requireAdmin,
+    express.json(),
+    async (req: Request, res: Response) => {
+      try {
+        const { name } = req.body;
+        if (!name) {
+          res.status(400).json({ error: "Name required" });
+          return;
+        }
+        const { generateToken, hashToken } = await import("../core/utils.ts");
+        const token = generateToken("gbrain_");
+        const hash = hashToken(token);
+        const id = (await import("crypto")).randomUUID();
+        await sql`INSERT INTO access_tokens (id, name, token_hash) VALUES (${id}, ${name}, ${hash})`;
+        res.json({ name, token, id });
+      } catch (e) {
+        res
+          .status(500)
+          .json({
+            error: e instanceof Error ? e.message : "Failed to create API key",
+          });
+      }
+    },
+  );
 
-  app.post('/admin/api/api-keys/revoke', requireAdmin, express.json(), async (req: Request, res: Response) => {
-    try {
-      const { name } = req.body;
-      if (!name) { res.status(400).json({ error: 'Name required' }); return; }
-      await sql`UPDATE access_tokens SET revoked_at = now() WHERE name = ${name} AND revoked_at IS NULL`;
-      res.json({ revoked: true });
-    } catch (e) {
-      res.status(500).json({ error: e instanceof Error ? e.message : 'Revoke failed' });
-    }
-  });
+  app.post(
+    "/admin/api/api-keys/revoke",
+    requireAdmin,
+    express.json(),
+    async (req: Request, res: Response) => {
+      try {
+        const { name } = req.body;
+        if (!name) {
+          res.status(400).json({ error: "Name required" });
+          return;
+        }
+        await sql`UPDATE access_tokens SET revoked_at = now() WHERE name = ${name} AND revoked_at IS NULL`;
+        res.json({ revoked: true });
+      } catch (e) {
+        res
+          .status(500)
+          .json({ error: e instanceof Error ? e.message : "Revoke failed" });
+      }
+    },
+  );
 
   // Register client from admin dashboard
-  app.post('/admin/api/register-client', requireAdmin, express.json(), async (req: Request, res: Response) => {
-    try {
-      const { name, scopes, tokenTtl } = req.body;
-      if (!name) { res.status(400).json({ error: 'Name required' }); return; }
-      const result = await oauthProvider.registerClientManual(
-        name, ['client_credentials'], scopes || 'read', [],
-      );
-      // Set per-client TTL if specified
-      if (tokenTtl && Number(tokenTtl) > 0) {
-        await sql`UPDATE oauth_clients SET token_ttl = ${Number(tokenTtl)} WHERE client_id = ${result.clientId}`;
+  app.post(
+    "/admin/api/register-client",
+    requireAdmin,
+    express.json(),
+    async (req: Request, res: Response) => {
+      try {
+        const { name, scopes, tokenTtl } = req.body;
+        if (!name) {
+          res.status(400).json({ error: "Name required" });
+          return;
+        }
+        const result = await oauthProvider.registerClientManual(
+          name,
+          ["client_credentials"],
+          scopes || "read",
+          [],
+        );
+        // Set per-client TTL if specified
+        if (tokenTtl && Number(tokenTtl) > 0) {
+          await sql`UPDATE oauth_clients SET token_ttl = ${Number(tokenTtl)} WHERE client_id = ${result.clientId}`;
+        }
+        res.json({ ...result, tokenTtl: tokenTtl ? Number(tokenTtl) : null });
+      } catch (e) {
+        res
+          .status(500)
+          .json({
+            error: e instanceof Error ? e.message : "Registration failed",
+          });
       }
-      res.json({ ...result, tokenTtl: tokenTtl ? Number(tokenTtl) : null });
-    } catch (e) {
-      res.status(500).json({ error: e instanceof Error ? e.message : 'Registration failed' });
-    }
-  });
+    },
+  );
 
   // Update client TTL
-  app.post('/admin/api/update-client-ttl', requireAdmin, express.json(), async (req: Request, res: Response) => {
-    try {
-      const { clientId, tokenTtl } = req.body;
-      if (!clientId) { res.status(400).json({ error: 'clientId required' }); return; }
-      const ttl = tokenTtl === null || tokenTtl === 0 ? null : Number(tokenTtl);
-      await sql`UPDATE oauth_clients SET token_ttl = ${ttl} WHERE client_id = ${clientId}`;
-      res.json({ updated: true, tokenTtl: ttl });
-    } catch (e) {
-      res.status(500).json({ error: e instanceof Error ? e.message : 'Update failed' });
-    }
-  });
+  app.post(
+    "/admin/api/update-client-ttl",
+    requireAdmin,
+    express.json(),
+    async (req: Request, res: Response) => {
+      try {
+        const { clientId, tokenTtl } = req.body;
+        if (!clientId) {
+          res.status(400).json({ error: "clientId required" });
+          return;
+        }
+        const ttl =
+          tokenTtl === null || tokenTtl === 0 ? null : Number(tokenTtl);
+        await sql`UPDATE oauth_clients SET token_ttl = ${ttl} WHERE client_id = ${clientId}`;
+        res.json({ updated: true, tokenTtl: ttl });
+      } catch (e) {
+        res
+          .status(500)
+          .json({ error: e instanceof Error ? e.message : "Update failed" });
+      }
+    },
+  );
 
   // Revoke OAuth client
-  app.post('/admin/api/revoke-client', requireAdmin, express.json(), async (req: Request, res: Response) => {
-    try {
-      const { clientId } = req.body;
-      if (!clientId) { res.status(400).json({ error: 'clientId required' }); return; }
-      // Soft-delete the client
-      await sql`UPDATE oauth_clients SET deleted_at = now() WHERE client_id = ${clientId} AND deleted_at IS NULL`;
-      // Revoke all active tokens for this client
-      await sql`DELETE FROM oauth_tokens WHERE client_id = ${clientId}`;
-      res.json({ revoked: true });
-    } catch (e) {
-      res.status(500).json({ error: e instanceof Error ? e.message : 'Revoke failed' });
-    }
-  });
+  app.post(
+    "/admin/api/revoke-client",
+    requireAdmin,
+    express.json(),
+    async (req: Request, res: Response) => {
+      try {
+        const { clientId } = req.body;
+        if (!clientId) {
+          res.status(400).json({ error: "clientId required" });
+          return;
+        }
+        // Soft-delete the client
+        await sql`UPDATE oauth_clients SET deleted_at = now() WHERE client_id = ${clientId} AND deleted_at IS NULL`;
+        // Revoke all active tokens for this client
+        await sql`DELETE FROM oauth_tokens WHERE client_id = ${clientId}`;
+        res.json({ revoked: true });
+      } catch (e) {
+        res
+          .status(500)
+          .json({ error: e instanceof Error ? e.message : "Revoke failed" });
+      }
+    },
+  );
+
+  app.get(
+    "/v1/models",
+    requireBearerAuth({ verifier: oauthProvider }),
+    async (_req: Request, res: Response) => {
+      res.json({
+        object: "list",
+        data: [
+          {
+            id: getChatModel(),
+            object: "model",
+            owned_by: "gbrain",
+            permission: [],
+          },
+          {
+            id: getEmbeddingModel(),
+            object: "model",
+            owned_by: "gbrain",
+            permission: [],
+          },
+        ],
+      });
+    },
+  );
+
+  app.post(
+    "/v1/embeddings",
+    requireBearerAuth({ verifier: oauthProvider }),
+    express.json(),
+    async (req: Request, res: Response) => {
+      const body = req.body ?? {};
+      const inputs = Array.isArray(body.input)
+        ? body.input.map((item: unknown) => String(item))
+        : body.input !== undefined
+          ? [String(body.input)]
+          : [];
+      if (inputs.length === 0) {
+        res
+          .status(400)
+          .json({
+            error: "invalid_request_error",
+            message: "input is required",
+          });
+        return;
+      }
+
+      try {
+        const embeddings = await embed(
+          inputs,
+          typeof body.model === "string" ? body.model : undefined,
+        );
+        res.json({
+          object: "list",
+          data: embeddings.map((vector, index) => ({
+            object: "embedding",
+            embedding: Array.from(vector),
+            index,
+          })),
+          model:
+            typeof body.model === "string" ? body.model : getEmbeddingModel(),
+          usage: { prompt_tokens: 0, total_tokens: 0 },
+        });
+      } catch (e) {
+        const message =
+          e instanceof Error ? e.message : "Embedding request failed";
+        res.status(500).json({ error: "server_error", message });
+      }
+    },
+  );
+
+  app.post(
+    "/v1/chat/completions",
+    requireBearerAuth({ verifier: oauthProvider }),
+    express.json(),
+    async (req: Request, res: Response) => {
+      const body = req.body ?? {};
+      if (!Array.isArray(body.messages) || body.messages.length === 0) {
+        res
+          .status(400)
+          .json({
+            error: "invalid_request_error",
+            message: "messages is required and must be a non-empty array",
+          });
+        return;
+      }
+
+      if (body.stream) {
+        res
+          .status(501)
+          .json({
+            error: "not_implemented",
+            message: "streaming is not supported by this endpoint",
+          });
+        return;
+      }
+
+      const messages = body.messages.map((msg: any) => {
+        if (!msg || typeof msg.role !== "string") {
+          throw new Error("Each message must have a role string");
+        }
+        const content =
+          typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content ?? "");
+        return { role: msg.role, content };
+      });
+
+      try {
+        const result = await chat({
+          model: typeof body.model === "string" ? body.model : undefined,
+          messages,
+          maxTokens:
+            typeof body.max_tokens === "number" ? body.max_tokens : undefined,
+        });
+
+        res.json({
+          id: `gbrain-chat-${Date.now()}`,
+          object: "chat.completion",
+          created: Math.floor(Date.now() / 1000),
+          model: result.model,
+          choices: [
+            {
+              index: 0,
+              message: { role: "assistant", content: result.text },
+              finish_reason:
+                result.stopReason === "end" ? "stop" : result.stopReason,
+            },
+          ],
+          usage: {
+            prompt_tokens: result.usage.input_tokens || 0,
+            completion_tokens: result.usage.output_tokens || 0,
+            total_tokens:
+              (result.usage.input_tokens || 0) +
+              (result.usage.output_tokens || 0),
+          },
+        });
+      } catch (e) {
+        const message = e instanceof Error ? e.message : "Chat request failed";
+        res.status(500).json({ error: "server_error", message });
+      }
+    },
+  );
 
   // ---------------------------------------------------------------------------
   // SSE live activity feed
   // ---------------------------------------------------------------------------
-  app.get('/admin/events', requireAdmin, (req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+  app.get("/admin/events", requireAdmin, (req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
     res.flushHeaders();
 
     sseClients.add(res);
-    req.on('close', () => sseClients.delete(res));
+    req.on("close", () => sseClients.delete(res));
   });
 
   // ---------------------------------------------------------------------------
   // Admin SPA static files
   // ---------------------------------------------------------------------------
   // Serve from admin/dist if it exists (development), otherwise embedded assets
-  const path = await import('path');
-  const fs = await import('fs');
-  const adminDistPath = path.join(process.cwd(), 'admin', 'dist');
+  const path = await import("path");
+  const fs = await import("fs");
+  const adminDistPath = path.join(process.cwd(), "admin", "dist");
   if (fs.existsSync(adminDistPath)) {
-    app.use('/admin', express.static(adminDistPath));
+    app.use("/admin", express.static(adminDistPath));
     // SPA fallback: serve index.html for all unmatched /admin/* routes
-    app.get('/admin/{*path}', (req: Request, res: Response, next: NextFunction) => {
-      // Skip API and events routes
-      if (req.path.startsWith('/admin/api/') || req.path === '/admin/events' || req.path === '/admin/login') {
-        return next();
-      }
-      res.sendFile(path.join(adminDistPath, 'index.html'));
-    });
+    app.get(
+      "/admin/{*path}",
+      (req: Request, res: Response, next: NextFunction) => {
+        // Skip API and events routes
+        if (
+          req.path.startsWith("/admin/api/") ||
+          req.path === "/admin/events" ||
+          req.path === "/admin/login"
+        ) {
+          return next();
+        }
+        res.sendFile(path.join(adminDistPath, "index.html"));
+      },
+    );
   }
 
   // ---------------------------------------------------------------------------
   // MCP tool calls (bearer auth + scope enforcement)
   // ---------------------------------------------------------------------------
-  const mcpOperations = operations.filter(op => !op.localOnly);
+  const mcpOperations = operations.filter((op) => !op.localOnly);
 
-  app.post('/mcp', requireBearerAuth({ verifier: oauthProvider }), async (req: Request, res: Response) => {
-    const startTime = Date.now();
-    const authInfo = (req as any).auth as AuthInfo;
+  app.post(
+    "/mcp",
+    requireBearerAuth({ verifier: oauthProvider }),
+    async (req: Request, res: Response) => {
+      const startTime = Date.now();
+      const authInfo = (req as any).auth as AuthInfo;
 
-    // Human-readable agent name is now threaded through AuthInfo by
-    // verifyAccessToken (which JOINs oauth_clients in its existing token
-    // SELECT). No per-request DB roundtrip needed. Falls back to clientId
-    // for legacy tokens or when the JOIN row's client_name is NULL.
-    const agentName = authInfo.clientName ?? authInfo.clientId;
+      // Human-readable agent name is now threaded through AuthInfo by
+      // verifyAccessToken (which JOINs oauth_clients in its existing token
+      // SELECT). No per-request DB roundtrip needed. Falls back to clientId
+      // for legacy tokens or when the JOIN row's client_name is NULL.
+      const agentName = authInfo.clientName ?? authInfo.clientId;
 
-    // Create a fresh MCP server per request (stateless)
-    const server = new Server(
-      { name: 'gbrain', version: VERSION },
-      { capabilities: { tools: {} } },
-    );
+      // Create a fresh MCP server per request (stateless)
+      const server = new Server(
+        { name: "gbrain", version: VERSION },
+        { capabilities: { tools: {} } },
+      );
 
-    server.setRequestHandler(ListToolsRequestSchema, async () => {
-      // v0.28.10: log every JSON-RPC method, not just successful tools/call.
-      // Pre-fix, /admin/api/requests showed nothing for clients that only
-      // ever called tools/list, and the v0.26.3 persistence regression test
-      // asserting >= 2 rows after tools/list + tools/call was unreachable.
-      const latency = Date.now() - startTime;
-      try {
-        await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params)
-                  VALUES (${authInfo.clientId}, ${agentName}, ${'tools/list'}, ${latency}, ${'success'}, ${null})`;
-      } catch { /* best effort */ }
-      broadcastEvent({
-        agent: agentName,
-        operation: 'tools/list',
-        scopes: authInfo.scopes.join(','),
-        latency_ms: latency,
-        status: 'success',
-        timestamp: new Date().toISOString(),
-      });
-      return {
-        tools: mcpOperations.map(op => ({
-          name: op.name,
-          description: op.description,
-          inputSchema: {
-            type: 'object' as const,
-            properties: Object.fromEntries(
-              Object.entries(op.params).map(([k, v]) => [k, {
-                type: v.type,
-                description: v.description,
-                ...(v.enum ? { enum: v.enum } : {}),
-                ...(v.default !== undefined ? { default: v.default } : {}),
-              }]),
-            ),
-            required: Object.entries(op.params).filter(([, v]) => v.required).map(([k]) => k),
-          },
-        })),
-      };
-    });
-
-    server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: params } = request.params;
-      const op = mcpOperations.find(o => o.name === name);
-      if (!op) {
-        // v0.28.10: persist unknown-op attempts. Operators investigating
-        // misbehaving agents need to see the full attempt log, not just
-        // valid-op success/error.
+      server.setRequestHandler(ListToolsRequestSchema, async () => {
+        // v0.28.10: log every JSON-RPC method, not just successful tools/call.
+        // Pre-fix, /admin/api/requests showed nothing for clients that only
+        // ever called tools/list, and the v0.26.3 persistence regression test
+        // asserting >= 2 rows after tools/list + tools/call was unreachable.
         const latency = Date.now() - startTime;
         try {
-          await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params, error_message)
-                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${'error'}, ${null}, ${`unknown_operation: ${name}`})`;
-        } catch { /* best effort */ }
+          await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params)
+                  VALUES (${authInfo.clientId}, ${agentName}, ${"tools/list"}, ${latency}, ${"success"}, ${null})`;
+        } catch {
+          /* best effort */
+        }
         broadcastEvent({
           agent: agentName,
-          operation: name,
-          scopes: authInfo.scopes.join(','),
+          operation: "tools/list",
+          scopes: authInfo.scopes.join(","),
           latency_ms: latency,
-          status: 'error',
-          error: { code: 'unknown_operation', message: `Unknown: ${name}` },
-          timestamp: new Date().toISOString(),
-        });
-        return { content: [{ type: 'text', text: JSON.stringify({ error: 'unknown_operation', message: `Unknown: ${name}` }) }], isError: true };
-      }
-
-      // Scope enforcement (v0.28: hasScope replaces exact-string-match so
-      // admin tokens satisfy any scope, write satisfies read, and the new
-      // sources_admin / users_admin scopes resolve through the same
-      // hierarchy. Plain string includes() at this site would have made
-      // sources_admin tokens look like they couldn't even read.)
-      const requiredScope = op.scope || 'read';
-      if (!hasScope(authInfo.scopes, requiredScope)) {
-        // v0.28.10: persist scope-rejected attempts. Same operator-visibility
-        // motivation as the unknown-op path — and it makes the v0.26.3
-        // persistence regression test reliable across both rejection paths.
-        const latency = Date.now() - startTime;
-        try {
-          await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params, error_message)
-                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${'error'}, ${null}, ${`insufficient_scope: requires '${requiredScope}'`})`;
-        } catch { /* best effort */ }
-        broadcastEvent({
-          agent: agentName,
-          operation: name,
-          scopes: authInfo.scopes.join(','),
-          latency_ms: latency,
-          status: 'error',
-          error: { code: 'insufficient_scope', message: `requires '${requiredScope}'` },
+          status: "success",
           timestamp: new Date().toISOString(),
         });
         return {
-          content: [{
-            type: 'text',
-            text: JSON.stringify({
-              error: 'insufficient_scope',
-              message: `Operation ${name} requires '${requiredScope}' scope`,
-              your_scopes: authInfo.scopes,
-            }),
-          }],
-          isError: true,
+          tools: mcpOperations.map((op) => ({
+            name: op.name,
+            description: op.description,
+            inputSchema: {
+              type: "object" as const,
+              properties: Object.fromEntries(
+                Object.entries(op.params).map(([k, v]) => [
+                  k,
+                  {
+                    type: v.type,
+                    description: v.description,
+                    ...(v.enum ? { enum: v.enum } : {}),
+                    ...(v.default !== undefined ? { default: v.default } : {}),
+                  },
+                ]),
+              ),
+              required: Object.entries(op.params)
+                .filter(([, v]) => v.required)
+                .map(([k]) => k),
+            },
+          })),
         };
-      }
+      });
 
-      const ctx: OperationContext = {
-        engine,
-        config,
-        logger: {
-          info: (msg: string) => console.error(`[INFO] ${msg}`),
-          warn: (msg: string) => console.error(`[WARN] ${msg}`),
-          error: (msg: string) => console.error(`[ERROR] ${msg}`),
-        },
-        dryRun: !!(params?.dry_run),
-        // F7: HTTP MCP is the untrusted/agent-facing transport. Stdio MCP at
-        // src/mcp/dispatch.ts:61 sets this; the inlined HTTP context-builder
-        // forgot it for several releases, which let HTTP MCP callers with a
-        // read+write token submit `shell` jobs and execute arbitrary commands
-        // on the host (RCE). The fail-closed contract in operations.ts is the
-        // belt; this is the suspenders.
-        remote: true,
-        auth: authInfo,
-      };
+      server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        const { name, arguments: params } = request.params;
+        const op = mcpOperations.find((o) => o.name === name);
+        if (!op) {
+          // v0.28.10: persist unknown-op attempts. Operators investigating
+          // misbehaving agents need to see the full attempt log, not just
+          // valid-op success/error.
+          const latency = Date.now() - startTime;
+          try {
+            await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params, error_message)
+                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${"error"}, ${null}, ${`unknown_operation: ${name}`})`;
+          } catch {
+            /* best effort */
+          }
+          broadcastEvent({
+            agent: agentName,
+            operation: name,
+            scopes: authInfo.scopes.join(","),
+            latency_ms: latency,
+            status: "error",
+            error: { code: "unknown_operation", message: `Unknown: ${name}` },
+            timestamp: new Date().toISOString(),
+          });
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  error: "unknown_operation",
+                  message: `Unknown: ${name}`,
+                }),
+              },
+            ],
+            isError: true,
+          };
+        }
 
-      // F8: redact request payload by default (declared keys only via the
-      // op's `params` allow-list; values + attacker-controlled key names
-      // never written to mcp_request_log or the SSE feed). --log-full-params
-      // bypasses this for operators debugging on their own laptop, with the
-      // startup warning printed earlier.
-      const safeParamsSummary = summarizeMcpParams(name, params);
-      const logParams = logFullParams
-        ? (params ? JSON.stringify(params) : null)
-        : (safeParamsSummary ? JSON.stringify(safeParamsSummary) : null);
-      const broadcastParams = logFullParams ? (params || {}) : safeParamsSummary;
+        // Scope enforcement (v0.28: hasScope replaces exact-string-match so
+        // admin tokens satisfy any scope, write satisfies read, and the new
+        // sources_admin / users_admin scopes resolve through the same
+        // hierarchy. Plain string includes() at this site would have made
+        // sources_admin tokens look like they couldn't even read.)
+        const requiredScope = op.scope || "read";
+        if (!hasScope(authInfo.scopes, requiredScope)) {
+          // v0.28.10: persist scope-rejected attempts. Same operator-visibility
+          // motivation as the unknown-op path — and it makes the v0.26.3
+          // persistence regression test reliable across both rejection paths.
+          const latency = Date.now() - startTime;
+          try {
+            await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params, error_message)
+                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${"error"}, ${null}, ${`insufficient_scope: requires '${requiredScope}'`})`;
+          } catch {
+            /* best effort */
+          }
+          broadcastEvent({
+            agent: agentName,
+            operation: name,
+            scopes: authInfo.scopes.join(","),
+            latency_ms: latency,
+            status: "error",
+            error: {
+              code: "insufficient_scope",
+              message: `requires '${requiredScope}'`,
+            },
+            timestamp: new Date().toISOString(),
+          });
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  error: "insufficient_scope",
+                  message: `Operation ${name} requires '${requiredScope}' scope`,
+                  your_scopes: authInfo.scopes,
+                }),
+              },
+            ],
+            isError: true,
+          };
+        }
 
+        const ctx: OperationContext = {
+          engine,
+          config,
+          logger: {
+            info: (msg: string) => console.error(`[INFO] ${msg}`),
+            warn: (msg: string) => console.error(`[WARN] ${msg}`),
+            error: (msg: string) => console.error(`[ERROR] ${msg}`),
+          },
+          dryRun: !!params?.dry_run,
+          // F7: HTTP MCP is the untrusted/agent-facing transport. Stdio MCP at
+          // src/mcp/dispatch.ts:61 sets this; the inlined HTTP context-builder
+          // forgot it for several releases, which let HTTP MCP callers with a
+          // read+write token submit `shell` jobs and execute arbitrary commands
+          // on the host (RCE). The fail-closed contract in operations.ts is the
+          // belt; this is the suspenders.
+          remote: true,
+          auth: authInfo,
+        };
+
+        // F8: redact request payload by default (declared keys only via the
+        // op's `params` allow-list; values + attacker-controlled key names
+        // never written to mcp_request_log or the SSE feed). --log-full-params
+        // bypasses this for operators debugging on their own laptop, with the
+        // startup warning printed earlier.
+        const safeParamsSummary = summarizeMcpParams(name, params);
+        const logParams = logFullParams
+          ? params
+            ? JSON.stringify(params)
+            : null
+          : safeParamsSummary
+            ? JSON.stringify(safeParamsSummary)
+            : null;
+        const broadcastParams = logFullParams
+          ? params || {}
+          : safeParamsSummary;
+
+        try {
+          const result = await op.handler(
+            ctx,
+            (params || {}) as Record<string, unknown>,
+          );
+          const latency = Date.now() - startTime;
+
+          try {
+            await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params)
+                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${"success"}, ${logParams})`;
+          } catch {
+            /* best effort */
+          }
+
+          broadcastEvent({
+            agent: agentName,
+            operation: name,
+            params: broadcastParams,
+            scopes: authInfo.scopes.join(","),
+            latency_ms: latency,
+            status: "success",
+            timestamp: new Date().toISOString(),
+          });
+
+          return { content: [{ type: "text", text: JSON.stringify(result) }] };
+        } catch (e) {
+          const latency = Date.now() - startTime;
+          // F15: unify error envelope. Both OperationError and unexpected
+          // exceptions go through src/core/errors.ts so clients see a single
+          // shape ({class, code, message, hint}). Pre-fix, OperationError
+          // serialized via e.toJSON() and other exceptions used a hand-rolled
+          // {error, message} envelope — a client couldn't pattern-match
+          // reliably across the two.
+          const errorPayload =
+            e instanceof OperationError
+              ? buildError({
+                  class: "OperationError",
+                  code: e.code,
+                  message: e.message,
+                  hint: e.suggestion,
+                  docs_url: e.docs,
+                })
+              : serializeError(e);
+          const errMsg = errorPayload.message;
+          try {
+            await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params, error_message)
+                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${"error"}, ${logParams}, ${errMsg})`;
+          } catch {
+            /* best effort */
+          }
+
+          broadcastEvent({
+            agent: agentName,
+            operation: name,
+            params: broadcastParams,
+            scopes: authInfo.scopes.join(","),
+            latency_ms: latency,
+            status: "error",
+            error: errorPayload,
+            timestamp: new Date().toISOString(),
+          });
+
+          return {
+            content: [
+              { type: "text", text: JSON.stringify({ error: errorPayload }) },
+            ],
+            isError: true,
+          };
+        }
+      });
+
+      // F14: wrap transport setup + handleRequest in try/catch. Without this,
+      // an SDK-level throw (e.g., schema parse failure on a malformed request)
+      // propagates to express's default error handler, which renders an HTML
+      // error page — clients expecting JSON-RPC envelopes break. On
+      // !res.headersSent we emit a minimal JSON 500 so the client at least
+      // gets parseable JSON back.
       try {
-        const result = await op.handler(ctx, (params || {}) as Record<string, unknown>);
-        const latency = Date.now() - startTime;
-
-        try {
-          await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params)
-                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${'success'}, ${logParams})`;
-        } catch { /* best effort */ }
-
-        broadcastEvent({
-          agent: agentName,
-          operation: name,
-          params: broadcastParams,
-          scopes: authInfo.scopes.join(','),
-          latency_ms: latency,
-          status: 'success',
-          timestamp: new Date().toISOString(),
+        const transport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: undefined as any,
         });
-
-        return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+        await server.connect(transport);
+        await transport.handleRequest(req, res, req.body);
       } catch (e) {
-        const latency = Date.now() - startTime;
-        // F15: unify error envelope. Both OperationError and unexpected
-        // exceptions go through src/core/errors.ts so clients see a single
-        // shape ({class, code, message, hint}). Pre-fix, OperationError
-        // serialized via e.toJSON() and other exceptions used a hand-rolled
-        // {error, message} envelope — a client couldn't pattern-match
-        // reliably across the two.
-        const errorPayload = e instanceof OperationError
-          ? buildError({
-              class: 'OperationError',
-              code: e.code,
-              message: e.message,
-              hint: e.suggestion,
-              docs_url: e.docs,
-            })
-          : serializeError(e);
-        const errMsg = errorPayload.message;
-        try {
-          await sql`INSERT INTO mcp_request_log (token_name, agent_name, operation, latency_ms, status, params, error_message)
-                    VALUES (${authInfo.clientId}, ${agentName}, ${name}, ${latency}, ${'error'}, ${logParams}, ${errMsg})`;
-        } catch { /* best effort */ }
-
-        broadcastEvent({
-          agent: agentName,
-          operation: name,
-          params: broadcastParams,
-          scopes: authInfo.scopes.join(','),
-          latency_ms: latency,
-          status: 'error',
-          error: errorPayload,
-          timestamp: new Date().toISOString(),
-        });
-
-        return { content: [{ type: 'text', text: JSON.stringify({ error: errorPayload }) }], isError: true };
+        console.error(
+          "MCP request handler error:",
+          e instanceof Error ? e.message : e,
+        );
+        if (!res.headersSent) {
+          res.status(500).json({
+            error: "internal_error",
+            message: e instanceof Error ? e.message : "Unknown error",
+          });
+        }
       }
-    });
-
-    // F14: wrap transport setup + handleRequest in try/catch. Without this,
-    // an SDK-level throw (e.g., schema parse failure on a malformed request)
-    // propagates to express's default error handler, which renders an HTML
-    // error page — clients expecting JSON-RPC envelopes break. On
-    // !res.headersSent we emit a minimal JSON 500 so the client at least
-    // gets parseable JSON back.
-    try {
-      const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined as any });
-      await server.connect(transport);
-      await transport.handleRequest(req, res, req.body);
-    } catch (e) {
-      console.error('MCP request handler error:', e instanceof Error ? e.message : e);
-      if (!res.headersSent) {
-        res.status(500).json({
-          error: 'internal_error',
-          message: e instanceof Error ? e.message : 'Unknown error',
-        });
-      }
-    }
-  });
+    },
+  );
 
   // ---------------------------------------------------------------------------
   // Start server
   // ---------------------------------------------------------------------------
-  const clientCount = await sql`SELECT count(*)::int as count FROM oauth_clients`;
+  const clientCount =
+    await sql`SELECT count(*)::int as count FROM oauth_clients`;
 
   app.listen(port, () => {
     console.error(`
@@ -979,15 +1394,15 @@ export async function runServeHttp(engine: BrainEngine, options: ServeHttpOption
 ║  GBrain MCP Server v${VERSION.padEnd(37)}║
 ╠══════════════════════════════════════════════════════╣
 ║  Port:      ${String(port).padEnd(40)}║
-║  Engine:    ${(config.engine || 'pglite').padEnd(40)}║
+║  Engine:    ${(config.engine || "pglite").padEnd(40)}║
 ║  Issuer:    ${issuerUrl.origin.padEnd(40)}║
 ║  Clients:   ${String((clientCount[0] as any).count).padEnd(40)}║
-║  DCR:       ${(enableDcr ? 'enabled' : 'disabled').padEnd(40)}║
-║  Token TTL: ${(tokenTtl + 's').padEnd(40)}║
+║  DCR:       ${(enableDcr ? "enabled" : "disabled").padEnd(40)}║
+║  Token TTL: ${(tokenTtl + "s").padEnd(40)}║
 ╠══════════════════════════════════════════════════════╣
-║  Admin:     http://localhost:${port}/admin${' '.repeat(Math.max(0, 19 - String(port).length))}║
-║  MCP:       http://localhost:${port}/mcp${' '.repeat(Math.max(0, 21 - String(port).length))}║
-║  Health:    http://localhost:${port}/health${' '.repeat(Math.max(0, 18 - String(port).length))}║
+║  Admin:     http://localhost:${port}/admin${" ".repeat(Math.max(0, 19 - String(port).length))}║
+║  MCP:       http://localhost:${port}/mcp${" ".repeat(Math.max(0, 21 - String(port).length))}║
+║  Health:    http://localhost:${port}/health${" ".repeat(Math.max(0, 18 - String(port).length))}║
 ╠══════════════════════════════════════════════════════╣
 ║  Admin Token (paste into /admin login):              ║
 ║  ${bootstrapToken.substring(0, 50)}  ║

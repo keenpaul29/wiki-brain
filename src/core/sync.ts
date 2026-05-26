@@ -211,26 +211,31 @@ function matchesAnyGlob(path: string, patterns?: string[]): boolean {
  * Strategy-aware: 'markdown' (default) = .md/.mdx only, 'code' = code files only, 'auto' = both.
  */
 export function isSyncable(path: string, opts: SyncableOptions = {}): boolean {
+  const normalized = path.replace(/\\/g, '/');
   const strategy = opts.strategy || 'markdown';
 
-  if (!isAllowedByStrategy(path, strategy)) return false;
+  if (!isAllowedByStrategy(normalized, strategy)) return false;
 
+  const parts = normalized.split('/');
   // Skip hidden directories
-  if (path.split('/').some(p => p.startsWith('.'))) return false;
+  if (parts.some(p => p.startsWith('.'))) return false;
+
+  // Skip node_modules and build dist directories
+  if (parts.includes('node_modules') || parts.includes('dist')) return false;
 
   // Skip .raw/ sidecar directories
-  if (path.includes('.raw/')) return false;
+  if (normalized.includes('.raw/')) return false;
 
   // Skip meta files that aren't pages
   const skipFiles = ['schema.md', 'index.md', 'log.md', 'README.md'];
-  const basename = path.split('/').pop() || '';
+  const basename = parts.pop() || '';
   if (skipFiles.includes(basename)) return false;
 
   // Skip ops/ directory
-  if (path.startsWith('ops/')) return false;
+  if (normalized.startsWith('ops/')) return false;
 
-  if (opts.include && opts.include.length > 0 && !matchesAnyGlob(path, opts.include)) return false;
-  if (opts.exclude && opts.exclude.length > 0 && matchesAnyGlob(path, opts.exclude)) return false;
+  if (opts.include && opts.include.length > 0 && !matchesAnyGlob(normalized, opts.include)) return false;
+  if (opts.exclude && opts.exclude.length > 0 && matchesAnyGlob(normalized, opts.exclude)) return false;
 
   return true;
 }

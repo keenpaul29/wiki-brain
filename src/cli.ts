@@ -81,6 +81,7 @@ const CLI_ONLY = new Set([
   "code-refs",
   "reindex-code",
   "reindex-frontmatter",
+  "backfill",
   "code-callers",
   "code-callees",
   "frontmatter",
@@ -906,14 +907,14 @@ async function handleCliOnly(command: string, args: string[]) {
         // effective_date`. This command stays as a thin alias for back-compat.
         const { reindexFrontmatterCli } =
           await import("./commands/reindex-frontmatter.ts");
-        await reindexFrontmatterCli(args);
-        return; // reindexFrontmatterCli handles its own engine lifecycle
+        await reindexFrontmatterCli(args, engine);
+        return;
       }
       case "backfill": {
         // v0.30.1: first-class generic backfill command. Subcommand dispatch
         // is inside runBackfillCommand (kind | list | --help).
         const { runBackfillCommand } = await import("./commands/backfill.ts");
-        await runBackfillCommand(args);
+        await runBackfillCommand(args, engine);
         return;
       }
       case "code-callers": {

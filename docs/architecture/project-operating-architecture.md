@@ -7,6 +7,8 @@ This repository has two jobs that must stay connected:
 
 The architecture below keeps those jobs from blurring into each other.
 
+The goal is to make this repo a self-growing brain: new wiki content should flow into the `brain` source, then daily automation should turn that content into richer pages, better links, and stronger search recall.
+
 ## Layers
 
 ### 1. Source Database Layer
@@ -89,4 +91,3 @@ powershell -ExecutionPolicy Bypass -File scripts/lint-wiki.ps1
 bun run src/cli.ts sources list
 bun run src/cli.ts stats
 ```
-

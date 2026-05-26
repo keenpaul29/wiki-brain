@@ -71,7 +71,7 @@ export function walkMarkdownFiles(dir: string): { path: string; relPath: string 
         if (lstatSync(full).isDirectory()) {
           walk(full);
         } else if (entry.endsWith('.md') && !entry.startsWith('_')) {
-          files.push({ path: full, relPath: relative(dir, full) });
+          files.push({ path: full, relPath: relative(dir, full).replace(/\\/g, '/') });
         }
       } catch { /* skip unreadable */ }
     }
@@ -134,14 +134,15 @@ export function extractMarkdownLinks(content: string): { name: string; relTarget
  */
 export function resolveSlug(fileDir: string, relTarget: string, allSlugs: Set<string>): string | null {
   const targetNoExt = relTarget.endsWith('.md') ? relTarget.slice(0, -3) : relTarget;
+  const fileDirNormalized = fileDir.replace(/\\/g, '/');
 
-  const s1 = join(fileDir, targetNoExt);
+  const s1 = join(fileDirNormalized, targetNoExt).replace(/\\/g, '/');
   if (allSlugs.has(s1)) return s1;
 
-  const parts = fileDir.split('/').filter(Boolean);
+  const parts = fileDirNormalized.split('/').filter(Boolean);
   for (let strip = 1; strip <= parts.length; strip++) {
     const ancestor = parts.slice(0, parts.length - strip).join('/');
-    const candidate = ancestor ? join(ancestor, targetNoExt) : targetNoExt;
+    const candidate = (ancestor ? join(ancestor, targetNoExt) : targetNoExt).replace(/\\/g, '/');
     if (allSlugs.has(candidate)) return candidate;
   }
 
@@ -161,8 +162,8 @@ export function resolveSlug(fileDir: string, relTarget: string, allSlugs: Set<st
  * migration normalizes any legacy rows on existing brains.
  */
 function inferTypeByDir(fromDir: string, toDir: string, frontmatter?: Record<string, unknown>): string {
-  const from = fromDir.split('/')[0];
-  const to = toDir.split('/')[0];
+  const from = fromDir.replace(/\\/g, '/').split('/')[0];
+  const to = toDir.replace(/\\/g, '/').split('/')[0];
   if (from === 'people' && to === 'companies') {
     if (Array.isArray(frontmatter?.founded)) return 'founded';
     return 'works_at';
@@ -197,9 +198,10 @@ export async function extractLinksFromFile(
   opts?: { includeFrontmatter?: boolean },
 ): Promise<ExtractedLink[]> {
   const links: ExtractedLink[] = [];
-  const slug = relPath.replace('.md', '');
-  const fileDir = dirname(relPath);
-  const fm = parseFrontmatterFromContent(content, relPath);
+  const normalizedRelPath = relPath.replace(/\\/g, '/');
+  const slug = normalizedRelPath.replace('.md', '');
+  const fileDir = dirname(normalizedRelPath).replace(/\\/g, '/');
+  const fm = parseFrontmatterFromContent(content, normalizedRelPath);
 
   for (const { name, relTarget } of extractMarkdownLinks(content)) {
     const resolved = resolveSlug(fileDir, relTarget, allSlugs);
@@ -302,6 +304,8 @@ export interface ExtractOpts {
    * Pass undefined or omit for a full walk (CLI / first-run path).
    */
   slugs?: string[];
+  /** v0.18.0: scope extraction to a specific tenancy source ID. */
+  sourceId?: string;
 }
 
 /**
@@ -320,6 +324,7 @@ export async function runExtractCore(engine: BrainEngine, opts: ExtractOpts): Pr
 
   const dryRun = !!opts.dryRun;
   const jsonMode = !!opts.jsonMode;
+  const sourceId = opts.sourceId || 'default';
   const result: ExtractResult = { links_created: 0, timeline_entries_created: 0, pages_processed: 0 };
 
   // Incremental path: if specific slugs provided, only extract from those files.
@@ -329,7 +334,7 @@ export async function runExtractCore(engine: BrainEngine, opts: ExtractOpts): Pr
       // Nothing changed — skip entirely.
       return result;
     }
-    const r = await extractForSlugs(engine, opts.dir, opts.slugs, opts.mode, dryRun, jsonMode);
+    const r = await extractForSlugs(engine, opts.dir, opts.slugs, opts.mode, dryRun, jsonMode, sourceId);
     result.links_created = r.links_created;
     result.timeline_entries_created = r.timeline_created;
     result.pages_processed = r.pages;
@@ -338,12 +343,12 @@ export async function runExtractCore(engine: BrainEngine, opts: ExtractOpts): Pr
 
   // Full walk path: CLI `gbrain extract` or first-run.
   if (opts.mode === 'links' || opts.mode === 'all') {
-    const r = await extractLinksFromDir(engine, opts.dir, dryRun, jsonMode);
+    const r = await extractLinksFromDir(engine, opts.dir, dryRun, jsonMode, sourceId);
     result.links_created = r.created;
     result.pages_processed = r.pages;
   }
   if (opts.mode === 'timeline' || opts.mode === 'all') {
-    const r = await extractTimelineFromDir(engine, opts.dir, dryRun, jsonMode);
+    const r = await extractTimelineFromDir(engine, opts.dir, dryRun, jsonMode, sourceId);
     result.timeline_entries_created = r.created;
     result.pages_processed = Math.max(result.pages_processed, r.pages);
   }
@@ -397,6 +402,21 @@ export async function runExtract(engine: BrainEngine, args: string[]) {
   }
 
   let result: ExtractResult;
+  let sourceId = 'default';
+  try {
+    const { resolveSourceId } = await import('../core/source-resolver.ts');
+    sourceId = await resolveSourceId(engine, null);
+  } catch (e) {
+    // If the resolved source is not found in the DB (common in tests where the DB is clean),
+    // fall back to 'default'.
+    if (e instanceof Error && e.message.includes('not found')) {
+      sourceId = 'default';
+    } else {
+      console.error(e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    }
+  }
+
   try {
     if (source === 'db') {
       // DB source: walk pages from the engine. The unified runExtractCore
@@ -404,12 +424,12 @@ export async function runExtract(engine: BrainEngine, args: string[]) {
       // can opt in via mode + source.
       result = { links_created: 0, timeline_entries_created: 0, pages_processed: 0 };
       if (subcommand === 'links' || subcommand === 'all') {
-        const r = await extractLinksFromDB(engine, dryRun, jsonMode, typeFilter, since, { includeFrontmatter });
+        const r = await extractLinksFromDB(engine, dryRun, jsonMode, typeFilter, since, { includeFrontmatter }, sourceId);
         result.links_created = r.created;
         result.pages_processed = r.pages;
       }
       if (subcommand === 'timeline' || subcommand === 'all') {
-        const r = await extractTimelineFromDB(engine, dryRun, jsonMode, typeFilter, since);
+        const r = await extractTimelineFromDB(engine, dryRun, jsonMode, typeFilter, since, sourceId);
         result.timeline_entries_created = r.created;
         result.pages_processed = Math.max(result.pages_processed, r.pages);
       }
@@ -419,6 +439,7 @@ export async function runExtract(engine: BrainEngine, args: string[]) {
         dir: brainDir,
         dryRun,
         jsonMode,
+        sourceId,
       });
     }
   } catch (e) {
@@ -450,6 +471,7 @@ async function extractForSlugs(
   mode: 'links' | 'timeline' | 'all',
   dryRun: boolean,
   jsonMode: boolean,
+  sourceId: string,
 ): Promise<{ links_created: number; timeline_created: number; pages: number }> {
   // Build the full slug set for link resolution (fast: just readdir, no file reads)
   const allFiles = walkMarkdownFiles(brainDir);
@@ -508,7 +530,12 @@ async function extractForSlugs(
             if (!jsonMode) console.log(`  ${link.from_slug} → ${link.to_slug} (${link.link_type})`);
             linksCreated++;
           } else {
-            linkBatch.push(link);
+            linkBatch.push({
+              ...link,
+              from_source_id: sourceId,
+              to_source_id: sourceId,
+              origin_source_id: sourceId,
+            });
             if (linkBatch.length >= BATCH_SIZE) await flushLinks();
           }
         }
@@ -522,7 +549,14 @@ async function extractForSlugs(
             if (!jsonMode) console.log(`  ${entry.slug}: ${entry.date} — ${entry.summary}`);
             timelineCreated++;
           } else {
-            timelineBatch.push({ slug: entry.slug, date: entry.date, source: entry.source, summary: entry.summary, detail: entry.detail });
+            timelineBatch.push({
+              slug: entry.slug,
+              date: entry.date,
+              source: entry.source,
+              summary: entry.summary,
+              detail: entry.detail,
+              source_id: sourceId,
+            });
             if (timelineBatch.length >= BATCH_SIZE) await flushTimeline();
           }
         }
@@ -546,7 +580,7 @@ async function extractForSlugs(
 }
 
 async function extractLinksFromDir(
-  engine: BrainEngine, brainDir: string, dryRun: boolean, jsonMode: boolean,
+  engine: BrainEngine, brainDir: string, dryRun: boolean, jsonMode: boolean, sourceId: string,
 ): Promise<{ created: number; pages: number }> {
   const files = walkMarkdownFiles(brainDir);
   const allSlugs = new Set(files.map(f => f.relPath.replace('.md', '')));
@@ -591,7 +625,12 @@ async function extractLinksFromDir(
           if (!jsonMode) console.log(`  ${link.from_slug} → ${link.to_slug} (${link.link_type})`);
           created++;
         } else {
-          batch.push(link);
+          batch.push({
+            ...link,
+            from_source_id: sourceId,
+            to_source_id: sourceId,
+            origin_source_id: sourceId,
+          });
           if (batch.length >= BATCH_SIZE) await flush();
         }
       }
@@ -609,7 +648,7 @@ async function extractLinksFromDir(
 }
 
 async function extractTimelineFromDir(
-  engine: BrainEngine, brainDir: string, dryRun: boolean, jsonMode: boolean,
+  engine: BrainEngine, brainDir: string, dryRun: boolean, jsonMode: boolean, sourceId: string,
 ): Promise<{ created: number; pages: number }> {
   const files = walkMarkdownFiles(brainDir);
 
@@ -649,7 +688,14 @@ async function extractTimelineFromDir(
           if (!jsonMode) console.log(`  ${entry.slug}: ${entry.date} — ${entry.summary}`);
           created++;
         } else {
-          batch.push({ slug: entry.slug, date: entry.date, source: entry.source, summary: entry.summary, detail: entry.detail });
+          batch.push({
+            slug: entry.slug,
+            date: entry.date,
+            source: entry.source,
+            summary: entry.summary,
+            detail: entry.detail,
+            source_id: sourceId,
+          });
           if (batch.length >= BATCH_SIZE) await flush();
         }
       }
@@ -714,6 +760,7 @@ async function extractLinksFromDB(
   typeFilter: PageType | undefined,
   since: string | undefined,
   opts?: { includeFrontmatter?: boolean },
+  sourceId?: string,
 ): Promise<{ created: number; pages: number; unresolved: UnresolvedFrontmatterRef[] }> {
   const includeFrontmatter = opts?.includeFrontmatter ?? false;
   // Batch resolver: pg_trgm + exact only, NO search fallback. Dodges the
@@ -754,7 +801,7 @@ async function extractLinksFromDB(
 
   for (let i = 0; i < slugList.length; i++) {
     const slug = slugList[i];
-    const page = await engine.getPage(slug);
+    const page = await engine.getPage(slug, { sourceId });
     if (!page) continue;
     if (typeFilter && page.type !== typeFilter) continue;
     if (since) {
@@ -778,30 +825,41 @@ async function extractLinksFromDB(
       // fromSlug !== the page being processed; we need that page to exist
       // too or the JOIN drops the row anyway.
       const fromSlug = c.fromSlug ?? slug;
-      if (!allSlugs.has(c.targetSlug)) continue;
+      let targetSlug = c.targetSlug;
+      if (!allSlugs.has(targetSlug)) {
+        const resolved = resolveSlug(dirname(slug).replace(/\\/g, '/'), targetSlug, allSlugs);
+        if (resolved) {
+          targetSlug = resolved;
+        } else {
+          continue;
+        }
+      }
       if (!allSlugs.has(fromSlug)) continue;
       if (dryRunSeen) {
-        const key = `${fromSlug}::${c.targetSlug}::${c.linkType}::${c.linkSource ?? 'markdown'}`;
+        const key = `${fromSlug}::${targetSlug}::${c.linkType}::${c.linkSource ?? 'markdown'}`;
         if (dryRunSeen.has(key)) continue;
         dryRunSeen.add(key);
         if (jsonMode) {
           process.stdout.write(JSON.stringify({
-            action: 'add_link', from: fromSlug, to: c.targetSlug,
+            action: 'add_link', from: fromSlug, to: targetSlug,
             type: c.linkType, context: c.context, link_source: c.linkSource,
           }) + '\n');
         } else {
-          console.log(`  ${fromSlug} → ${c.targetSlug} (${c.linkType})${c.linkSource === 'frontmatter' ? ' [fm]' : ''}`);
+          console.log(`  ${fromSlug} → ${targetSlug} (${c.linkType})${c.linkSource === 'frontmatter' ? ' [fm]' : ''}`);
         }
         created++;
       } else {
         batch.push({
           from_slug: fromSlug,
-          to_slug: c.targetSlug,
+          to_slug: targetSlug,
           link_type: c.linkType,
           context: c.context,
           link_source: c.linkSource,
           origin_slug: c.originSlug,
           origin_field: c.originField,
+          from_source_id: sourceId,
+          to_source_id: sourceId,
+          origin_source_id: sourceId,
         });
         if (batch.length >= BATCH_SIZE) await flush();
       }
@@ -839,6 +897,7 @@ async function extractTimelineFromDB(
   jsonMode: boolean,
   typeFilter: PageType | undefined,
   since: string | undefined,
+  sourceId?: string,
 ): Promise<{ created: number; pages: number }> {
   const allSlugs = await engine.getAllSlugs();
   const slugList = Array.from(allSlugs);
@@ -869,7 +928,7 @@ async function extractTimelineFromDB(
 
   for (let i = 0; i < slugList.length; i++) {
     const slug = slugList[i];
-    const page = await engine.getPage(slug);
+    const page = await engine.getPage(slug, { sourceId });
     if (!page) continue;
     if (typeFilter && page.type !== typeFilter) continue;
     if (since) {
@@ -896,7 +955,14 @@ async function extractTimelineFromDB(
         }
         created++;
       } else {
-        batch.push({ slug, date: entry.date, summary: entry.summary, detail: entry.detail || '' });
+        batch.push({
+          slug,
+          date: entry.date,
+          source: 'markdown',
+          summary: entry.summary,
+          detail: entry.detail || '',
+          source_id: sourceId,
+        });
         if (batch.length >= BATCH_SIZE) await flush();
       }
     }

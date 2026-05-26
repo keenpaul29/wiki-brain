@@ -20,6 +20,7 @@ import { resolveDirectPoolSize } from '../core/connection-manager.ts';
 import { listBackfills, getBackfill } from '../core/backfill-registry.ts';
 import { runBackfill, clearBackfillCheckpoint } from '../core/backfill-base.ts';
 import { loadConfig, toEngineConfig } from '../core/config.ts';
+import type { BrainEngine } from '../core/engine.ts';
 
 interface BackfillArgs {
   kind?: string;
@@ -114,7 +115,7 @@ function clampConcurrency(requested: number | undefined): { effective: number; w
   return { effective: requested };
 }
 
-export async function runBackfillCommand(args: string[]): Promise<void> {
+export async function runBackfillCommand(args: string[], passedEngine?: BrainEngine): Promise<void> {
   const cli = parseArgs(args);
   if (cli.help) { printHelp(); return; }
 
@@ -154,9 +155,14 @@ export async function runBackfillCommand(args: string[]): Promise<void> {
   const { effective: concurrency, warning } = clampConcurrency(cli.concurrency);
   if (warning) console.warn(warning);
 
-  const { createEngine } = await import('../core/engine-factory.ts');
-  const engine = await createEngine(toEngineConfig(config));
-  await engine.connect(toEngineConfig(config));
+  let engine = passedEngine;
+  let disconnectNeeded = false;
+  if (!engine) {
+    const { createEngine } = await import('../core/engine-factory.ts');
+    engine = await createEngine(toEngineConfig(config));
+    await engine.connect(toEngineConfig(config));
+    disconnectNeeded = true;
+  }
 
   if (cli.fresh) {
     await clearBackfillCheckpoint(engine, reg.spec.name);
@@ -192,7 +198,9 @@ export async function runBackfillCommand(args: string[]): Promise<void> {
   if (result.cappedByMaxRows) console.log(`  ⚠️  Capped by --max-rows; more remain.`);
   if (result.cappedByErrors) console.log(`  ⚠️  Capped by --max-errors at ${result.errors}.`);
 
-  await engine.disconnect();
+  if (disconnectNeeded) {
+    await engine.disconnect();
+  }
   if (result.cappedByErrors) process.exit(1);
 }
 
