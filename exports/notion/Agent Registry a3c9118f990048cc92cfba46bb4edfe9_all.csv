@@ -1,0 +1,5 @@
+﻿Resource,Canonical URL,Kind,Last Edited,Owner,Priority,Purpose,Resource ID,Status
+GitHub Command Center,https://www.notion.so/34141c3e886881eb95e3f2496428ecab,Page,"April 14, 2026 12:13 AM",Codex,P1,Operational GitHub workflow instructions,RES-3,Done
+GitHub Repo Tracker,https://www.notion.so/acd9947f1965424a882405901e9778bd,Database,"April 14, 2026 12:13 AM",Any Agent,P0,Canonical inventory of repositories for agents,RES-1,Done
+Agent Gateway (Codex • Claude Code • OpenCode),https://www.notion.so/34141c3e8868811abe87f38626406aca,Protocol,"April 14, 2026 12:13 AM",Any Agent,P0,Global rules and navigation for all agents,RES-2,Done
+GitHub Repo Tracker (All Repos),https://www.notion.so/629b88884dac4819af46d1d75575f67a,Database,"April 14, 2026 12:28 AM",Any Agent,P0,Canonical all-repository inventory with lane segregation,RES-4,Done

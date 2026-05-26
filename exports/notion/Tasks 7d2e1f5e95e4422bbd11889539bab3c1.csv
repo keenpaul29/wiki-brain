@@ -1,0 +1,9 @@
+﻿Task,Blocked By,Context,Created,Due Date,Effort,Energy,Impact,Lane,Priority,Priority Score,Repo,Review Date,Status,Urgency
+Weekly review and planning,,Deep Work,"April 14, 2026 12:06 AM",,2,Medium,4,Projects,P1,4,second-brain-os,,Not started,4
+Daily inbox triage (10 min),,Admin,"April 14, 2026 12:06 AM",,1,Low,3,Projects,P1,4.1,second-brain-os,,Not started,5
+Define 3 active projects only,,Deep Work,"April 14, 2026 12:06 AM",,2,Medium,4,Projects,P2,4,second-brain-os,,Not started,4
+Process one old note into Knowledge DB,,Admin,"April 14, 2026 12:06 AM",,2,Low,3,Reference Reading,P2,3.15,knowledge-system,,Not started,3
+Triage open PRs/issues for core repos,,Admin,"April 14, 2026 12:13 AM",,3,Medium,5,Contributions & Issue Fixing,P1,4.7,multi-repo,,Not started,5
+GitHub weekly repo review (top 12),,Admin,"April 14, 2026 12:13 AM",,2,Medium,4,Contributions & Issue Fixing,P1,4,multi-repo,,Not started,4
+Map repeated fixes into Memory Graph patterns,,Deep Work,"April 14, 2026 12:13 AM",,4,High,5,Reference Reading,P2,3.75,multi-repo,,Not started,3
+Promote one lesson per repo to Knowledge,,Deep Work,"April 14, 2026 12:13 AM",,3,Low,4,Reference Reading,P2,3.45,multi-repo,,Not started,3

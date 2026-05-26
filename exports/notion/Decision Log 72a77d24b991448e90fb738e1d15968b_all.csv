@@ -1,0 +1,4 @@
+﻿Decision,Choice,Context,Date,Domain,Owner,Review Date,Status,Tradeoffs
+Knowledge must be evidence-linked before promotion,Require source URL or linked note before increasing confidence/understanding.,Unverified notes degrade long-term trust.,,Architecture,Second Brain OS,,Accepted,"Slightly slower note processing, higher long-term reliability."
+Canonical all-repo tracker as single source of truth,Use GitHub Repo Tracker (All Repos) as canonical registry.,Multiple partial trackers caused context drift.,,Tooling,Second Brain OS,,Accepted,Requires discipline to avoid parallel trackers.
+Adopt lane-based repo strategy,"Segregate into Reference Reading, Projects, Contributions & Issue Fixing.",Repos were mixed without operational boundaries.,,Workflow,Second Brain OS,,Accepted,Slight overhead in classification; major gains in focus and agent routing.
