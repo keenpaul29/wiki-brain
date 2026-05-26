@@ -20,6 +20,9 @@ GBrain is initialized locally and attached to this project.
 - Updated `wiki/index.md` and `wiki/log.md` with links and entries.
 - Validated Obsidian-style links and orphan pages using PowerShell scripts.
 - Committed daily scan manifest state with `update-wiki-state.ps1 -CommitState`.
+- Fixed a TypeScript type signature error in `src/core/think/index.ts` (replaced `sourceId: opts?.sourceId` with `source_id: opts?.sourceId` inside `persistSynthesis`).
+- Ran successful TypeScript type checks (`bun run typecheck`) and validated unit tests.
+- Staged and committed all wiki files and codebase changes cleanly to git.
 - Performed full walk database sync (`sync --full`) to import all changes into source `brain` in local database.
 
 ## Open Items
@@ -42,4 +45,5 @@ For GBrain project sync (after wiki edits are verified), run:
 ```powershell
 bun run src/cli.ts sync --source brain --no-embed --no-pull --full
 ```
+
 
