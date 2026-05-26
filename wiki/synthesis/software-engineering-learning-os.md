@@ -60,6 +60,8 @@ The 2026-05-09 ingest reinforces execution discipline. [[sources/ai-coding-workf
 
 The 2026-05-19 ingest adds a sharper learning guardrail. [[sources/dont-outsource-learning|Don't Outsource the Learning]] argues that AI coding workflows need two explicit metrics: what shipped and what the engineer learned. The practical operating rule is to form a hypothesis before prompting, ask for explanation and tradeoffs before generated code in unfamiliar areas, and treat model output as reviewable work rather than a substitute for comprehension.
 
+The 2026-05-25 refresh strengthens that guardrail with the order-of-operations point: do not let the model frame unfamiliar work before the engineer has formed a first diagnosis. Learning modes, Socratic prompts, and manual re-derivation are not student-only practices; they are calibration tools for senior engineers working outside their current mental model.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:

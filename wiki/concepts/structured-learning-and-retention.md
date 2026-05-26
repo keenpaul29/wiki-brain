@@ -29,6 +29,8 @@ AI-assisted learning should preserve ownership. Supportive AI use explains, crit
 
 The same distinction applies inside production coding. If AI closes the ticket but the engineer cannot explain the failure, reconstruct the fix, or identify the tradeoffs, the session produced output without retention. A learning-preserving workflow starts with a human hypothesis, uses the model to compare explanations, then re-derives important parts often enough to keep the mental model alive.
 
+Learning-oriented AI modes are not only remedial tools. Socratic prompts, study mode, guided learning, and "explain before code" workflows can help experienced engineers when they are entering a new library, framework, or domain. The useful friction is intentional: it forces recall, prediction, and explanation before the generated answer becomes the path of least resistance.
+
 ## Source Support
 
 - [[sources/learn-from-course-content|How to Learn from Course Content Without Paying for It]]

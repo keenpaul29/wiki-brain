@@ -1,10 +1,3 @@
----
-title: Session Handoff
-type: state
-created: 2026-05-09
-updated: 2026-05-14
----
-
 # Session Handoff
 
 ## Current State
@@ -14,21 +7,20 @@ GBrain is initialized locally and attached to this project.
 - Local brain: `C:\Users\giftlaya\.gbrain\brain.pglite`
 - Project source: `brain`
 - Attached by: `.gbrain-source`
-- Last source sync: 2026-05-14 architecture pass
-- Imported pages: 282+
-- Imported chunks: 2429+
+- Last source sync: 2026-05-26 ingestion pass
+- Imported pages: 335
+- Imported chunks: 2899
 - Embedded chunks: 0
 
 ## Work Completed
 
-- Initialized the local PGLite brain with current migrations.
-- Created and attached the `brain` source for this checkout.
-- Ran a text-only full sync for the project.
-- Corrected imported page routing so synced pages belong to source `brain`.
-- Added `GBRAIN_DEV_WORKFLOW.md` so future sessions have exact commands.
-- Added `docs/architecture/project-operating-architecture.md` and `wiki/concepts/project-operating-architecture.md`.
-- Made source-scoped sync/import carry `sourceId` into page, version, tag, and chunk writes.
-- Added a regression test proving `performSync(..., sourceId)` writes pages into the requested source instead of `default`.
+- Ingested 23 new raw sources under `wiki/sources/`.
+- Created concept page `wiki/concepts/command-line-and-git-productivity.md` to document Git timeline control and CLI productivity hacks.
+- Expanded concept pages: `wiki/concepts/ai-era-software-engineering.md`, `wiki/concepts/self-improving-agent-workflows.md`, `wiki/concepts/system-design.md`, `wiki/concepts/system-design-case-studies.md`, and `wiki/concepts/software-design-patterns.md`.
+- Updated `wiki/index.md` and `wiki/log.md` with links and entries.
+- Validated Obsidian-style links and orphan pages using PowerShell scripts.
+- Committed daily scan manifest state with `update-wiki-state.ps1 -CommitState`.
+- Performed full walk database sync (`sync --full`) to import all changes into source `brain` in local database.
 
 ## Open Items
 
@@ -39,14 +31,15 @@ GBrain is initialized locally and attached to this project.
 
 ## Next Concrete Action
 
-For normal maintenance, run:
+For normal maintenance (when new raw files are added), run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
 ```
 
-For GBrain project sync, run:
+For GBrain project sync (after wiki edits are verified), run:
 
 ```powershell
-bun run src/cli.ts sync --source brain --no-embed --no-pull
+bun run src/cli.ts sync --source brain --no-embed --no-pull --full
 ```
+

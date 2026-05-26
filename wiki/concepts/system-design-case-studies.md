@@ -98,6 +98,45 @@ Useful patterns:
 - Split service boundaries only where scaling and fault isolation justify the cost.
 - Add metrics, dashboards, tracing, backups, and failure drills before the next major event.
 
+## Snapchat Bento ML Platform
+
+Core problem: serve over a billion ranking predictions per second for content recommendations while optimizing infrastructure splits and feature delivery speeds.
+
+Useful patterns:
+- Candidate Retrieval vs. Deep Ranking: Two-stage prediction pipeline filtering millions of items down to hundreds before deep scoring.
+- CPU/GPU Splitting: Running neural net operations on GPUs while handling memory-intensive embedding lookups on CPUs.
+- Co-location of Features: Keeping candidate features inside inference engine memory to eliminate network fanout.
+- Offline-Online Sync: Synchronizing analytical store features (Apache Iceberg) with low-latency key-value stores (Robusta on Spark).
+- Raw Byte Transfer: Deferring feature deserialization and sending raw bytes directly to the inference engine to minimize serialisation overhead.
+
+## Netflix Multimodal Video Search
+
+Core problem: allow creative editors to search millions of video frames and audio clips using natural language queries with sub-second latency.
+
+Useful patterns:
+- Multimodal Space Fusion: Encoding text, visual frames (Vision Transformers / CLIP ViT), and audio tracks (CLAP) into a shared embedding space.
+- Fusion Alignment: Tuning fusion pipelines to prevent model representation mismatch and search query skew.
+- Temporal Segment Hashing: Hashing video chunks temporally to index and retrieve precise frame sequences.
+
+## Production Web Application Firewall (WAF)
+
+Core problem: intercept and inspect high-throughput HTTP requests to filter malicious payloads (SQL Injection, XSS) on latency-critical packet paths.
+
+Useful patterns:
+- Tokio Asynchronous Threading: Using non-blocking executors in Rust to parse and route requests at scale.
+- 5-Layer WAF Model: Layering TCP Listening, HTTP parsing, rule-based signature checks, upstream proxying (Hyper), and structured tracing.
+- Signature Pre-compilation: Pre-compiling rule regular expressions at startup to avoid runtime compilation pauses.
+
+## Monolith-to-Service Migration Patterns
+
+Core problem: safely decompose a monolithic application into decoupled, scale-independent microservices without risking operational downtime.
+
+Useful patterns:
+- Strangler Fig Pattern: Intercepting request traffic at an API gateway/proxy, redirecting specific paths to new microservices while legacy logic is phased out.
+- Parallel Run Pattern: Routing traffic concurrently to both monolith and service to verify output equivalence before final cutover.
+- Collaborator Pattern: Decorating monolithic modules with service wrappers instead of changing legacy codebase logic directly.
+- Change Data Capture (CDC): Streaming real-time database write streams (e.g. from transaction logs) to synchronise microservice databases.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -108,3 +147,9 @@ Useful patterns:
 - Source: [[sources/amazon-rufus-technology|Technology Behind Amazon Rufus]]
 - Source: [[sources/gpt-5-5-agents-replaced-python-backend|GPT-5.5 Agents Replaced My Python Backend]]
 - Source: [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]
+- Source: [[sources/snapchat-billion-predictions|Snapchat Bento ML Platform Architecture]]
+- Source: [[sources/netflix-multimodal-video-search|Netflix Multimodal Video Search Architecture]]
+- Source: [[sources/production-firewalls-rust|Production Firewall Architecture in Rust]]
+- Source: [[sources/monolith-to-service-migration|Monolith to Service Migration Strategies]]
+- Source: [[sources/kensho-multi-agent|Kensho Financial Multi-Agent Retrieval Architecture]]
+- Source: [[sources/madrigal-multi-agent|Madrigal Pharmaceuticals Agentic Research Platform]]

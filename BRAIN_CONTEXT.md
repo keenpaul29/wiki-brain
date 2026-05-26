@@ -1,4 +1,4 @@
-﻿# BRAIN_CONTEXT
+# BRAIN_CONTEXT
 
 This file is the portable memory layer for cross-session/cross-tool continuity.
 Any assistant session (Claude Code, Codex, others) must read this first along with `AGENTS.md`.
@@ -56,6 +56,7 @@ Record decisions that future sessions should treat as default unless explicitly 
 | 2026-05-09 | Use local PGLite GBrain source `brain` for this project. | Keeps repo/wiki recall available without requiring external Postgres. | Local development, wiki maintenance, future agent sessions |
 | 2026-05-09 | Use `bun run src/cli.ts` for GBrain commands until a global `gbrain` binary is on PATH. | The source repo CLI works locally; global command is not currently installed. | Local command examples and automation |
 | 2026-05-14 | Treat source identity as part of the import architecture, not only sync bookkeeping. | Source-scoped full syncs must not leak pages into `default`. | `src/commands/sync.ts`, `src/commands/import.ts`, `src/core/import-file.ts`, engine implementations |
+| 2026-05-26 | Use full walk database sync (`sync --full`) to index local uncommitted markdown edits. | Incremental git diff sync skips uncommitted files; `--full` walks the filesystem. | Local command execution, synchronization, wiki update |
 
 ## 5) Current Priorities (Update Weekly)
 
@@ -70,7 +71,7 @@ Record decisions that future sessions should treat as default unless explicitly 
 - Current blockers:
   - Embeddings are not generated yet because provider credentials were not configured during integration.
 - Next concrete action:
-  - Run the wiki daily scan, then run `bun run src/cli.ts sync --source brain --no-embed --no-pull` after accepted markdown changes.
+  - Run the wiki daily scan, then run `bun run src/cli.ts sync --source brain --no-embed --no-pull --full` after accepted markdown changes.
 - Related files/pages:
   - `AGENTS.md`
   - `SESSION_HANDOFF.md`

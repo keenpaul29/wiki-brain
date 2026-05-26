@@ -7,6 +7,14 @@ updated: 2026-04-28
 
 # Wiki Log
 
+## [2026-05-25] ingest | AI learning posture refresh
+
+Processed changed raw source:
+
+- `raw/Don't Outsource the Learning.md`
+
+Refreshed [[sources/dont-outsource-learning|Don't Outsource the Learning]] with stronger study-backed evidence, the order-of-operations risk from early LLM problem framing, and the point that learning-oriented AI modes are useful for experienced engineers entering unfamiliar domains. Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
 ## [2026-05-19] decision | Shared engineering language page
 
 Decision: yes, the wiki should maintain a shared engineering language page, similar to a lightweight `CONTEXT.md`, for recurring project terms and durable engineering decisions.
@@ -190,3 +198,17 @@ Modified the project architecture across four layers:
 - Refactored source-scoped sync/import so `sourceId` is carried into page, version, tag, and chunk writes instead of only being used for sync bookmarks.
 
 Verification: `bun run typecheck` and `bun test --timeout 180000 test/sync.test.ts` passed.
+
+## [2026-05-26] ingest | 23 new sources, software design patterns, and CLI/Git productivity
+
+Processed 23 new raw sources:
+
+- 10 no-code AI platforms, caching patterns, cheap code vs. judgment shift, end of legacy code through AI behavior testing, agent harness components, multi-agent frameworks (Kensho, Madrigal, Remote), Snapchat Bento prediction architecture, Netflix multimodal video search, and monolith-to-service migration patterns.
+- Version control and terminal tips: effective Git (bisect, worktrees, reflogs, interactive staging) and terminal efficiency hacks.
+- Google L7 system design URLs, Rust WAF firewalls, and active study roadmaps.
+
+Created [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]].
+Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/system-design|System Design]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/software-design-patterns|Software Design Patterns]], and [[index]].
+
+Verification: Verified all links resolved and committed raw scanner state. Sync'd DB source `brain`.
+

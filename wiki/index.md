@@ -32,6 +32,8 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/software-design-patterns|Software Design Patterns]] - Choosing design patterns from concrete creation, structure, or behavior pain.
 - [[concepts/project-operating-architecture|Project Operating Architecture]] - The local GBrain, wiki, codebase, and agent handoff architecture for this checkout.
 - [[concepts/shared-engineering-language|Shared Engineering Language]] - A lightweight CONTEXT-style glossary for recurring project terms and durable engineering decisions.
+- [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]] - Terminal efficiency patterns and advanced Git timeline mechanics for robust workflow execution.
+
 
 ## Sources
 
@@ -72,7 +74,31 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]] - Data-structure tradeoffs for membership and key-value lookup workloads.
 - [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] - A plan-first, context-rich AI coding workflow with review gates and clarification loops.
 - [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]] - Validation-first error handling, typed exceptions, centralized handlers, and expected-failure result types.
-- [[sources/dont-outsource-learning|Don't Outsource the Learning]] - A warning about cognitive debt when AI coding closes tasks without preserving engineering understanding.
+- [[sources/dont-outsource-learning|Don't Outsource the Learning]] - A research-backed warning about cognitive debt when AI coding closes tasks without preserving engineering understanding.
+- [[sources/no-code-ai-platforms|No-Code AI Development Platforms]] - Evaluates the shift in AI product creation enabled by modern no-code platforms.
+- [[sources/caching-patterns|Essential Caching Patterns and Strategies]] - Explains critical caching architectures and eviction schemes, highlighting performance trade-offs.
+- [[sources/code-cheap-judgement-not|AI Code Leverage and Engineering Judgement]] - Highlights the value of engineering judgment, feature curation, and refusal as code implementation costs drop.
+- [[sources/end-of-legacy-code|Eradicating Legacy Code via AI-Driven Testing]] - Proposes continuously generated AI behavior-based testing to eliminate human memory decay and technical debt.
+- [[sources/kensho-multi-agent|Kensho Financial Multi-Agent Retrieval Architecture]] - Outlines Kensho's LangGraph routing framework for structured data retrieval.
+- [[sources/madrigal-multi-agent|Madrigal Pharmaceuticals Agentic Research Platform]] - Details a modular agentic pharma research platform utilizing LangChain, LangGraph, and LangSmith.
+- [[sources/netflix-multimodal-video-search|Netflix Multimodal Video Search Architecture]] - Illustrates video indexing and CLIP/CLAP multimodal embedding search frameworks at scale.
+- [[sources/remote-data-migration-agent|Remote Data Migration Agentic Architecture]] - Explores sandboxed Python code execution agents mapping and migrating HR spreadsheets in WebAssembly.
+- [[sources/snapchat-billion-predictions|Snapchat Bento ML Platform Architecture]] - Covers Snapchat's Bento platform serving high-frequency recommendation predictions.
+- [[sources/monolith-to-service-migration|Monolith to Service Migration Strategies]] - Outlines Strangler Fig, Parallel Run, Collaborator, and CDC migration patterns.
+- [[sources/effective-git|Effective Git Workflows and Commands]] - Advanced Git habits including interactive staging, bisecting, worktrees, and reflogs.
+- [[sources/effective-terminal|Effective Terminal Workflows and Productivity]] - Terminal shortcuts, configurations, and multiplexing to boost development workflow.
+- [[sources/latency-gambler-day-1|Building the System Architect Mindset]] - Day 1 of a system design curriculum reinterpreting SOLID principles for distributed failure isolation.
+- [[sources/latency-gambler-day-2|Strategy and Observer Patterns for System Design]] - Day 2 covering Strategy selection and decoupled event Observer designs.
+- [[sources/latency-gambler-day-3|Decorator and Proxy Patterns for System Design]] - Day 3 outlining dynamic wrappers and Virtual/Remote proxy interceptors.
+- [[sources/latency-gambler-day-4|Singleton and Builder Patterns for System Design]] - Day 4 on thread-safe JVM Singleton structures and immutable Builder validations.
+- [[sources/latency-gambler-day-5|Command and Template Method Patterns for System Design]] - Day 5 encapsulating tasks as objects and organizing extensible template methods.
+- [[sources/latency-gambler-day-6|Adapter and Facade Patterns for System Design]] - Day 6 bridging legacy integrations and taming microservice subsystem complexity.
+- [[sources/tracking-ai-usage-goodharts-law|Goodhart's Law in Corporate AI Usage Tracking]] - Critique of tracking developer token usage, leading to gaming metrics ("tokenmaxxing").
+- [[sources/anatomy-agent-harness|Anatomy of an AI Agent Harness]] - Explains filesystems, bash sandboxes, self-verification loops, and memory architectures that enable agent autonomy.
+- [[sources/google-l7-system-design|Google L7 System Design Interview Insights]] - Humble URL shortener design feedback stressing system physics and vertical node optimization over defaults.
+- [[sources/production-firewalls-rust|Production Firewall Architecture in Rust]] - Multi-layer Rust Web Application Firewall (WAF) async TCP and Regex signature inspection engine.
+- [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]] - Structured learning path using engineering blogs and case studies to develop real architectural tradeoff intuition.
+
 
 ## Maintenance Notes
 

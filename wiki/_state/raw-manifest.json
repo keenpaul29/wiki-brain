@@ -1,5 +1,17 @@
 ﻿[
     {
+        "path":  "raw/10 No-Code AI Platforms Making Anyone an AI Developer  by Souradip Pal.md",
+        "sha256":  "452ed45cf4a67bb41ceb0d2778e5ca38bc496856cd2c88549f60e7872c451d66",
+        "length":  8314,
+        "last_write_time":  "2026-05-26T13:19:37.1816461+05:30"
+    },
+    {
+        "path":  "raw/12 Caching Patterns Every Engineer Should Know From Cache-Aside to Bloom Filters.md",
+        "sha256":  "7db55e92826b23ff1e1d552cdee82d99f507355ea422bd66bb1934b92f7300ed",
+        "length":  8432,
+        "last_write_time":  "2026-05-26T14:27:54.3090354+05:30"
+    },
+    {
         "path":  "raw/A FastAPI Update Broke My Production App. Here Is the Fix.  by inprogrammer  in Artificial Intelligence in Plain English.md",
         "sha256":  "46c18ece61d0710eecde979bee03f9c3b575368513dec00f0df731539cab2ab3",
         "length":  11486,
@@ -30,6 +42,12 @@
         "last_write_time":  "2026-05-05T18:34:42.5932576+05:30"
     },
     {
+        "path":  "raw/Code got cheap. Judgement did not.md",
+        "sha256":  "d42a8bdd8b5cf10763c5201841eaa79f0d96c0466c4f12403ef06cba092fb4d9",
+        "length":  9827,
+        "last_write_time":  "2026-05-26T12:54:09.9664050+05:30"
+    },
+    {
         "path":  "raw/Create a tunnel (dashboard).md",
         "sha256":  "073c854a9963674e6241051f47a6b1583a6b2645f6665dfdb32e7e55b3366e4c",
         "length":  4461,
@@ -43,9 +61,9 @@
     },
     {
         "path":  "raw/Don\u0027t Outsource the Learning.md",
-        "sha256":  "7e50ed3ca87cdcca9eabb4398e4869340a197dc0e1e3bb2a24fa6ebcf3c2a4e8",
-        "length":  9634,
-        "last_write_time":  "2026-05-19T16:39:51.0514287+05:30"
+        "sha256":  "a08bf5330699b0bc37f59a73a39a156ba4c519a0872572c6fedd3cf7fddb8b39",
+        "length":  9533,
+        "last_write_time":  "2026-05-19T17:41:48.5618026+05:30"
     },
     {
         "path":  "raw/Enhance productivity with AI + Remote Dev.md",
@@ -60,6 +78,12 @@
         "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
     },
     {
+        "path":  "raw/Have We Reached the End of Legacy Code  by David Rodenas PhD.md",
+        "sha256":  "ae3238ee8c2000dce5f5d20e31ad196084362d144cc8b7781bfacf280329417a",
+        "length":  13280,
+        "last_write_time":  "2026-05-26T12:57:29.8650409+05:30"
+    },
+    {
         "path":  "raw/How I Get 100% Out of AI When Coding — The Workflow Nobody Taught Me  by Udara Abeythilake  in Level Up Coding.md",
         "sha256":  "c274e862d581506e69dc5057930ffad296e4e9da3544fb9bfe91df9730881c3f",
         "length":  14313,
@@ -72,6 +96,36 @@
         "last_write_time":  "2026-05-05T18:47:27.9425093+05:30"
     },
     {
+        "path":  "raw/How Kensho built a multi-agent framework with LangGraph to solve trusted financial data retrieval.md",
+        "sha256":  "e5f028e8f81ac70f7c75974dfe416597beb497c75b90767db3a7bc61df482880",
+        "length":  7732,
+        "last_write_time":  "2026-05-26T12:49:57.6480065+05:30"
+    },
+    {
+        "path":  "raw/How Madrigal Built a Flexible and Scalable Multi-Agent Research and Intelligence Platform for Pharma with LangChain and LangSmith.md",
+        "sha256":  "566b8221f3fb6f19d214a9fd67fef9a245e0f456dd864635eb95e9fc034cfa75",
+        "length":  15363,
+        "last_write_time":  "2026-05-26T12:50:45.5017003+05:30"
+    },
+    {
+        "path":  "raw/How Netflix is Using Multimodal AI to Power Video Search.md",
+        "sha256":  "589b0675ccd64ba3c16e7d14f4299785cc21cc0825af178a22ec17f872118b94",
+        "length":  18080,
+        "last_write_time":  "2026-05-26T12:40:42.9025525+05:30"
+    },
+    {
+        "path":  "raw/How Remote uses LangChain and LangGraph to onboard thousands of customers with AI.md",
+        "sha256":  "152a27774b250b22289ecdca0b765fd0c17193d42cbdb2dc5f3c5a3ff24fac9b",
+        "length":  8094,
+        "last_write_time":  "2026-05-26T12:51:03.8450346+05:30"
+    },
+    {
+        "path":  "raw/How Snapchat Serves a Billion Predictions Per Second.md",
+        "sha256":  "f1a6d5766b43578718fa8658f1b3fad5953becb48aee3754e56a4fd389a13f69",
+        "length":  20065,
+        "last_write_time":  "2026-05-26T12:45:11.2631712+05:30"
+    },
+    {
         "path":  "raw/How To Build An AI Brain That Never Forgets.md",
         "sha256":  "ee47b4efe22c6be8d2cf975236bc72db765f33376b40cf044cb0e5d7890742db",
         "length":  17157,
@@ -82,6 +136,12 @@
         "sha256":  "5769146992dd0f11b0baf8e73b13bbe8b9053636ca7bf8ec66147131b836826b",
         "length":  2775,
         "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
+    },
+    {
+        "path":  "raw/How to Move from Monolith to a Service Based Architecture.md",
+        "sha256":  "1905b6040cb1e6ec3f1c89311341bbda5eb8c73e372ae1e62080ea36836a719f",
+        "length":  6181,
+        "last_write_time":  "2026-05-26T14:27:38.3067487+05:30"
     },
     {
         "path":  "raw/How to Secure and Optimize Docker images  Best Practices.md",
@@ -120,6 +180,18 @@
         "last_write_time":  "2026-05-05T18:27:41.9566675+05:30"
     },
     {
+        "path":  "raw/I Used Git Wrong for Years.md",
+        "sha256":  "4b69356c7a123fa79de3edfe355a6f4dffbce8332d164de6d273781445f0dee1",
+        "length":  11248,
+        "last_write_time":  "2026-05-26T13:58:32.2923001+05:30"
+    },
+    {
+        "path":  "raw/I Used the Terminal Wrong for Years.md",
+        "sha256":  "c8061cba984180ed7c39441a9b28ac40b44dce10d8b2c0901aa3c7798030a334",
+        "length":  11385,
+        "last_write_time":  "2026-05-26T13:58:29.5748302+05:30"
+    },
+    {
         "path":  "raw/Improving Site Performance With Webpack Tree Shaking.md",
         "sha256":  "148ecf81c7b1e7847ac142a1d270d227b21b250d4b5695f4e5391846098b6a26",
         "length":  9641,
@@ -136,6 +208,42 @@
         "sha256":  "6723bfa1448b3035c0e433f99d631e57fde562ee0f9e46a83b878284f806f52d",
         "length":  291580,
         "last_write_time":  "2026-04-28T17:38:08.8808888+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 2 Strategy \u0026 Observer Patterns for System Design  by The Latency Gambler.md",
+        "sha256":  "a4732651a990e8ec98c162c49b304a080be5ddad2c18e10f0f213997e1f7c817",
+        "length":  14548,
+        "last_write_time":  "2026-05-26T16:18:01.5242557+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 3 Decorator \u0026 Proxy Patterns. Adding Superpowers Without Surgery  by The Latency Gambler.md",
+        "sha256":  "2ba0155ad24fbd9f3033c3357f0d18db03fe94b7a39a76a1a43f97ca57fa55fa",
+        "length":  18727,
+        "last_write_time":  "2026-05-26T16:16:34.2378569+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 4 Singleton \u0026 Builder Patterns (The Right Way)  by The Latency Gambler.md",
+        "sha256":  "ebbdf4e6532605f38eb220d71481f2d11db26dd9e26e0e0ed60dd2e165c8234b",
+        "length":  17705,
+        "last_write_time":  "2026-05-26T16:18:04.2252974+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 5 Command \u0026 Template Method Patterns  by The Latency Gambler.md",
+        "sha256":  "939c2f5689718a0cf9cb15a868f9213af9d2bb81a0c762ee7462a27b52dd8dff",
+        "length":  26077,
+        "last_write_time":  "2026-05-26T16:53:07.1194681+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me Day 1 Building Your Architect Mindset  by The Latency Gambler.md",
+        "sha256":  "0cf2a7ad71c8e830cb4c0aa8d2a966bd27a0203faa97e3980b1acd713cccb649",
+        "length":  7738,
+        "last_write_time":  "2026-05-26T16:13:11.2573545+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me Part 6  by The Latency Gambler.md",
+        "sha256":  "b0c676e25b25af3f69ee094b13f101bf25bf9b150b8b13f3c28fac58a39ecb3f",
+        "length":  25852,
+        "last_write_time":  "2026-05-26T17:15:23.5327288+05:30"
     },
     {
         "path":  "raw/Microservices vs. Monoliths When to Choose What (and Why It Matters).md",
@@ -192,6 +300,12 @@
         "last_write_time":  "2026-05-05T18:28:31.3707897+05:30"
     },
     {
+        "path":  "raw/Tech Companies Are Tracking AI Usage, And The Employees Have Already Figured Out How To Beat It  by Vivek Naskar.md",
+        "sha256":  "47d7fefe81a5b3da9b00b470df40ccdac1d7d298a79592898149ead0ae9c3f4d",
+        "length":  7868,
+        "last_write_time":  "2026-05-26T12:55:36.4581977+05:30"
+    },
+    {
         "path":  "raw/tech skills vs system design Unlock case study in Production.md",
         "sha256":  "9af5318203f0cdb607f3d473c2f80977c7112a475cc7832fe1aef4f905d314df",
         "length":  6235,
@@ -202,6 +316,18 @@
         "sha256":  "cb6d0692d14af4226b8c15cf3955cc2b3b1ac52d00526c382ab5d98267f0448f",
         "length":  5778,
         "last_write_time":  "2026-05-05T19:07:36.8657658+05:30"
+    },
+    {
+        "path":  "raw/The Anatomy of an Agent Harness.md",
+        "sha256":  "ff142cb22d92c72ac0b67b41014e2d104eaa9227bc2e957cb50539ae6ffad1c9",
+        "length":  13965,
+        "last_write_time":  "2026-05-26T12:45:30.4042079+05:30"
+    },
+    {
+        "path":  "raw/The Day a Google L7 Engineer Tore My System Design to Shreds  by Cloud With Azeem  in ExpoComputing.md",
+        "sha256":  "62b0fcdba8e32d876141f36a7a6db801543cc189ca0bfc6e7571b24c2e89ed5d",
+        "length":  10417,
+        "last_write_time":  "2026-05-26T14:05:37.5962169+05:30"
     },
     {
         "path":  "raw/The Dictionary Problem Fast Lookups in Large Collections.md",
@@ -216,9 +342,21 @@
         "last_write_time":  "2026-04-28T17:38:08.8838812+05:30"
     },
     {
+        "path":  "raw/The Untold Architecture Behind Production Firewalls Build Your Own SafeLine in Rust From Zero  by Souradip Pal  in Level Up Coding.md",
+        "sha256":  "23fe7e31eefe32f49f05583e67324250292bb559c03d60c48b9da90971af6a15",
+        "length":  11833,
+        "last_write_time":  "2026-05-26T13:18:02.6666663+05:30"
+    },
+    {
         "path":  "raw/Top Skills Frontend Developers Need in 2026 (Beyond React)  by Kevin - MERN Stack Developer.md",
         "sha256":  "ea47935c19a6151e5edb781ee977715163dea433468a3fa178320a7dee421580",
         "length":  6551,
         "last_write_time":  "2026-05-05T18:24:16.9725330+05:30"
+    },
+    {
+        "path":  "raw/Watching 100 System Design Videos Won\u0027t Get You Hired. This Will.  by The Latency Gambler.md",
+        "sha256":  "1d7e520d3251bb2959d0a687c31b98231ecffb085d714f96d451a47739afef9b",
+        "length":  10516,
+        "last_write_time":  "2026-05-26T14:06:00.8559892+05:30"
     }
 ]

@@ -2,6 +2,10 @@
 title: AI-Era Software Engineering
 type: concept
 created: 2026-04-28
+---
+title: AI-Era Software Engineering
+type: concept
+created: 2026-04-28
 tags:
   - concept
   - software-engineering
@@ -21,6 +25,7 @@ AI-era software engineering shifts value away from typing code and toward direct
 - Strategic thinking: anticipating second-order effects such as more generated code increasing maintenance burden.
 - Accountability: reviewing AI output for safety, license, privacy, and ethical risk.
 - Human alignment: building trust, managing incidents, and keeping product work grounded in real users.
+- Feature Refusal & Curation: Filtering and rejecting plausible but unnecessary features to keep the system maintainable.
 
 ## Connection to System Design
 
@@ -46,7 +51,11 @@ Codemods and AI-generated edits both reduce the cost of broad code changes, but 
 
 AI leverage has different cognitive costs depending on how it is used. Explanation, critique, tradeoff exploration, and assumption testing can expand engineering judgment. Blindly accepting generated solutions, delegating architecture too early, or outsourcing debugging without understanding the root cause can erode ownership. The durable skill is choosing the right mode for the task and being able to explain the result afterward.
 
-AI coding should preserve skill formation as well as delivery speed. A useful guardrail is to form a diagnosis before asking the model, request explanation and tradeoffs before code when the area is unfamiliar, and review generated output like a pull request. Shipping without learning can accumulate cognitive debt even when the immediate task succeeds.
+AI coding should preserve skill formation as well as delivery speed. A useful guardrail is to form a diagnosis before asking the model, request explanation and tradeoffs before code when the area is unfamiliar, and review generated output like a pull request. The order matters: if the model frames the problem before the engineer has reasoned about it, the answer can anchor the whole session. Shipping without learning can accumulate cognitive debt even when the immediate task succeeds.
+
+## Metrics and Corporate Pressure
+
+When corporate metrics focus on tracking developer AI token consumption to justify Capex, they risk triggering Goodhart's Law (when a measure becomes a target, it ceases to be a good measure). Developers pressured to meet token targets may resort to "tokenmaxxing"—running automated background tasks to inflate token counts without delivering real value. Effective engineering measures efficiency and value delivery rather than raw token consumption.
 
 ## Tool and Model Fit
 
@@ -60,6 +69,10 @@ Agentic coding works better when constraints live in project structure rather th
 
 AI coding quality improves when teams formalize a context-first workflow: provide full requirement artifacts, force an implementation plan before code, challenge plan assumptions with domain context, execute in small reviewable steps, and keep test generation inside the same review loop. This keeps AI as a multiplier for judgment rather than a shortcut around it.
 
+## Legacy Code and Continuous Testing
+
+Technical debt degrades into legacy code because software grows faster than human developers can remember the business intent behind it. Legacy code is defined by a lack of tests, making modifications risky. AI-driven testing workflows can run continuously to capture business intent and maintain comprehensive behavior-based test suites, breaking the cycle of legacy code decay and enabling safe refactoring.
+
 ## Remote and Sandboxed Context
 
 Remote development makes agent context and permissions explicit. SSH hosts, dev containers, WSL environments, tunnels, and Codespaces may each have different toolchains, credentials, and blast radius. Environment-specific instructions help AI reason correctly, while scoped approvals and sandboxed targets keep agentic execution from touching sensitive local or production systems by default.
@@ -70,7 +83,7 @@ AI coding assistants should propose changes, commands, and infrastructure edits;
 
 ## Design Judgment
 
-Generated code can make over-abstraction cheaper, which raises the importance of design discipline. Patterns such as Builder, Adapter, Facade, Strategy, and Chain of Responsibility should be chosen from observed code pain: creation complexity, boundary leakage, or changing behavior. The pattern is not the goal; localizing a recurring cost is.
+Generated code compresses implementation costs, which exposes the engineering judgment layer underneath. High-level software design patterns should be selected to resolve concrete codebase pain (creation complexity, boundary leakage, or changing behavior) and prevent over-abstraction. When code is cheap, the architect's primary value is system layout, integration, and feature curation.
 
 ## Production AI Systems
 
@@ -101,3 +114,10 @@ Once an AI feature ships, the hard work moves to grounding, retrieval quality, i
 - [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]]
 - [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]
 - [[sources/dont-outsource-learning|Don't Outsource the Learning]]
+- [[sources/no-code-ai-platforms|No-Code AI Development Platforms]]
+- [[sources/code-cheap-judgement-not|AI Code Leverage and Engineering Judgement]]
+- [[sources/end-of-legacy-code|Eradicating Legacy Code via AI-Driven Testing]]
+- [[sources/tracking-ai-usage-goodharts-law|Goodhart's Law in Corporate AI Usage Tracking]]
+- [[sources/remote-data-migration-agent|Remote Data Migration Agentic Architecture]]
+- [[sources/effective-git|Effective Git Workflows and Commands]]
+- [[sources/effective-terminal|Effective Terminal Workflows and Productivity]]

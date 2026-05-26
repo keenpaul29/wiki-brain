@@ -342,7 +342,7 @@ export async function persistSynthesis(
     title: result.question.slice(0, 200),
     type: 'synthesis',
     compiled_truth: body,
-    sourceId: opts?.sourceId,
+    source_id: opts?.sourceId,
     frontmatter: {
       type: 'synthesis',
       question: result.question,
