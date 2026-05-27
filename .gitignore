@@ -48,3 +48,6 @@ meetings/transcripts/
 .windsurf\rules\openmemory.md
 CLAUDE.md
 AGENTS.md
+
+# Private brain reports — never check these in (per CLAUDE.md privacy rule)
+reports/network-intelligence/

@@ -2,8 +2,7 @@
  * Shared link/timeline extraction utilities.
  *
  * Used by:
- *   - src/commands/link-extract.ts        (batch DB extraction)
- *   - src/commands/timeline-extract.ts    (batch DB extraction)
+ *   - src/commands/extract.ts             (batch DB + FS extraction — `gbrain extract links|timeline|all`)
  *   - src/commands/backlinks.ts           (filesystem walk, legacy)
  *   - src/core/operations.ts put_page     (auto-link post-hook)
  *
@@ -97,7 +96,7 @@ const QUALIFIED_WIKILINK_RE = new RegExp(
  * for any caller that cares about positions; for our extractors this is just
  * defense-in-depth — slugs inside code are not real entity references.
  */
-function stripCodeBlocks(content: string): string {
+export function stripCodeBlocks(content: string): string {
   let out = '';
   let i = 0;
   while (i < content.length) {

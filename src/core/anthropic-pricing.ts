@@ -21,12 +21,14 @@ export interface ModelPricing {
 
 /** Map of Anthropic model id → pricing. Aliases (opus/sonnet/haiku) resolve via DEFAULT_ALIASES. */
 export const ANTHROPIC_PRICING: Record<string, ModelPricing> = {
-  // Claude 4.7 family (current generation)
-  'claude-opus-4-7':            { input: 15.00, output: 75.00 },
+  // Claude 4.7 generation (current)
+  // Opus 4.7 dropped from $15/$75 (Opus 4) to $5/$25 per
+  // https://platform.claude.com/docs/en/about-claude/models/overview (verified 2026-05-10).
+  'claude-opus-4-7':            { input:  5.00, output: 25.00 },
   'claude-sonnet-4-6':          { input:  3.00, output: 15.00 },
   'claude-haiku-4-5-20251001':  { input:  1.00, output:  5.00 },
   // Older but still frequently aliased
-  'claude-opus-4-6':            { input: 15.00, output: 75.00 },
+  'claude-opus-4-6':            { input:  5.00, output: 25.00 },
   'claude-3-5-sonnet-20241022': { input:  3.00, output: 15.00 },
   'claude-3-5-haiku-20241022':  { input:  0.80, output:  4.00 },
 };
@@ -45,7 +47,16 @@ export function estimateMaxCostUsd(
   estimatedInputTokens: number,
   maxOutputTokens: number,
 ): number | null {
-  const p = ANTHROPIC_PRICING[modelId];
+  // Accept both bare (`claude-opus-4-7`) and provider-prefixed
+  // (`anthropic:claude-opus-4-7`) ids. Required since cebu-v4's
+  // model-config rewrite (commit c4f03a9d) prefixes every default — without
+  // tail fallback, every internal call would hit BUDGET_METER_NO_PRICING and
+  // silently disable the budget gate.
+  let p = ANTHROPIC_PRICING[modelId];
+  if (!p && modelId.includes(':')) {
+    const tail = modelId.split(':', 2)[1];
+    if (tail) p = ANTHROPIC_PRICING[tail];
+  }
   if (!p) return null;
   return (
     (estimatedInputTokens / 1_000_000) * p.input +

@@ -47,6 +47,12 @@ CREATE TABLE IF NOT EXISTS sources (
   archived            BOOLEAN NOT NULL DEFAULT false,
   archived_at         TIMESTAMPTZ,
   archive_expires_at  TIMESTAMPTZ,
+  -- v0.40.3.0: per-source CR mode override + mount-frontmatter trust gate.
+  -- contextual_retrieval_mode NULL = fall through to global mode bundle.
+  -- trust_frontmatter_overrides FALSE for mounts by default; host source
+  -- (id='default') is always trusted regardless of this column.
+  contextual_retrieval_mode   TEXT,
+  trust_frontmatter_overrides BOOLEAN NOT NULL DEFAULT false,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -58,6 +64,15 @@ CREATE TABLE IF NOT EXISTS sources (
 INSERT INTO sources (id, name, config)
   VALUES ('default', 'default', '{"federated": true}'::jsonb)
   ON CONFLICT (id) DO NOTHING;
+
+-- v0.40 Federated Sync v2: partial expression index on config->>'github_repo'
+-- so POST /webhooks/github's source-by-repo lookup hits an index. Only rows
+-- with a configured webhook actually take up index entries. Both Postgres and
+-- PGLite support partial expression indexes. Migration v87 installs the same
+-- index on legacy brains (idempotent IF NOT EXISTS).
+CREATE INDEX IF NOT EXISTS sources_github_repo_idx
+  ON sources ((config->>'github_repo'))
+  WHERE config ? 'github_repo';
 
 -- ============================================================
 -- pages: the core content table
@@ -103,8 +118,72 @@ CREATE TABLE IF NOT EXISTS pages (
   effective_date_source TEXT,
   import_filename       TEXT,
   salience_touched_at   TIMESTAMPTZ,
+  -- v0.37.0 (migration v79): real stale-page signal for \`gbrain lsd\`. Bumped
+  -- by op-layer write-back inside \`search\`/\`query\`/\`get_page\` op handlers
+  -- (NOT inside engine methods — internal callers must not pollute the
+  -- signal). NULL = never retrieved (LSD prioritizes these first).
+  last_retrieved_at     TIMESTAMPTZ,
+  -- v0.40.3.0 contextual retrieval (renumbered from v81 to v90 on master
+  -- merge). contextual_retrieval_mode is what tier the page was last embedded
+  -- under (NULL = pre-v90 = treated as 'none' for drift detection).
+  -- corpus_generation is the composite hash of (synopsis_prompt_version,
+  -- haiku_model, title_wrapper_version, embedding_model) — document-side
+  -- provenance for query_cache invalidation per D27 P1-5. NULL means pre-v90;
+  -- the page_generations JSONB check correctly invalidates pre-v90 cache
+  -- rows against any current generation.
+  contextual_retrieval_mode  TEXT,
+  corpus_generation          TEXT,
+  -- v0.40.3.0 cache invalidation gate (migration v91). Monotonic per-page
+  -- counter bumped by bump_page_generation_trg on INSERT (initial value =
+  -- MAX(generation) + 1 so the bookmark fires for any cache row stored
+  -- before this page existed — codex #4) and on UPDATE when any column in
+  -- the content allow-list IS DISTINCT FROM. Read by the per-page snapshot
+  -- check in query-cache-gate.ts.
+  generation     BIGINT NOT NULL DEFAULT 1,
   CONSTRAINT pages_source_slug_key UNIQUE (source_id, slug)
 );
+
+-- v0.40.3.0 cache invalidation trigger (migration v91; mirrored in
+-- src/core/pglite-schema.ts). BEFORE INSERT OR UPDATE so every write path
+-- bumps generation per D6 / codex #4. INSERT: pages get
+-- COALESCE(MAX(generation), 0) + 1 so the bookmark gate fires for any
+-- cache row stored before the new page existed. UPDATE: bumps only when
+-- content columns IS DISTINCT FROM (allow-list widened per D6 + codex #3
+-- to include title/type/page_kind/corpus_generation/content_hash) so
+-- read-time mutations don't invalidate every cache row.
+CREATE OR REPLACE FUNCTION bump_page_generation_fn() RETURNS trigger AS \$func\$
+BEGIN
+  IF (TG_OP = 'INSERT') THEN
+    NEW.generation := COALESCE((SELECT MAX(generation) FROM pages), 0) + 1;
+  ELSIF (OLD.compiled_truth IS DISTINCT FROM NEW.compiled_truth)
+     OR (OLD.timeline IS DISTINCT FROM NEW.timeline)
+     OR (OLD.frontmatter IS DISTINCT FROM NEW.frontmatter)
+     OR (OLD.deleted_at IS DISTINCT FROM NEW.deleted_at)
+     OR (OLD.contextual_retrieval_mode IS DISTINCT FROM NEW.contextual_retrieval_mode)
+     OR (OLD.title IS DISTINCT FROM NEW.title)
+     OR (OLD.type IS DISTINCT FROM NEW.type)
+     OR (OLD.page_kind IS DISTINCT FROM NEW.page_kind)
+     OR (OLD.corpus_generation IS DISTINCT FROM NEW.corpus_generation)
+     OR (OLD.content_hash IS DISTINCT FROM NEW.content_hash)
+  THEN
+    NEW.generation := OLD.generation + 1;
+  END IF;
+  RETURN NEW;
+END;
+\$func\$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS bump_page_generation_trg ON pages;
+CREATE TRIGGER bump_page_generation_trg
+  BEFORE INSERT OR UPDATE ON pages
+  FOR EACH ROW
+  EXECUTE FUNCTION bump_page_generation_fn();
+
+-- v0.40.3.0 supports O(log N) MAX(generation) for the Layer 1 bookmark
+-- check in query-cache-gate.ts. Plain btree (DESC unnecessary; Postgres
+-- backward-scans plain btrees for MAX per codex #8). CONCURRENTLY would
+-- be used inside a migration; in the schema-bootstrap path it's a plain
+-- CREATE INDEX since the table is empty.
+CREATE INDEX IF NOT EXISTS pages_generation_idx ON pages (generation);
 
 CREATE INDEX IF NOT EXISTS idx_pages_type ON pages(type);
 CREATE INDEX IF NOT EXISTS idx_pages_frontmatter ON pages USING GIN(frontmatter);
@@ -120,6 +199,13 @@ CREATE INDEX IF NOT EXISTS idx_pages_source_id ON pages(source_id);
 -- stays low. Don't add a regular \`(deleted_at)\` index without measuring.
 CREATE INDEX IF NOT EXISTS pages_deleted_at_purge_idx
   ON pages (deleted_at) WHERE deleted_at IS NOT NULL;
+-- v0.37.0: full B-tree index on last_retrieved_at supports LSD's stale-page
+-- query \`WHERE last_retrieved_at IS NULL OR last_retrieved_at < NOW() -
+-- INTERVAL '90 days'\`. Postgres handles NULL in B-tree indexes (sorted to
+-- one end) so one index covers both branches. A partial WHERE NOT NULL
+-- would miss the NULL branch that LSD prioritizes (codex round 2 #6).
+CREATE INDEX IF NOT EXISTS pages_last_retrieved_at_idx
+  ON pages (last_retrieved_at);
 -- v0.29.1: expression index used by since/until date-range filters that read
 -- COALESCE(effective_date, updated_at). A partial index on effective_date
 -- alone would NOT help — the planner can't use it for the negative side of
@@ -159,7 +245,10 @@ CREATE TABLE IF NOT EXISTS content_chunks (
   -- mixed-provider brains (e.g. OpenAI 1536 text + Voyage 1024 images) keep
   -- both columns populated with distinct dim spaces.
   modality              TEXT NOT NULL DEFAULT 'text',
-  embedding_image       vector(1024)
+  embedding_image       vector(1024),
+  -- v0.36 Phase 3 cross-modal: unified column populated by reindex.
+  -- Migration v75 also adds it for upgrade paths.
+  embedding_multimodal  vector(1024)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_chunks_page_index ON content_chunks(page_id, chunk_index);
@@ -268,7 +357,10 @@ CREATE TABLE IF NOT EXISTS links (
   to_page_id     INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
   link_type      TEXT    NOT NULL DEFAULT '',
   context        TEXT    NOT NULL DEFAULT '',
-  link_source    TEXT    CHECK (link_source IS NULL OR link_source IN ('markdown', 'frontmatter', 'manual')),
+  -- v0.42.0.0: 'mentions' added for auto-linked body-text mentions
+  -- (gbrain extract links --by-mention). Filtered OUT of backlink-count
+  -- for search ranking; only counts toward orphan-ratio + graph traversal.
+  link_source    TEXT    CHECK (link_source IS NULL OR link_source IN ('markdown', 'frontmatter', 'manual', 'mentions')),
   origin_page_id INTEGER REFERENCES pages(id) ON DELETE SET NULL,
   origin_field   TEXT,
   -- v0.18.0 Step 4: 'qualified' when the link was written as
@@ -350,17 +442,23 @@ CREATE INDEX IF NOT EXISTS idx_versions_page ON page_versions(page_id);
 -- ============================================================
 -- ingest_log
 -- ============================================================
--- NOTE (v0.18.0 Step 1): ingest_log.source_id is NOT added yet — lands
--- in v17 alongside the sync rewrite (Step 5), which starts writing
--- source-scoped entries.
+-- v0.31.2 (codex P1 #3): source_id added so facts:absorb logging
+-- (runFactsBackstop / writeFactsAbsorbLog) and doctor's
+-- facts_extraction_health check can scope failure counts per source.
+-- Migration v47 ALTERs existing brains; this inline definition covers
+-- fresh installs.
 CREATE TABLE IF NOT EXISTS ingest_log (
   id            SERIAL PRIMARY KEY,
+  source_id     TEXT    NOT NULL DEFAULT 'default',
   source_type   TEXT    NOT NULL,
   source_ref    TEXT    NOT NULL,
   pages_updated JSONB   NOT NULL DEFAULT '[]',
   summary       TEXT    NOT NULL DEFAULT '',
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE INDEX IF NOT EXISTS idx_ingest_log_source_type_created
+  ON ingest_log (source_id, source_type, created_at DESC);
 
 -- ============================================================
 -- config: brain-level settings
@@ -422,8 +520,24 @@ CREATE TABLE IF NOT EXISTS oauth_clients (
   client_secret_expires_at BIGINT,
   token_ttl               INTEGER,
   deleted_at              TIMESTAMPTZ,
+  source_id               TEXT REFERENCES sources(id) ON DELETE RESTRICT,
+  federated_read          TEXT[] NOT NULL DEFAULT '{}',
+  -- v0.38 Slice 2 + 3: per-client daily budget cap (v84) + agent binding (v85).
+  budget_usd_per_day      NUMERIC(10, 2) NULL,
+  bound_tools             TEXT[] NULL,
+  bound_source_id         TEXT NULL,
+  bound_brain_id          TEXT NULL,
+  bound_slug_prefixes     TEXT[] NULL,
+  bound_max_concurrent    INTEGER NOT NULL DEFAULT 1,
   created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- v0.34.1 (#861, D13 + #876): source_id is the write-source scope;
+-- federated_read is the read-source array. Migrations v60-v65 land both
+-- columns on upgrade; fresh installs include them inline above.
+CREATE INDEX IF NOT EXISTS idx_oauth_clients_source_id
+  ON oauth_clients(source_id) WHERE source_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_oauth_clients_federated_read
+  ON oauth_clients USING GIN (federated_read);
 
 CREATE TABLE IF NOT EXISTS oauth_tokens (
   token_hash   TEXT PRIMARY KEY,
@@ -454,6 +568,26 @@ CREATE TABLE IF NOT EXISTS oauth_codes (
 -- Composite indexes for admin dashboard request log queries
 CREATE INDEX IF NOT EXISTS idx_mcp_log_time_agent ON mcp_request_log(created_at, token_name);
 CREATE INDEX IF NOT EXISTS idx_mcp_log_agent_time ON mcp_request_log(agent_name, created_at DESC);
+
+-- ============================================================
+-- op_checkpoints: shared checkpoint table for long-running ops
+-- ============================================================
+-- v0.36+ autonomous-remediation wave (migration v67). Pre-fix each op
+-- carried its own file-backed checkpoint (or none); that broke on
+-- Postgres multi-worker hosts and fingerprint-collided across param
+-- variations. Fingerprint = sha8 of canonical-JSON of relevant params
+-- per op (mode, source, chunker_version, embedding_model+dims, etc.).
+-- completed_keys = op-defined string array. GC: cycle purge phase
+-- drops rows older than 7 days.
+CREATE TABLE IF NOT EXISTS op_checkpoints (
+  op             TEXT NOT NULL,
+  fingerprint    TEXT NOT NULL,
+  completed_keys JSONB NOT NULL DEFAULT '[]'::jsonb,
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (op, fingerprint)
+);
+CREATE INDEX IF NOT EXISTS op_checkpoints_updated_at_idx
+  ON op_checkpoints (updated_at);
 
 -- ============================================================
 -- files: binary attachments stored in Supabase Storage
@@ -677,20 +811,29 @@ CREATE INDEX IF NOT EXISTS idx_subagent_messages_provider ON subagent_messages (
 -- After success: UPDATE to 'complete' + output. On failure: 'failed' + error.
 -- Replay re-runs 'pending' rows only if the tool is idempotent.
 CREATE TABLE IF NOT EXISTS subagent_tool_executions (
-  id              BIGSERIAL PRIMARY KEY,
-  job_id          BIGINT      NOT NULL REFERENCES minion_jobs(id) ON DELETE CASCADE,
-  message_idx     INTEGER     NOT NULL,
-  tool_use_id     TEXT        NOT NULL,
-  tool_name       TEXT        NOT NULL,
-  input           JSONB       NOT NULL,
-  status          TEXT        NOT NULL,
-  output          JSONB,
-  error           TEXT,
-  schema_version  INTEGER     NOT NULL DEFAULT 1,
-  provider_id     TEXT,
-  started_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  ended_at        TIMESTAMPTZ,
+  id                  BIGSERIAL PRIMARY KEY,
+  job_id              BIGINT      NOT NULL REFERENCES minion_jobs(id) ON DELETE CASCADE,
+  message_idx         INTEGER     NOT NULL,
+  tool_use_id         TEXT        NOT NULL,
+  tool_name           TEXT        NOT NULL,
+  input               JSONB       NOT NULL,
+  status              TEXT        NOT NULL,
+  output              JSONB,
+  error               TEXT,
+  schema_version      INTEGER     NOT NULL DEFAULT 1,
+  provider_id         TEXT,
+  -- v0.38 D11: gbrain-owned stable IDs (ordinal assigned at first
+  -- observation of a tool call; gbrain_tool_use_id is uuid v7). Reconciliation
+  -- on crash-replay uses (job_id, message_idx, ordinal) as the unique key.
+  -- Legacy rows (pre-v82) have ordinal=NULL + gbrain_tool_use_id=NULL and
+  -- are resolved by the read-time D5 shim that recomputes the key from
+  -- (job_id, message_idx, content_blocks index, tool_name).
+  ordinal             INTEGER,
+  gbrain_tool_use_id  UUID,
+  started_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ended_at            TIMESTAMPTZ,
   CONSTRAINT uniq_subagent_tools_use_id UNIQUE (job_id, tool_use_id),
+  CONSTRAINT subagent_tool_executions_stable_id UNIQUE (job_id, message_idx, ordinal),
   CONSTRAINT chk_subagent_tools_status CHECK (status IN ('pending','complete','failed'))
 );
 CREATE INDEX IF NOT EXISTS idx_subagent_tools_job ON subagent_tool_executions (job_id, status);
@@ -734,11 +877,16 @@ CREATE TABLE IF NOT EXISTS dream_verdicts (
 -- Works through PgBouncer transaction pooling, unlike session-scoped
 -- pg_try_advisory_lock.
 CREATE TABLE IF NOT EXISTS gbrain_cycle_locks (
-  id              TEXT        PRIMARY KEY,
-  holder_pid      INT         NOT NULL,
-  holder_host     TEXT,
-  acquired_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  ttl_expires_at  TIMESTAMPTZ NOT NULL
+  id                 TEXT        PRIMARY KEY,
+  holder_pid         INT         NOT NULL,
+  holder_host        TEXT,
+  acquired_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  ttl_expires_at     TIMESTAMPTZ NOT NULL,
+  -- v0.41.13.0 (migration v97 + D-V3-4): bumped on every withRefreshingLock
+  -- refresh tick. Used by \`gbrain sync --break-lock --max-age <s>\` to
+  -- identify wedged-but-alive holders without stealing healthy long-running
+  -- holders that are actively refreshing.
+  last_refreshed_at  TIMESTAMPTZ
 );
 CREATE INDEX IF NOT EXISTS idx_cycle_locks_ttl ON gbrain_cycle_locks(ttl_expires_at);
 
@@ -776,7 +924,13 @@ CREATE TABLE IF NOT EXISTS eval_candidates (
   salience_resolved     TEXT,
   recency_resolved      TEXT,
   salience_source       TEXT,
-  recency_source        TEXT
+  recency_source        TEXT,
+  -- v0.36.3.0 (D16 / CDX-10) — embedding column resolved at capture time so
+  -- \`gbrain eval replay\` reproduces the same column the capture ran against.
+  -- Nullable; pre-v0.36 rows have NULL and replay falls back to current
+  -- default. Migration v68 (src/core/migrate.ts) adds the same column on
+  -- upgrade brains.
+  embedding_column      TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_eval_candidates_created_at ON eval_candidates(created_at DESC);
 
@@ -786,6 +940,209 @@ CREATE TABLE IF NOT EXISTS eval_capture_failures (
   reason  TEXT         NOT NULL CHECK (reason IN ('db_down', 'rls_reject', 'check_violation', 'scrubber_exception', 'other'))
 );
 CREATE INDEX IF NOT EXISTS idx_eval_capture_failures_ts ON eval_capture_failures(ts DESC);
+
+-- eval_takes_quality_runs (v0.32 — EXP-5): DB-authoritative receipts for the
+-- takes-quality eval CLI. 4-sha unique key (corpus, prompt, models, rubric)
+-- so re-running the same run is a no-op (ON CONFLICT DO NOTHING) and a
+-- future rubric tweak segregates trend rows cleanly. receipt_json carries
+-- the full receipt blob so \`replay\` can reconstruct when the disk artifact
+-- is missing. Mirrored in src/core/pglite-schema.ts + migration v49.
+CREATE TABLE IF NOT EXISTS eval_takes_quality_runs (
+  id                    BIGSERIAL    PRIMARY KEY,
+  receipt_sha8_corpus   TEXT         NOT NULL,
+  receipt_sha8_prompt   TEXT         NOT NULL,
+  receipt_sha8_models   TEXT         NOT NULL,
+  receipt_sha8_rubric   TEXT         NOT NULL,
+  rubric_version        TEXT         NOT NULL,
+  verdict               TEXT         NOT NULL CHECK (verdict IN ('pass','fail','inconclusive')),
+  overall_score         REAL         NOT NULL,
+  dim_scores            JSONB        NOT NULL,
+  cost_usd              REAL         NOT NULL,
+  receipt_json          JSONB        NOT NULL,
+  receipt_disk_path     TEXT,
+  created_at            TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  UNIQUE (receipt_sha8_corpus, receipt_sha8_prompt, receipt_sha8_models, receipt_sha8_rubric)
+);
+CREATE INDEX IF NOT EXISTS eval_takes_quality_runs_trend_idx
+  ON eval_takes_quality_runs (rubric_version, created_at DESC);
+
+-- eval_contradictions_cache (v0.32.6): persistent judge verdicts for the
+-- contradiction probe. Composite primary key includes prompt_version +
+-- truncation_policy so any prompt edit cleanly invalidates prior verdicts
+-- (Codex outside-voice fix). TTL via expires_at; cache.ts sweeps periodically.
+CREATE TABLE IF NOT EXISTS eval_contradictions_cache (
+  chunk_a_hash       TEXT         NOT NULL,
+  chunk_b_hash       TEXT         NOT NULL,
+  model_id           TEXT         NOT NULL,
+  prompt_version     TEXT         NOT NULL,
+  truncation_policy  TEXT         NOT NULL,
+  verdict            JSONB        NOT NULL,
+  created_at         TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  expires_at         TIMESTAMPTZ  NOT NULL,
+  PRIMARY KEY (chunk_a_hash, chunk_b_hash, model_id, prompt_version, truncation_policy)
+);
+CREATE INDEX IF NOT EXISTS eval_contradictions_cache_expires_idx
+  ON eval_contradictions_cache (expires_at);
+
+-- eval_contradictions_runs (v0.32.6): time-series tracking for the probe.
+-- One row per run; source for the \`trend\` sub-subcommand and the doctor
+-- \`contradictions\` check. report_json carries the full ProbeReport for replay.
+CREATE TABLE IF NOT EXISTS eval_contradictions_runs (
+  run_id                       TEXT         PRIMARY KEY,
+  ran_at                       TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  schema_version               INTEGER      NOT NULL DEFAULT 1,
+  judge_model                  TEXT         NOT NULL,
+  prompt_version               TEXT         NOT NULL,
+  queries_evaluated            INTEGER      NOT NULL,
+  queries_with_contradiction   INTEGER      NOT NULL,
+  total_contradictions_flagged INTEGER      NOT NULL,
+  wilson_ci_lower              REAL         NOT NULL,
+  wilson_ci_upper              REAL         NOT NULL,
+  judge_errors_total           INTEGER      NOT NULL,
+  cost_usd_total               REAL         NOT NULL,
+  duration_ms                  INTEGER      NOT NULL,
+  source_tier_breakdown        JSONB        NOT NULL,
+  report_json                  JSONB        NOT NULL
+);
+CREATE INDEX IF NOT EXISTS eval_contradictions_runs_ran_at_idx
+  ON eval_contradictions_runs (ran_at DESC);
+
+-- ============================================================
+-- v0.36.1.0 Hindsight calibration wave (migrations v67-v71)
+-- ============================================================
+-- See src/core/migrate.ts for full design notes per table.
+--
+-- calibration_profiles: per-holder LLM-narrative aggregation of
+-- TakesScorecard data. source_id-scoped per v0.34.1 isolation discipline.
+-- published flag gates E8 cross-brain mount sharing (D15 asymmetric opt-in).
+CREATE TABLE IF NOT EXISTS calibration_profiles (
+  id                      BIGSERIAL PRIMARY KEY,
+  source_id               TEXT         NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+  holder                  TEXT         NOT NULL,
+  wave_version            TEXT         NOT NULL DEFAULT 'v0.36.1.0',
+  generated_at            TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  published               BOOLEAN      NOT NULL DEFAULT false,
+  total_resolved          INTEGER      NOT NULL,
+  brier                   REAL,
+  accuracy                REAL,
+  partial_rate            REAL,
+  grade_completion        REAL         NOT NULL DEFAULT 1.0,
+  domain_scorecards       JSONB        NOT NULL,
+  pattern_statements      TEXT[]       NOT NULL,
+  voice_gate_passed       BOOLEAN      NOT NULL,
+  voice_gate_attempts     SMALLINT     NOT NULL,
+  active_bias_tags        TEXT[]       NOT NULL,
+  model_id                TEXT         NOT NULL,
+  cost_usd                NUMERIC(10,4),
+  judge_model_agreement   REAL
+);
+CREATE INDEX IF NOT EXISTS calibration_profiles_holder_recent_idx
+  ON calibration_profiles (source_id, holder, generated_at DESC);
+CREATE INDEX IF NOT EXISTS calibration_profiles_bias_tags_gin
+  ON calibration_profiles USING GIN (active_bias_tags);
+CREATE INDEX IF NOT EXISTS calibration_profiles_published_idx
+  ON calibration_profiles (source_id, published, holder)
+  WHERE published = true;
+
+-- take_proposals: propose_takes phase queue. Idempotency cache via the
+-- composite unique index (source_id, page_slug, content_hash, prompt_version)
+-- mirrors v0.23 dream_verdicts. proposal_run_id supports --rollback by run.
+CREATE TABLE IF NOT EXISTS take_proposals (
+  id                          BIGSERIAL PRIMARY KEY,
+  source_id                   TEXT         NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+  page_slug                   TEXT         NOT NULL,
+  content_hash                TEXT         NOT NULL,
+  prompt_version              TEXT         NOT NULL,
+  wave_version                TEXT         NOT NULL DEFAULT 'v0.36.1.0',
+  proposed_at                 TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  proposal_run_id             TEXT         NOT NULL,
+  status                      TEXT         NOT NULL DEFAULT 'pending'
+                                           CHECK (status IN ('pending','accepted','rejected','superseded')),
+  claim_text                  TEXT         NOT NULL,
+  kind                        TEXT         NOT NULL,
+  holder                      TEXT         NOT NULL,
+  weight                      REAL         NOT NULL,
+  domain                      TEXT,
+  dedup_against_fence_rows    JSONB,
+  model_id                    TEXT         NOT NULL,
+  acted_at                    TIMESTAMPTZ,
+  acted_by                    TEXT,
+  promoted_row_num            INTEGER,
+  predicted_brier             REAL,
+  predicted_brier_bucket_n    INTEGER
+);
+CREATE UNIQUE INDEX IF NOT EXISTS take_proposals_idempotency_idx
+  ON take_proposals (source_id, page_slug, content_hash, prompt_version);
+CREATE INDEX IF NOT EXISTS take_proposals_pending_idx
+  ON take_proposals (source_id, status, proposed_at DESC)
+  WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS take_proposals_run_id_idx
+  ON take_proposals (proposal_run_id);
+
+-- take_grade_cache: grade_takes verdict cache. Composite PK on
+-- (take_id, prompt_version, judge_model_id, evidence_signature) means
+-- prompt edits OR evidence changes cleanly invalidate prior verdicts.
+-- applied=false default + D17 auto-resolve-off-by-default = every fresh
+-- install needs operator opt-in before grade verdicts mutate takes table.
+CREATE TABLE IF NOT EXISTS take_grade_cache (
+  take_id            BIGINT       NOT NULL,
+  prompt_version     TEXT         NOT NULL,
+  judge_model_id     TEXT         NOT NULL,
+  evidence_signature TEXT         NOT NULL,
+  wave_version       TEXT         NOT NULL DEFAULT 'v0.36.1.0',
+  graded_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  verdict            TEXT         NOT NULL
+                                  CHECK (verdict IN ('correct','incorrect','partial','unresolvable')),
+  confidence         REAL         NOT NULL,
+  applied            BOOLEAN      NOT NULL DEFAULT false,
+  cost_usd           NUMERIC(10,4),
+  PRIMARY KEY (take_id, prompt_version, judge_model_id, evidence_signature)
+);
+CREATE INDEX IF NOT EXISTS take_grade_cache_applied_idx
+  ON take_grade_cache (take_id, applied);
+CREATE INDEX IF NOT EXISTS take_grade_cache_wave_idx
+  ON take_grade_cache (wave_version, graded_at DESC);
+
+-- take_nudge_log: E7 nudge cooldown state. Polymorphic FK — a nudge fires
+-- on either a canonical take OR a pending proposal (CDX-5). CHECK enforces
+-- exactly one is set.
+CREATE TABLE IF NOT EXISTS take_nudge_log (
+  id              BIGSERIAL PRIMARY KEY,
+  source_id       TEXT         NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+  take_id         BIGINT,
+  proposal_id     BIGINT       REFERENCES take_proposals(id) ON DELETE CASCADE,
+  nudge_pattern   TEXT         NOT NULL,
+  fired_at        TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  channel         TEXT         NOT NULL DEFAULT 'stderr',
+  wave_version    TEXT         NOT NULL DEFAULT 'v0.36.1.0',
+  CONSTRAINT take_nudge_log_target_xor
+    CHECK ((take_id IS NOT NULL) <> (proposal_id IS NOT NULL))
+);
+CREATE INDEX IF NOT EXISTS take_nudge_log_take_cooldown_idx
+  ON take_nudge_log (take_id, nudge_pattern, fired_at DESC)
+  WHERE take_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS take_nudge_log_proposal_cooldown_idx
+  ON take_nudge_log (proposal_id, nudge_pattern, fired_at DESC)
+  WHERE proposal_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS take_nudge_log_wave_idx
+  ON take_nudge_log (wave_version, fired_at DESC);
+
+-- think_ab_results (v0.36.1.0 T18 / D19): A/B harness data for
+-- \`gbrain think --ab\`. One row per side-by-side comparison.
+CREATE TABLE IF NOT EXISTS think_ab_results (
+  id              BIGSERIAL PRIMARY KEY,
+  source_id       TEXT         NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+  wave_version    TEXT         NOT NULL DEFAULT 'v0.36.1.0',
+  ran_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  question        TEXT         NOT NULL,
+  baseline_answer TEXT         NOT NULL,
+  with_calibration_answer TEXT NOT NULL,
+  preferred       TEXT         NOT NULL CHECK (preferred IN ('baseline','with_calibration','neither','tie')),
+  model_id        TEXT,
+  notes           TEXT
+);
+CREATE INDEX IF NOT EXISTS think_ab_results_recent_idx
+  ON think_ab_results (source_id, ran_at DESC);
 
 -- NOTIFY trigger for real-time job events (Postgres only, not PGLite)
 CREATE OR REPLACE FUNCTION notify_minion_job_change() RETURNS trigger AS \$\$
@@ -839,6 +1196,15 @@ BEGIN
     ALTER TABLE dream_verdicts ENABLE ROW LEVEL SECURITY;
     ALTER TABLE eval_candidates ENABLE ROW LEVEL SECURITY;
     ALTER TABLE eval_capture_failures ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE eval_takes_quality_runs ENABLE ROW LEVEL SECURITY;
+    -- v0.32.6 contradiction probe tables
+    ALTER TABLE eval_contradictions_cache ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE eval_contradictions_runs ENABLE ROW LEVEL SECURITY;
+    -- v0.36.1.0 Hindsight calibration wave tables
+    ALTER TABLE calibration_profiles ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE take_proposals ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE take_grade_cache ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE take_nudge_log ENABLE ROW LEVEL SECURITY;
     -- v0.26 OAuth 2.1 tables
     ALTER TABLE oauth_clients ENABLE ROW LEVEL SECURITY;
     ALTER TABLE oauth_tokens ENABLE ROW LEVEL SECURITY;

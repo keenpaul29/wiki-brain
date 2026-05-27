@@ -19,9 +19,74 @@ import type {
 import { UnrecoverableError } from './types.ts';
 import { MinionQueue } from './queue.ts';
 import { calculateBackoff } from './backoff.ts';
+import { RateLeaseUnavailableError } from './handlers/subagent.ts';
+import { logLeasePressure } from './lease-pressure-audit.ts';
 import { randomUUID } from 'crypto';
 import { EventEmitter } from 'events';
 import { evaluateQuietHours, type QuietHoursConfig } from './quiet-hours.ts';
+import { readFileSync } from 'fs';
+
+/**
+ * Pure parser for /proc/self/status RSS fields. Returns bytes of
+ * RssAnon + RssShmem when either field is present, or null when the
+ * status text is from a kernel that doesn't expose those fields
+ * (kernels older than 4.5) or the values are malformed. Exported so
+ * the test suite can unit-test the field-presence + malformed-value
+ * edge cases without mocking the filesystem.
+ *
+ * M1 fix: field-presence check, not value-presence check. The earlier
+ * `if (anonKb > 0)` form conflated "field exists with value 0" with
+ * "field missing", which mis-routed to VmRSS fallback in the legitimate
+ * shmem-only worker case (RssAnon: 0 + RssShmem: 512).
+ */
+export function parseRssFromProcStatus(status: string): number | null {
+  const anonMatch = status.match(/^RssAnon:\s+(\d+)/m);
+  const shmemMatch = status.match(/^RssShmem:\s+(\d+)/m);
+  if (anonMatch === null && shmemMatch === null) {
+    return null;
+  }
+  const anonKb = parseInt(anonMatch?.[1] ?? '0', 10);
+  const shmemKb = parseInt(shmemMatch?.[1] ?? '0', 10);
+  if (isNaN(anonKb) || isNaN(shmemKb)) {
+    return null;
+  }
+  return (anonKb + shmemKb) * 1024; // bytes
+}
+
+/**
+ * Read accurate RSS from /proc/self/status (RssAnon + RssShmem).
+ *
+ * `process.memoryUsage().rss` returns VmRSS which includes file-backed mmap'd
+ * pages (e.g. git packfiles). On a 96K-page brain repo, git operations can
+ * inflate VmRSS to 7GB+ while actual heap usage is ~100MB. The kernel reclaims
+ * file-backed pages under memory pressure — they're cache, not real usage.
+ *
+ * RssAnon = anonymous pages (heap, stack, anonymous mmap). RssShmem = shared
+ * anonymous pages (IPC, tmpfs). Their sum is the non-file-backed resident
+ * memory used for **per-process leak detection** — exactly the metric a leak
+ * watchdog wants. It is NOT a full container-OOM metric: cgroup memory
+ * pressure includes page cache, so a sibling container holding the page
+ * cache hot can OOM us even at low anon+shmem. Use cgroup-aware monitoring
+ * for that scenario; this helper is for the worker's own leak guard.
+ *
+ * Falls back to process.memoryUsage().rss on non-Linux, missing /proc, or
+ * kernels older than 4.5 that don't expose RssAnon/RssShmem.
+ *
+ * `readStatus` is injectable for tests — production callers use the default,
+ * which reads `/proc/self/status`.
+ */
+export function getAccurateRss(
+  readStatus: () => string = () => readFileSync('/proc/self/status', 'utf8'),
+): number {
+  try {
+    const status = readStatus();
+    const parsed = parseRssFromProcStatus(status);
+    if (parsed !== null) return parsed;
+  } catch {
+    // Non-Linux or /proc unavailable
+  }
+  return process.memoryUsage().rss;
+}
 
 /** Reason payload emitted with `'unhealthy'` when self-health-check trips.
  *  CLI layer (jobs.ts:work) subscribes and decides whether to call process.exit. */
@@ -93,7 +158,7 @@ export class MinionWorker extends EventEmitter {
       maxStalledCount: opts?.maxStalledCount ?? 1,
       pollInterval: opts?.pollInterval ?? 5000,
       maxRssMb: opts?.maxRssMb ?? 0,
-      getRss: opts?.getRss ?? (() => process.memoryUsage().rss),
+      getRss: opts?.getRss ?? getAccurateRss,
       rssCheckInterval: opts?.rssCheckInterval ?? 60000,
       healthCheckInterval: opts?.healthCheckInterval ?? 60000,
       stallWarnAfterMs: opts?.stallWarnAfterMs ?? 5 * 60_000,
@@ -693,6 +758,57 @@ export class MinionWorker extends EventEmitter {
         errorText = `aborted: ${reason}`;
       } else {
         errorText = err instanceof Error ? err.message : String(err);
+      }
+
+      // v0.41 Bug 2: lease-full bounces don't burn attempts.
+      //
+      // Pre-v0.41 every non-`UnrecoverableError` routed to `delayed` with
+      // exponential backoff BUT still incremented `attempts_made`. After 3
+      // lease-full bounces the job hit `max_attempts` and dead-lettered
+      // with message `rate lease "..." full (N/M)` — operators saw a
+      // "dead" job and assumed real failure. The field-report dead-letter
+      // loop is exactly this path.
+      //
+      // Detect `RateLeaseUnavailableError` BEFORE the attempts-exhaustion
+      // gate and route through `queue.releaseLeaseFullJob` which mirrors
+      // `failJob` minus the `attempts_made` increment. Audit row to
+      // `minion_lease_pressure_log` so operators see pressure live in
+      // `gbrain doctor` + `gbrain jobs stats lease_pressure`.
+      const isLeaseFull = err instanceof RateLeaseUnavailableError;
+      if (isLeaseFull) {
+        const leaseErr = err as RateLeaseUnavailableError;
+        // 1-3s jittered backoff. Not the exponential curve — this is "yield
+        // the slot, try again soon", not "give up after a few tries."
+        const leaseBackoffMs = 1000 + Math.floor(Math.random() * 2000);
+        const released = await this.queue.releaseLeaseFullJob(
+          job.id, lockToken, errorText, leaseBackoffMs,
+        );
+        if (!released) {
+          console.warn(`Job ${job.id} lease-full release dropped (lock token mismatch)`);
+          return;
+        }
+        // Audit row write is best-effort — never blocks the bypass path.
+        // Denormalized columns persist past `gbrain jobs prune` so post-NULL
+        // forensic queries still see context (Eng D8 / codex pass-3 #7).
+        await logLeasePressure(this.engine, {
+          job_id: job.id,
+          lease_key: leaseErr.key,
+          active_at_bounce: leaseErr.active,
+          max_concurrent: Number.isFinite(leaseErr.max) ? leaseErr.max : -1,
+          queue_name: job.queue,
+          job_name: job.name,
+          // Best-effort context — populated when we can. The worker doesn't
+          // always know the model at catch time (model is resolved inside
+          // the handler), so leave NULL when unavailable. The doctor check's
+          // aggregate queries handle NULL gracefully.
+          model: null,
+          provider: null,
+          root_owner_id: job.parent_job_id ?? null,
+        });
+        console.log(
+          `Job ${job.id} (${job.name}) lease-full, re-queuing in ${Math.round(leaseBackoffMs)}ms (no attempt burned)`,
+        );
+        return;
       }
 
       const isUnrecoverable = err instanceof UnrecoverableError;

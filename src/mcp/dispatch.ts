@@ -6,21 +6,32 @@
  * + missing-context bugs; this module exists to prevent that recurring.
  */
 
-import type { BrainEngine } from "../core/engine.ts";
-import { operations, OperationError } from "../core/operations.ts";
-import type { Operation, OperationContext } from "../core/operations.ts";
-import { loadConfig } from "../core/config.ts";
+import type { BrainEngine } from '../core/engine.ts';
+import { operations, OperationError } from '../core/operations.ts';
+import type { Operation, OperationContext, AuthInfo } from '../core/operations.ts';
+import { loadConfig } from '../core/config.ts';
 
 export interface ToolResult {
-  content: { type: "text"; text: string }[];
+  content: { type: 'text'; text: string }[];
   isError?: boolean;
+  /**
+   * v0.31 (eD3): MCP spec-blessed metadata slot for server-supplied data.
+   * The dispatcher injects `_meta.brain_hot_memory` here when an op succeeds
+   * and the configured `metaHook` returns a payload.
+   *
+   * Existing clients ignore unknown `_meta` fields; capable clients (Claude
+   * Code, Claude Desktop) read it. NOT a wrapper around the result body —
+   * `content` stays the same shape it always had. Best-effort: any error in
+   * the meta hook is absorbed and the tool call still succeeds.
+   */
+  _meta?: Record<string, unknown>;
 }
 
 export interface DispatchOpts {
   /** Defaults to true (remote/untrusted). Local CLI callers (`gbrain call`) pass false. */
   remote?: boolean;
   /** Override the default stderr logger (e.g. CLI uses console.* directly). */
-  logger?: OperationContext["logger"];
+  logger?: OperationContext['logger'];
   /**
    * v0.28: per-token allow-list for the takes.holder field. Threaded by
    * the HTTP/stdio transport from `access_tokens.permissions.takes_holders`.
@@ -29,8 +40,36 @@ export interface DispatchOpts {
    * callers leave this unset (no filter — they own the brain).
    */
   takesHoldersAllowList?: string[];
-  /** Resolved source id (v0.18.0). */
+  /**
+   * v0.31 (eD4): tenancy axis for facts hot memory ops (extract_facts,
+   * recall, forget_fact). When set, the OperationContext receives a
+   * matching `sourceId`. CLI dispatch resolves this from --source flag /
+   * GBRAIN_SOURCE / .gbrain-source / 'default'; HTTP MCP transport
+   * resolves it from the per-token allow-list (eE3).
+   */
   sourceId?: string;
+  /**
+   * v0.31 (eD3): hook called by the dispatcher AFTER op.handler succeeds
+   * to compute `_meta.brain_hot_memory` for the response. Wrapped in its
+   * own try/catch (eE4) so a DB blip in the helper degrades to no _meta
+   * rather than flipping the whole tool call to error.
+   *
+   * Returning undefined means "no _meta to inject"; the dispatcher
+   * preserves the existing response shape.
+   */
+  metaHook?: (
+    name: string,
+    ctx: OperationContext,
+  ) => Promise<Record<string, unknown> | undefined>;
+  /**
+   * OAuth auth info threaded through from the HTTP MCP transport. Set so
+   * the whoami op (and any future scope-aware op handlers) can introspect
+   * the calling identity. Without this, every whoami call from HTTP
+   * transports throws unknown_transport — the v0.31 D12 / eE1 refactor
+   * silently dropped this field when the inlined OperationContext literal
+   * was replaced by dispatchToolCall.
+   */
+  auth?: AuthInfo;
 }
 
 /**
@@ -60,7 +99,7 @@ export interface DispatchOpts {
  */
 export interface ParamSummary {
   redacted: true;
-  kind: "array" | "object" | string;
+  kind: 'array' | 'object' | string;
   declared_keys?: string[];
   unknown_key_count?: number;
   length?: number;
@@ -86,31 +125,24 @@ function bucketBytes(n: number | undefined): number | undefined {
   return Math.ceil(n / KB) * KB;
 }
 
-export function summarizeMcpParams(
-  opName: string,
-  params: unknown,
-): ParamSummary | null {
+export function summarizeMcpParams(opName: string, params: unknown): ParamSummary | null {
   if (params == null) return null;
 
   let approxBytes: number | undefined;
-  try {
-    approxBytes = bucketBytes(JSON.stringify(params).length);
-  } catch {
-    approxBytes = undefined;
-  }
+  try { approxBytes = bucketBytes(JSON.stringify(params).length); } catch { approxBytes = undefined; }
 
   if (Array.isArray(params)) {
     return {
       redacted: true,
-      kind: "array",
+      kind: 'array',
       length: params.length,
       ...(approxBytes !== undefined ? { approx_bytes: approxBytes } : {}),
     };
   }
 
-  if (typeof params === "object") {
+  if (typeof params === 'object') {
     const submittedKeys = Object.keys(params as Record<string, unknown>);
-    const op = operations.find((o) => o.name === opName);
+    const op = operations.find(o => o.name === opName);
     const allowList = op ? new Set(Object.keys(op.params)) : new Set<string>();
     const declared: string[] = [];
     let unknown = 0;
@@ -121,7 +153,7 @@ export function summarizeMcpParams(
     declared.sort();
     return {
       redacted: true,
-      kind: "object",
+      kind: 'object',
       declared_keys: declared,
       unknown_key_count: unknown,
       ...(approxBytes !== undefined ? { approx_bytes: approxBytes } : {}),
@@ -136,10 +168,7 @@ export function summarizeMcpParams(
 }
 
 /** Validate required params exist and have the expected type. Returns null on success, error message on failure. */
-export function validateParams(
-  op: Operation,
-  params: Record<string, unknown>,
-): string | null {
+export function validateParams(op: Operation, params: Record<string, unknown>): string | null {
   for (const [key, def] of Object.entries(op.params)) {
     if (def.required && (params[key] === undefined || params[key] === null)) {
       return `Missing required parameter: ${key}`;
@@ -147,25 +176,17 @@ export function validateParams(
     if (params[key] !== undefined && params[key] !== null) {
       const val = params[key];
       const expected = def.type;
-      if (expected === "string" && typeof val !== "string")
-        return `Parameter "${key}" must be a string`;
-      if (expected === "number" && typeof val !== "number")
-        return `Parameter "${key}" must be a number`;
-      if (expected === "boolean" && typeof val !== "boolean")
-        return `Parameter "${key}" must be a boolean`;
-      if (
-        expected === "object" &&
-        (typeof val !== "object" || Array.isArray(val))
-      )
-        return `Parameter "${key}" must be an object`;
-      if (expected === "array" && !Array.isArray(val))
-        return `Parameter "${key}" must be an array`;
+      if (expected === 'string' && typeof val !== 'string') return `Parameter "${key}" must be a string`;
+      if (expected === 'number' && typeof val !== 'number') return `Parameter "${key}" must be a number`;
+      if (expected === 'boolean' && typeof val !== 'boolean') return `Parameter "${key}" must be a boolean`;
+      if (expected === 'object' && (typeof val !== 'object' || Array.isArray(val))) return `Parameter "${key}" must be an object`;
+      if (expected === 'array' && !Array.isArray(val)) return `Parameter "${key}" must be an array`;
     }
   }
   return null;
 }
 
-const stderrLogger: OperationContext["logger"] = {
+const stderrLogger: OperationContext['logger'] = {
   info: (msg: string) => process.stderr.write(`[info] ${msg}\n`),
   warn: (msg: string) => process.stderr.write(`[warn] ${msg}\n`),
   error: (msg: string) => process.stderr.write(`[error] ${msg}\n`),
@@ -178,12 +199,17 @@ export function buildOperationContext(
 ): OperationContext {
   return {
     engine,
-    config: loadConfig() || { engine: "postgres" },
+    config: loadConfig() || { engine: 'postgres' },
     logger: opts.logger || stderrLogger,
     dryRun: !!params.dry_run,
     remote: opts.remote ?? true,
     takesHoldersAllowList: opts.takesHoldersAllowList,
-    sourceId: opts.sourceId,
+    // v0.34 D4: sourceId is REQUIRED at the type level. Auto-fill 'default'
+    // for single-source brains and any caller who didn't resolve a sourceId.
+    // CLI / HTTP / stdio transports SHOULD pass an explicit sourceId via opts;
+    // this fallback covers code paths that historically passed undefined.
+    sourceId: opts.sourceId ?? 'default',
+    auth: opts.auth,
   };
 }
 
@@ -199,10 +225,15 @@ export async function dispatchToolCall(
   params: Record<string, unknown> | undefined,
   opts: DispatchOpts = {},
 ): Promise<ToolResult> {
-  const op = operations.find((o) => o.name === name);
+  const op = operations.find(o => o.name === name);
   if (!op) {
+    // Always return JSON-shaped error content. v0.31 e2e tests
+    // (sources-remote-mcp.test.ts) parse content via JSON.parse so a
+    // plain `Error: ...` string here breaks the contract on every
+    // unknown-op path and the resulting test failure looked like a
+    // transport bug.
     return {
-      content: [{ type: "text", text: `Error: Unknown tool: ${name}` }],
+      content: [{ type: 'text', text: JSON.stringify({ error: 'unknown_tool', message: `Unknown tool: ${name}` }, null, 2) }],
       isError: true,
     };
   }
@@ -211,41 +242,41 @@ export async function dispatchToolCall(
   const validationError = validateParams(op, safeParams);
   if (validationError) {
     return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(
-            { error: "invalid_params", message: validationError },
-            null,
-            2,
-          ),
-        },
-      ],
+      content: [{ type: 'text', text: JSON.stringify({ error: 'invalid_params', message: validationError }, null, 2) }],
       isError: true,
     };
   }
 
-  const { resolveSourceId } = await import("../core/source-resolver.ts");
-  const sourceId =
-    opts.sourceId ||
-    (await resolveSourceId(engine, (safeParams.source as string) || null));
-  const ctx = buildOperationContext(engine, safeParams, { ...opts, sourceId });
+  const ctx = buildOperationContext(engine, safeParams, opts);
 
   try {
     const result = await op.handler(ctx, safeParams);
-    return {
-      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
-    };
+    const out: ToolResult = { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    // v0.31 (eD3 + eE4): best-effort _meta.brain_hot_memory injection.
+    // The hook is wrapped in its own try/catch — any DB blip / cache miss /
+    // helper crash degrades to no `_meta` rather than flipping the whole
+    // tool call to error.
+    if (opts.metaHook) {
+      try {
+        const meta = await opts.metaHook(name, ctx);
+        if (meta && Object.keys(meta).length > 0) out._meta = meta;
+      } catch (metaErr) {
+        const msg = metaErr instanceof Error ? metaErr.message : String(metaErr);
+        ctx.logger.warn(`[mcp] _meta hook failed for ${name}: ${msg}; degrading to no-_meta`);
+      }
+    }
+    return out;
   } catch (e: unknown) {
     if (e instanceof OperationError) {
-      return {
-        content: [{ type: "text", text: JSON.stringify(e.toJSON(), null, 2) }],
-        isError: true,
-      };
+      return { content: [{ type: 'text', text: JSON.stringify(e.toJSON(), null, 2) }], isError: true };
     }
+    // Non-OperationError (uncaught throws) — wrap in the same shape so
+    // every error response is JSON-parseable. The pre-v0.31 path emitted
+    // plain `Error: ${msg}` strings here, which broke any caller that
+    // tried JSON.parse(content).
     const msg = e instanceof Error ? e.message : String(e);
     return {
-      content: [{ type: "text", text: `Error: ${msg}` }],
+      content: [{ type: 'text', text: JSON.stringify({ error: 'internal_error', message: msg }, null, 2) }],
       isError: true,
     };
   }

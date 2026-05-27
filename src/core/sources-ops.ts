@@ -50,6 +50,7 @@ import {
   type RepoState,
 } from './git-remote.ts';
 import { gbrainPath } from './config.ts';
+import { isValidSourceId } from './source-id.ts';
 
 // ── Errors ──────────────────────────────────────────────────────────────────
 
@@ -79,8 +80,6 @@ export class SourceOpError extends Error {
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
-const SOURCE_ID_RE = /^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$/;
-
 export interface SourceRow {
   id: string;
   name: string;
@@ -89,6 +88,20 @@ export interface SourceRow {
   last_sync_at: Date | null;
   config: Record<string, unknown>;
   created_at: Date;
+  /**
+   * v0.40.3.0: per-source CR mode override. NULL falls through to global
+   * mode bundle. Written only by `gbrain sources set-cr-mode <id> <mode>`
+   * (CLI-write-only per D15 security gate); MCP / OAuth callers cannot
+   * mutate this field.
+   */
+  contextual_retrieval_mode?: string | null;
+  /**
+   * v0.40.3.0: per-source mount-frontmatter trust gate (D15). FALSE for
+   * mounted sources by default. Flipped via
+   * `gbrain mounts trust-frontmatter <id>`. Host source (id='default') is
+   * always trusted in the resolver regardless of this column value.
+   */
+  trust_frontmatter_overrides?: boolean;
 }
 
 export interface SourceListEntry {
@@ -142,8 +155,14 @@ export interface RemoveSourceOpts {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
+/**
+ * Validate via the canonical regex from `source-id.ts` but rethrow as the
+ * sources-ops-tagged error so `gbrain sources add` keeps its user-facing
+ * SourceOpError shape. The regex itself is in one place; only the error
+ * envelope differs per caller.
+ */
 function validateSourceId(id: string): void {
-  if (!SOURCE_ID_RE.test(id)) {
+  if (!isValidSourceId(id)) {
     throw new SourceOpError(
       'invalid_id',
       `Invalid source id "${id}". Must be 1-32 lowercase alnum chars with optional interior hyphens.`,
@@ -375,6 +394,56 @@ export async function addSource(
     );
   }
   return created;
+}
+
+// ── resolveDefaultSource ────────────────────────────────────────────────────
+//
+// v0.34 W0b — canonical helper for CLI commands that take an optional
+// --source flag. The contract per the eng review D7:
+//   - exactly 1 registered source → return its id (single-source brains,
+//     the 80% case; --source flag is unnecessary friction)
+//   - 0 sources → throw (no source to scope to)
+//   - 2+ sources → throw with the list, forcing the caller to be explicit
+//
+// Codex finding #7: src/commands/code-callers.ts:54 + code-callees.ts:43
+// historically set `allSources: allSources || !sourceId` — which means
+// the documented "source-scoped by default" behavior INVERTED to global
+// whenever `--source` was omitted. Multi-source brains silently
+// cross-contaminated structural retrieval despite the docstring claim.
+//
+// Helper consolidates the resolution rule so blast/flow/clusters/wiki
+// (v0.34 new commands) and code-callers/callees (v0.20.0 retrofit)
+// behave identically.
+
+export class SourceResolutionError extends Error {
+  constructor(
+    message: string,
+    public readonly code: 'no_sources' | 'multiple_sources_ambiguous',
+    public readonly availableSources: string[],
+  ) {
+    super(message);
+    this.name = 'SourceResolutionError';
+  }
+}
+
+export async function resolveDefaultSource(engine: BrainEngine): Promise<string> {
+  const sources = await listSources(engine);
+  if (sources.length === 0) {
+    throw new SourceResolutionError(
+      'no sources registered; run `gbrain sources add` first',
+      'no_sources',
+      [],
+    );
+  }
+  if (sources.length === 1) {
+    return sources[0]!.id;
+  }
+  const ids = sources.map((s) => s.id);
+  throw new SourceResolutionError(
+    `multi-source brain — specify --source from: ${ids.join(', ')}`,
+    'multiple_sources_ambiguous',
+    ids,
+  );
 }
 
 // ── listSources ─────────────────────────────────────────────────────────────

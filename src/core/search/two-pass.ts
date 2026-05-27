@@ -75,18 +75,26 @@ export async function expandAnchors(
 
   // --near-symbol: add chunks whose symbol_name_qualified matches as
   // additional anchors. Best-effort — if none found, fall through.
+  //
+  // v0.34 (Codex finding #2): when opts.sourceId is set, scope the
+  // symbol lookup to that source. Pre-v0.34 this WAS unscoped despite the
+  // TwoPassOpts.sourceId field being declared — multi-source brains
+  // cross-contaminated structural retrieval. Now: opts.sourceId set →
+  // filter; undefined → cross-source (matches the documented contract).
   if (opts.nearSymbol) {
     try {
-      const sourceId = opts.sourceId;
-      const sourceJoin = sourceId ? `JOIN pages p ON p.id = cc.page_id` : '';
-      const sourceClause = sourceId ? `AND p.source_id = $2` : '';
-      const params: unknown[] = [opts.nearSymbol];
-      if (sourceId) params.push(sourceId);
-
-      const rows = await engine.executeRaw<{ id: number }>(
-        `SELECT cc.id FROM content_chunks cc ${sourceJoin} WHERE cc.symbol_name_qualified = $1 ${sourceClause} LIMIT 50`,
-        params,
-      );
+      const rows = opts.sourceId
+        ? await engine.executeRaw<{ id: number }>(
+            `SELECT cc.id FROM content_chunks cc
+             JOIN pages p ON p.id = cc.page_id
+             WHERE cc.symbol_name_qualified = $1 AND p.source_id = $2
+             LIMIT 50`,
+            [opts.nearSymbol, opts.sourceId],
+          )
+        : await engine.executeRaw<{ id: number }>(
+            `SELECT id FROM content_chunks WHERE symbol_name_qualified = $1 LIMIT 50`,
+            [opts.nearSymbol],
+          );
       const baseScore = anchors.length > 0 ? anchors[0]!.score : 1.0;
       for (const r of rows) {
         if (!seen.has(r.id)) {
@@ -132,18 +140,25 @@ export async function expandAnchors(
       }
       // Resolve unresolved edges by looking up chunks whose
       // symbol_name_qualified matches. One batch query per frontier node.
+      //
+      // v0.34 (Codex finding #2): scope by opts.sourceId when set. Pre-v0.34
+      // this lookup was unscoped, letting structural retrieval cross source
+      // boundaries silently in multi-source brains.
       if (unresolvedTargets.length > 0) {
         try {
-          const sourceId = opts.sourceId;
-          const sourceJoin = sourceId ? `JOIN pages p ON p.id = cc.page_id` : '';
-          const sourceClause = sourceId ? `AND p.source_id = $2` : '';
-          const params: unknown[] = [unresolvedTargets];
-          if (sourceId) params.push(sourceId);
-
-          const resolved = await engine.executeRaw<{ id: number }>(
-            `SELECT cc.id FROM content_chunks cc ${sourceJoin} WHERE cc.symbol_name_qualified = ANY($1::text[]) ${sourceClause} LIMIT ${NEIGHBOR_CAP_PER_HOP}`,
-            params,
-          );
+          const resolved = opts.sourceId
+            ? await engine.executeRaw<{ id: number }>(
+                `SELECT cc.id FROM content_chunks cc
+                 JOIN pages p ON p.id = cc.page_id
+                 WHERE cc.symbol_name_qualified = ANY($1::text[])
+                   AND p.source_id = $2
+                 LIMIT ${NEIGHBOR_CAP_PER_HOP}`,
+                [unresolvedTargets, opts.sourceId],
+              )
+            : await engine.executeRaw<{ id: number }>(
+                `SELECT id FROM content_chunks WHERE symbol_name_qualified = ANY($1::text[]) LIMIT ${NEIGHBOR_CAP_PER_HOP}`,
+                [unresolvedTargets],
+              );
           for (const r of resolved) directChunkIds.push(r.id);
         } catch {
           // best-effort

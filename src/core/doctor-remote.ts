@@ -14,6 +14,9 @@
 
 import type { GBrainConfig } from './config.ts';
 import { discoverOAuth, mintClientCredentialsToken, smokeTestMcp } from './remote-mcp-probe.ts';
+import { callRemoteTool, RemoteMcpError, unpackToolResult } from './mcp-client.ts';
+import { safeCompare, driftLevel, loadPromptState } from './thin-client-upgrade-prompt.ts';
+import { VERSION } from '../version.ts';
 
 export interface RemoteCheck {
   name: string;
@@ -52,10 +55,28 @@ export async function runRemoteDoctor(config: GBrainConfig, args: string[]): Pro
 }
 
 /**
+ * v0.31.1: opts for collectRemoteDoctorReport.
+ *
+ * `skipScopeProbe` defaults to false. Set to true in test fixtures that
+ * mock /mcp at JSON-RPC initialize level only — the MCP SDK Client used
+ * by the scope probe hangs on shape mismatch and doesn't always honor
+ * AbortSignal. Production callers always run the probe.
+ *
+ * Also honors GBRAIN_DOCTOR_SKIP_SCOPE_PROBE=1 for ops bypass; explicit
+ * opts.skipScopeProbe wins.
+ */
+export interface CollectRemoteDoctorOpts {
+  skipScopeProbe?: boolean;
+}
+
+/**
  * Pure data collector — separated from the print/exit logic so tests can
  * assert the report shape without intercepting stdout.
  */
-export async function collectRemoteDoctorReport(config: GBrainConfig): Promise<RemoteDoctorReport> {
+export async function collectRemoteDoctorReport(
+  config: GBrainConfig,
+  opts: CollectRemoteDoctorOpts = {},
+): Promise<RemoteDoctorReport> {
   const remote = config.remote_mcp;
   const checks: RemoteCheck[] = [];
 
@@ -180,7 +201,328 @@ export async function collectRemoteDoctorReport(config: GBrainConfig): Promise<R
     message: 'initialize round-trip succeeded',
   });
 
+  // 5. v0.31.1 (CDX-5): scope-probe — verify the OAuth client actually has
+  // the scopes its token claims. Calls a representative read op (always
+  // safe), then a representative admin op (also read-only, no side effects).
+  // Reports per-tier status with a pinpoint remediation hint when admin is
+  // missing — the v0.29.2/v0.30.0 thin-clients without admin scope hit
+  // `gbrain stats` / `gbrain history` and fail today; this check surfaces
+  // the gap during `gbrain remote doctor` instead of mid-command.
+  //
+  // Skippable via opts.skipScopeProbe (preferred for tests) OR
+  // GBRAIN_DOCTOR_SKIP_SCOPE_PROBE=1 (env-flag for ops bypass) — the MCP
+  // SDK Client hangs on JSON-RPC shape mismatch in fixtures that don't
+  // implement full tools/call.
+  const grantedScope = tokenRes.token.scope ?? '';
+  const skipProbe = opts.skipScopeProbe || process.env.GBRAIN_DOCTOR_SKIP_SCOPE_PROBE === '1';
+  if (!skipProbe) {
+    const scopeResult = await probeScopes(config);
+    checks.push(buildScopeCheck(grantedScope, scopeResult));
+  }
+
+  // 5b. v0.42.0.0 D11: thin-client orphan_ratio check via MCP find_orphans.
+  //
+  // Mirrors the local runDoctor `orphan_ratio` check but routes through
+  // the find_orphans MCP op (same canonical findOrphans() data fn under
+  // the hood) and emits an OPERATOR-POINTING hint instead of the
+  // self-fix hint — thin-client users can't run `gbrain extract links
+  // --by-mention` against a brain they don't host. Hint asks them to
+  // ping the brain operator at the configured public URL.
+  //
+  // Skippable via the same `skipScopeProbe` flag so hermetic fixtures
+  // that don't implement find_orphans on /mcp don't hang. find_orphans
+  // is a `read` scope op so even minimal-scope thin-clients can call it.
+  if (!skipProbe) {
+    checks.push(await runOrphanRatioCheck(config));
+  }
+
+  // 6. v0.31.11: thin-client version-drift check. Calls get_brain_identity
+  // to compare local CLI version against remote brain version. Reports:
+  //   - 'ok' when local >= remote OR drift is 'patch' (D8 policy: only
+  //     minor/major drift is meaningful enough to flag in doctor)
+  //   - 'warn' when minor/major drift detected; fix hint points at
+  //     `gbrain upgrade` (or, if state shows a prior 'failed' attempt,
+  //     points at the manual install path)
+  //   - 'ok' (informational) when network unreachable / fetch throws —
+  //     doctor MUST NOT fail loud on transient network issues; this check
+  //     is informational, the earlier mcp_smoke would have already failed
+  //     hard if the remote is genuinely down.
+  if (!skipProbe) {
+    checks.push(await runUpgradeDriftCheck(config));
+  }
+
   return finalize(remote, checks, tokenRes.token.scope);
+}
+
+/**
+ * v0.42.0.0 D11: thin-client orphan_ratio check.
+ *
+ * Calls `find_orphans` MCP op (read scope) to get the same data the
+ * local `gbrain doctor` `orphan_ratio` check uses. Computes the ratio,
+ * applies the same thresholds (vacuous <100 entity, warn >0.5, fail
+ * >0.8), but emits an OPERATOR-POINTING hint: thin-client users can't
+ * run `gbrain extract links --by-mention` themselves — they need to
+ * ping whoever runs the brain server.
+ *
+ * Errors non-fatal — informational check.
+ */
+export async function runOrphanRatioCheck(config: GBrainConfig): Promise<RemoteCheck> {
+  type OrphanData = {
+    orphans: unknown[];
+    total_orphans: number;
+    total_linkable: number;
+    total_pages: number;
+    excluded: number;
+  };
+  let data: OrphanData;
+  try {
+    const raw = await callRemoteTool(
+      config,
+      'find_orphans',
+      { include_pseudo: false },
+      { timeoutMs: 5000 },
+    );
+    data = unpackToolResult<OrphanData>(raw);
+  } catch (e) {
+    return {
+      name: 'orphan_ratio',
+      status: 'ok',
+      message: 'orphan_ratio: could not query remote (informational; not a doctor failure)',
+      detail: { network_error: e instanceof Error ? e.message : String(e) },
+    };
+  }
+  // Entity-count gate uses total_linkable as a proxy (the underlying op
+  // doesn't expose entity count directly; total_linkable is the same
+  // denominator the local check uses).
+  const entityCount = data.total_linkable;
+  if (entityCount < 100) {
+    return {
+      name: 'orphan_ratio',
+      status: 'ok',
+      message: `Vacuous: ${entityCount} linkable pages (<100). Orphan ratio not meaningful at this scale.`,
+    };
+  }
+  const ratio = entityCount > 0 ? data.total_orphans / entityCount : 0;
+  const pct = (ratio * 100).toFixed(0);
+  // Operator-pointing hint per D11 — thin-client users can't run the fix
+  // locally; point them at the brain server's operator.
+  const url = config.remote_mcp?.mcp_url ?? '<your brain server>';
+  const hint =
+    `Ask the brain operator at ${url} to run: gbrain extract links --by-mention ` +
+    `(auto-links entity mentions in body text).`;
+  if (ratio > 0.8) {
+    return {
+      name: 'orphan_ratio',
+      status: 'fail',
+      message: `Orphan ratio ${pct}% (${data.total_orphans}/${entityCount} linkable pages have no inbound links). ${hint}`,
+    };
+  }
+  if (ratio > 0.5) {
+    return {
+      name: 'orphan_ratio',
+      status: 'warn',
+      message: `Orphan ratio ${pct}% (${data.total_orphans}/${entityCount} linkable pages have no inbound links). ${hint}`,
+    };
+  }
+  return {
+    name: 'orphan_ratio',
+    status: 'ok',
+    message: `Orphan ratio ${pct}% (${data.total_orphans}/${entityCount} linkable pages)`,
+  };
+}
+
+/**
+ * v0.31.11: thin-client version-drift check. Surfaces remote-brain drift in
+ * `gbrain doctor` so quiet/non-TTY users (who don't see the interactive
+ * prompt) still learn about minor/major bumps. Pure data fetch + compare.
+ *
+ * Errors are non-fatal: any failure returns an 'ok' status with a
+ * `network_error` detail. The earlier `mcp_smoke` check covers the
+ * "remote is genuinely unreachable" case with a 'fail' status.
+ */
+export async function runUpgradeDriftCheck(config: GBrainConfig): Promise<RemoteCheck> {
+  let remoteVersion: string;
+  try {
+    const raw = await callRemoteTool(config, 'get_brain_identity', {}, { timeoutMs: 2000 });
+    const identity = unpackToolResult<{ version: string }>(raw);
+    remoteVersion = identity.version;
+  } catch (e) {
+    return {
+      name: 'thin_client_upgrade_drift',
+      status: 'ok',
+      message: 'could not fetch remote version (network or scope error); see other checks',
+      detail: { error: e instanceof Error ? e.message : String(e), inconclusive: true },
+    };
+  }
+
+  const cmp = safeCompare(VERSION, remoteVersion);
+  if (cmp === null) {
+    return {
+      name: 'thin_client_upgrade_drift',
+      status: 'ok',
+      message: `version comparison inconclusive (local=${VERSION}, remote=${remoteVersion})`,
+      detail: { local: VERSION, remote: remoteVersion, inconclusive: true },
+    };
+  }
+  if (cmp >= 0) {
+    return {
+      name: 'thin_client_upgrade_drift',
+      status: 'ok',
+      message: `local v${VERSION} ≥ remote v${remoteVersion}`,
+      detail: { local: VERSION, remote: remoteVersion },
+    };
+  }
+  const level = driftLevel(VERSION, remoteVersion);
+  if (level === 'patch') {
+    return {
+      name: 'thin_client_upgrade_drift',
+      status: 'ok',
+      message: `local v${VERSION}, remote v${remoteVersion} (patch drift; not flagged)`,
+      detail: { local: VERSION, remote: remoteVersion, level },
+    };
+  }
+
+  // Minor or major drift. Check the prompt-state file: if a prior 'failed'
+  // attempt is recorded for this remote+version, point users at the manual
+  // install path instead of the auto-upgrade command.
+  let priorFailed = false;
+  try {
+    const state = loadPromptState();
+    const entry = state.entries[config.remote_mcp?.mcp_url ?? ''];
+    if (entry && entry.last_response === 'failed' && entry.last_prompted_remote_version === remoteVersion) {
+      priorFailed = true;
+    }
+  } catch { /* state read is best-effort */ }
+
+  const fixHint = priorFailed
+    ? `Prior \`gbrain upgrade\` did not advance the binary. See https://github.com/garrytan/gbrain/releases for manual install.`
+    : `Run \`gbrain upgrade\` to install v${remoteVersion}.`;
+
+  return {
+    name: 'thin_client_upgrade_drift',
+    status: 'warn',
+    message: `${level} upgrade available: local v${VERSION} → remote v${remoteVersion}. ${fixHint}`,
+    detail: { local: VERSION, remote: remoteVersion, level, prior_failed: priorFailed },
+  };
+}
+
+/**
+ * v0.31.1: minimal probe of the read + admin scope tiers via two harmless
+ * read-only MCP calls. Write tier is NOT probed (no benign write op exists
+ * — every write would mutate state). Trust the granted-scope string for
+ * write status.
+ */
+/** v0.31.1: exported for test access (test/oauth-scope-probe.test.ts). */
+export interface ScopeProbeResult {
+  read_ok: boolean;
+  admin_ok: boolean;
+  read_error?: string;
+  admin_error?: string;
+}
+
+async function probeScopes(config: GBrainConfig): Promise<ScopeProbeResult> {
+  const result: ScopeProbeResult = { read_ok: false, admin_ok: false };
+
+  // Read tier: get_brain_identity is the cheapest read op (just returns
+  // counters; no DB scan beyond the existing getStats).
+  try {
+    await callRemoteTool(config, 'get_brain_identity', {}, { timeoutMs: 1500 });
+    result.read_ok = true;
+  } catch (e) {
+    if (e instanceof RemoteMcpError) {
+      result.read_error = e.detail?.code === 'missing_scope' ? 'missing_scope' : e.reason;
+    } else {
+      result.read_error = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  // Admin tier: get_health is read-only (engine.getHealth is a SELECT) but
+  // requires admin scope per operations.ts:1370.
+  try {
+    await callRemoteTool(config, 'get_health', {}, { timeoutMs: 1500 });
+    result.admin_ok = true;
+  } catch (e) {
+    if (e instanceof RemoteMcpError) {
+      result.admin_error = e.detail?.code === 'missing_scope' ? 'missing_scope' : e.reason;
+    } else {
+      result.admin_error = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  return result;
+}
+
+/** v0.31.1: exported for test access. */
+export function buildScopeCheck(grantedScope: string, probe: ScopeProbeResult): RemoteCheck {
+  // Status semantics — informational by default, escalates only on signals
+  // we can KNOW indicate a scope problem (i.e. tool_error code='missing_scope').
+  // Other probe failures (parse/network/timeout) might be transient or fixture
+  // artifacts; report as 'ok' with `inconclusive` detail so doctor's overall
+  // status doesn't flap on probe noise.
+  //
+  //   - read.missing_scope  → 'fail' (broken setup; nothing works)
+  //   - admin.missing_scope → 'warn' (the load-bearing case for v0.29.2 thin
+  //     clients that registered with read+write only; pinpoint hint follows)
+  //   - both succeed        → 'ok'
+  //   - other probe errors  → 'ok' with inconclusive=true
+  const readMissing = !probe.read_ok && probe.read_error === 'missing_scope';
+  const adminMissing = !probe.admin_ok && probe.admin_error === 'missing_scope';
+
+  if (readMissing) {
+    return {
+      name: 'oauth_client_scopes_probe',
+      status: 'fail',
+      message: 'OAuth client lacks read scope. Re-register on the host with at least `--scopes read`.',
+      detail: {
+        granted: grantedScope || null,
+        read_ok: false,
+        admin_ok: probe.admin_ok,
+      },
+    };
+  }
+  if (adminMissing) {
+    return {
+      name: 'oauth_client_scopes_probe',
+      status: 'warn',
+      message:
+        'admin scope MISSING (read works). On the host, re-register: ' +
+        '`gbrain auth register-client <name> --grant-types client_credentials --scopes read,write,admin`',
+      detail: {
+        granted: grantedScope || null,
+        read_ok: true,
+        admin_ok: false,
+        admin_error: probe.admin_error ?? null,
+      },
+    };
+  }
+  if (probe.read_ok && probe.admin_ok) {
+    return {
+      name: 'oauth_client_scopes_probe',
+      status: 'ok',
+      message: `read + admin scopes verified (write tier inferred from granted="${grantedScope || 'unspecified'}")`,
+      detail: {
+        granted: grantedScope || null,
+        read_ok: true,
+        admin_ok: true,
+      },
+    };
+  }
+  // Inconclusive: probe failed for non-scope reasons. Report as 'ok' so
+  // unrelated probe transients don't escalate doctor's overall status,
+  // but include the probe results for debugging.
+  return {
+    name: 'oauth_client_scopes_probe',
+    status: 'ok',
+    message: `scope probe inconclusive (granted="${grantedScope || 'unspecified'}"); commands will surface scope errors at call time if any`,
+    detail: {
+      granted: grantedScope || null,
+      read_ok: probe.read_ok,
+      admin_ok: probe.admin_ok,
+      read_error: probe.read_error ?? null,
+      admin_error: probe.admin_error ?? null,
+      inconclusive: true,
+    },
+  };
 }
 
 function finalize(
