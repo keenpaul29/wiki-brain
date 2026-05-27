@@ -11,6 +11,7 @@ bin/
 .gstack/
 supabase/.temp/
 .claude/skills/
+.gbrain/
 # admin/dist/ is the React SPA bundle. CLAUDE.md says it's committed for
 # self-contained binaries (the bun --compile path embeds it via
 # `import path from 'admin/dist/index.html' with { type: 'file' }`).
