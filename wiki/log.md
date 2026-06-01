@@ -7,6 +7,24 @@ updated: 2026-04-28
 
 # Wiki Log
 
+## [2026-06-01] ingest | Agents, transport, data projections, and fork migration
+
+Processed new/changed raw sources:
+
+- `raw/Escaping the Fork How Meta Modernized WebRTC Across 50+ Use Cases.md`
+- `raw/How I Scrubbed 100% of the AI Slop From My Game & Cut Code by 45%.md`
+- `raw/Learn System Design With Me . Day 7 Chain of Responsibility & State Patterns .  by The Latency Gambler.md` (changed)
+- `raw/Learn System Design With Me . Day 8 Load Balancing & Circuit Breaker….md`
+- `raw/Learn System Design With Me . Day 9 Database Patterns & Repository P….md`
+- `raw/The last year of localhost.md`
+- `raw/The Packet Drop That Froze Three Requests at Once.md`
+- `raw/The Read That Was Killing the Write.md`
+- `raw/Your Database Has Been Writing an Event Log the Whole Time.md`
+
+Added source summaries for Meta's WebRTC dual-stack fork migration, AI slop cleanup in a Godot game, cloud development environments for background agents, QUIC/HTTP3 head-of-line blocking, CQRS read/write separation, and CDC over database transaction logs. Preserved the existing Day 7-9 Latency Gambler summaries and linked the newly scanned Day 8-9 raw sources.
+
+Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/data-storage-and-consistency|Data Storage and Consistency]], [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]], [[concepts/software-design-patterns|Software Design Patterns]], [[concepts/system-design|System Design]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
 ## [2026-05-25] ingest | AI learning posture refresh
 
 Processed changed raw source:
@@ -211,4 +229,77 @@ Created [[concepts/command-line-and-git-productivity|Command-Line and Git Produc
 Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]], [[concepts/system-design|System Design]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/software-design-patterns|Software Design Patterns]], and [[index]].
 
 Verification: Verified all links resolved and committed raw scanner state. Sync'd DB source `brain`.
+
+## [2026-05-27] ingest & fix | Day 7 Ingestion, Sync Exclusions & Windows Test Fixes
+
+Processed 1 new raw source:
+- `raw/Learn System Design With Me . Day 7 Chain of Responsibility & State Patterns .  by The Latency Gambler.md`
+
+Created [[sources/latency-gambler-day-7|Chain of Responsibility & State Patterns]] summary.
+Updated [[concepts/software-design-patterns|Software Design Patterns]] with Chain of Responsibility and State Pattern descriptions, and linked Day 7.
+Updated [[index]] to list the new source.
+
+Fixed sync and test bugs:
+- Added `test` and `tests` directories to the sync/import walkers to prevent indexing of test fixtures (resolved `SLUG_MISMATCH` blocks in `bun run pull`).
+- Resolved Windows-specific path separator issues and skipped privilege-restricted symlink tests in `test/sync-walker-symlink.test.ts`.
+
+Verification: Checked that `bun test test/sync-walker-symlink.test.ts` runs clean on Windows and `bun run pull` successfully completes.
+
+## [2026-06-01] ingest | AI coding workflow, Dropbox Nova, LinkedIn search & FishDB deep dives
+
+Processed 7 new raw sources:
+
+- `raw/Beyond code generation rethinking engineering productivity in the age of AI agents.md`
+- `raw/Building collaborative prompt engineering playgrounds using Jupyter Notebook.md`
+- `raw/FishDB - a generic retrieval engine for scaling LinkedIn's feed.md`
+- `raw/How Edison is helping us build a faster, more powerful Dropbox on the web.md`
+- `raw/I'm a 10x Dev. Here's How I Use a $250Month LLM To Code 250% Faster Without Generating "Slop".md`
+- `raw/Reimagining LinkedIn's search tech stack.md`
+- `raw/The 58-Million-Key Freeze What a HashMap Resize Taught Us About Memory Allocation at Scale.md`
+
+Added source summaries for Dropbox's Nova agent platform (1-in-12 PRs agent-produced, bottleneck shift from generation to review/testing), LinkedIn's collaborative Jupyter prompt engineering playgrounds, FishDB Rust-based feed retrieval engine, Dropbox Edison local-first sync engine for the web, structured LLM coding without slop, LinkedIn's GPU-accelerated semantic search rebuild, and the HashMap → `mmap_lock` → async runtime freeze case study at 58.7M keys.
+
+Created [[concepts/fishdb|FishDB]] and [[concepts/local-first-architecture|Local-First Architecture]].
+
+Updated **11 concept pages** with cross-source synthesis:
+
+- [[concepts/system-design-case-studies|System Design Case Studies]] — added 5 new case studies: Dropbox Nova (agent platform), Dropbox Edison (local-first sync), FishDB (feed retrieval engine), LinkedIn semantic search (GPU EBR), HashMap freeze (cross-layer debugging).
+- [[concepts/data-storage-and-consistency|Data Storage and Consistency]] — added specialized index structures (B-tree, bit-sliced, inverted with skip lists), vector embeddings and EBR, client-side IndexedDB storage.
+- [[concepts/infrastructure-primitives|Infrastructure Primitives]] — added storage engine design (document model, allocator interaction, async runtime coupling), client-side sync infrastructure.
+- [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] — added local-first communication patterns (BroadcastChannel, WebSocket sync, optimistic UI) and EBR pipeline stages.
+- [[concepts/reliability-and-operations|Reliability and Operations]] — added traffic shaping/ranking controllers and conflict resolution/offline resilience.
+- [[concepts/ai-era-software-engineering|AI-Era Software Engineering]] — added bottleneck-shift, collaborative prompt engineering, structured LLM coding workflow, GPU semantic search sections.
+- [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]] — added production agent platform section (Dropbox Nova, 4-stage measurement model).
+- [[concepts/structured-learning-and-retention|Structured Learning and Retention]] — added speed-vs-retention tension in AI-assisted coding.
+- [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]] — added collaborative notebooks as prompt engineering surface, agent-produced content as wiki source material.
+- [[concepts/shared-engineering-language|Shared Engineering Language]] — added 5 new terms: bottleneck shift, slop, collaborative prompt engineering playground, local-first sync engine, Fuel→Adoption→Output→Impact.
+- [[concepts/system-design|System Design]] — added deeper sub-concepts (FishDB, Local-First Architecture) and 4 new case study references.
+
+Updated [[index]].
+
+Deep content pass:
+- Updated [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]] with full synthesis of all 7 new sources — bottleneck-shift insight, local-first architecture, FishDB+Rust+Tokio case study, GPU semantic search, collaborative prompt engineering, cross-layer debugging. Added FishDB and Local-First Architecture to the system design study spine.
+- Added concept-to-concept cross-links across 6 pages: `system-design` (sub-concept links), `infrastructure-primitives` (→ fishdb, local-first-architecture), `data-storage-and-consistency` (→ fishdb, local-first-architecture), `system-design-interview-workflow` (→ infrastructure-primitives, comm-patterns, case-studies), `frontend-build-performance` (→ system-design), `recurrent-depth-transformers` (→ ai-era-software-engineering, llm-maintained-wiki).
+- Verified bidirectional integrity: all 77 sources referenced by ≥1 concept page, all concept pages reference ≥1 source (except project-operating-architecture, which is internal architecture).
+
+Cross-reference pass over all 77 source summaries:
+- Fixed orphan `electron-screen-capture-protection` → linked to [[concepts/reliability-and-operations|Reliability and Operations]].
+- Expanded thin source references: `learn-from-course-content`, `llm-wiki-idea-file`, and all 7 new summaries now link to 3-6 concept pages each (was 1-2).
+- Added missing source backlinks to `system-design-interview-workflow` (added `system-design-study-roadmap`, `google-l7-system-design`, `latency-gambler-day-1`).
+
+## [2026-05-27] ingest | Day 8 and Day 9 Ingestion
+
+Processed 2 new raw sources:
+- `raw/Learn System Design With Me . Day 8 Load Balancing & Circuit Breaker….md`
+- `raw/Learn System Design With Me . Day 9 Database Patterns & Repository P….md`
+
+Created source summaries:
+- [[sources/latency-gambler-day-8|Load Balancing & Circuit Breaker Patterns]]
+- [[sources/latency-gambler-day-9|Database Patterns & Repository Pattern]]
+
+Updated concept pages:
+- [[concepts/reliability-and-operations|Reliability and Operations]] with load balancing strategies, circuit breaker states, and fallback resilience patterns.
+- [[concepts/data-storage-and-consistency|Data Storage and Consistency]] with the Repository Pattern, Connection Pools, and Connection Factories.
+
+Updated [[index]] to list the new sources.
 

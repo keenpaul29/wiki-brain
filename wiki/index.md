@@ -33,6 +33,8 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/project-operating-architecture|Project Operating Architecture]] - The local GBrain, wiki, codebase, and agent handoff architecture for this checkout.
 - [[concepts/shared-engineering-language|Shared Engineering Language]] - A lightweight CONTEXT-style glossary for recurring project terms and durable engineering decisions.
 - [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]] - Terminal efficiency patterns and advanced Git timeline mechanics for robust workflow execution.
+- [[concepts/fishdb|FishDB]] - LinkedIn's Rust-based storage and retrieval engine for Feed, using Tokio, jemalloc, and hashbrown.
+- [[concepts/local-first-architecture|Local-First Architecture]] - Local reads/writes with background sync, optimistic UI, and multi-tab coordination.
 
 
 ## Sources
@@ -93,12 +95,37 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/latency-gambler-day-4|Singleton and Builder Patterns for System Design]] - Day 4 on thread-safe JVM Singleton structures and immutable Builder validations.
 - [[sources/latency-gambler-day-5|Command and Template Method Patterns for System Design]] - Day 5 encapsulating tasks as objects and organizing extensible template methods.
 - [[sources/latency-gambler-day-6|Adapter and Facade Patterns for System Design]] - Day 6 bridging legacy integrations and taming microservice subsystem complexity.
+- [[sources/latency-gambler-day-7|Chain of Responsibility & State Patterns]] - Day 7 mastering request-processing pipelines and explicit state-machine transitions.
+- [[sources/latency-gambler-day-8|Load Balancing & Circuit Breaker Patterns]] - Day 8 covering load balancing traffic distribution and fault tolerance with circuit breakers.
+- [[sources/latency-gambler-day-9|Database Patterns & Repository Pattern]] - Day 9 on clean data persistence layers, repositories, connection pooling, and connection factories.
+- [[sources/meta-webrtc-fork-modernization|Escaping the Fork: Meta WebRTC Modernization]] - Meta's dual-stack WebRTC shim migration for escaping a long-lived upstream fork.
+- [[sources/ai-slop-game-refactor|Scrubbing AI Slop From a Game Codebase]] - A Godot/LLM refactor case study on removing comments, instrumentation, and architecture drift.
+- [[sources/localhost-cloud-dev-agents|The Last Year of Localhost]] - Cloud development environments as the execution substrate for parallel background coding agents.
+- [[sources/quic-head-of-line-blocking|The Packet Drop That Froze Three Requests at Once]] - QUIC, HTTP/3, head-of-line blocking, 0-RTT, connection migration, and UDP deployment tradeoffs.
+- [[sources/cqrs-read-write-separation|The Read That Was Killing the Write]] - CQRS as a separation between authoritative write models and optimized read projections.
+- [[sources/change-data-capture-event-log|Your Database Has Been Writing an Event Log the Whole Time]] - CDC from WAL/binlog streams for search, cache, audit, and service synchronization.
 - [[sources/tracking-ai-usage-goodharts-law|Goodhart's Law in Corporate AI Usage Tracking]] - Critique of tracking developer token usage, leading to gaming metrics ("tokenmaxxing").
 - [[sources/anatomy-agent-harness|Anatomy of an AI Agent Harness]] - Explains filesystems, bash sandboxes, self-verification loops, and memory architectures that enable agent autonomy.
 - [[sources/google-l7-system-design|Google L7 System Design Interview Insights]] - Humble URL shortener design feedback stressing system physics and vertical node optimization over defaults.
+- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]] - Dropbox's Nova agent platform: 1-in-12 PRs agent-produced, bottleneck shift, 4-stage measurement model.
+- [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]] - LinkedIn's Jupyter prompt engineering workflow bridging engineers and domain experts.
+- [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]] - Rust-based document-oriented storage and retrieval engine powering LinkedIn's Feed.
+- [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]] - Edison sync engine bringing local-first performance to dropbox.com.
+- [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Faster Without Slop]] - Structured approach to LLM-assisted coding with review discipline.
+- [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]] - GPU-accelerated embedding-based retrieval and Cross-Encoder SLM ranking at millions QPS.
+- [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze]] - HashMap resize → mmap_lock contention → async runtime freeze case study.
 - [[sources/production-firewalls-rust|Production Firewall Architecture in Rust]] - Multi-layer Rust Web Application Firewall (WAF) async TCP and Regex signature inspection engine.
 - [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]] - Structured learning path using engineering blogs and case studies to develop real architectural tradeoff intuition.
 
+## Newest Sources
+
+- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+- [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
+- [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
+- [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
+- [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Faster Without Slop]]
+- [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
+- [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze]]
 
 ## Maintenance Notes
 

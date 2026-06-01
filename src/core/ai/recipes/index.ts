@@ -23,6 +23,8 @@ import { zhipu } from './zhipu.ts';
 import { azureOpenAI } from './azure-openai.ts';
 import { zeroentropyai } from './zeroentropyai.ts';
 import { llamaServerReranker } from './llama-server-reranker.ts';
+import { puter } from './puter.ts';
+import { clod } from './clod.ts';
 
 const ALL: Recipe[] = [
   openai,
@@ -42,6 +44,8 @@ const ALL: Recipe[] = [
   zhipu,
   azureOpenAI,
   zeroentropyai,
+  puter,
+  clod,
 ];
 
 /** Map from `provider:id` key to recipe. */

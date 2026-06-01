@@ -238,5 +238,4 @@ know the other.
 
 - v0.18.0 CHANGELOG — introduced `sources` primitive.
 - v0.19.0 CHANGELOG (TBD after PR 0+1+2 ship) — introduces `mounts`.
-- `docs/mounts/publishing-a-team-brain.md` (PR 2) — how to be the brain
-  publisher, not just the subscriber.
+- See `docs/mcp/DEPLOY.md` for MCP deployment and publishing setup.

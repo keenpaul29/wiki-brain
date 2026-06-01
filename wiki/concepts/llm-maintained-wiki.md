@@ -32,6 +32,20 @@ The wiki turns reading into a compounding process. The current source set sugges
 
 The same pattern can support research, personal journals, book notes, team knowledge, competitive analysis, trip planning, and course notes. The domain changes, but the mechanism stays the same: raw material is compiled into a maintained knowledge layer that future questions can reuse.
 
+## Collaborative Notebooks as Prompt Engineering Surface
+
+LinkedIn's approach to prompt engineering uses Jupyter Notebooks as a collaborative playground where domain experts and engineers iterate on prompts together. This extends the wiki pattern from knowledge compilation to prompt development:
+
+- Notebooks live in the code repository alongside test data, requiring code reviews and versioning for all prompt changes.
+- Custom IPython magics simplify common tasks like querying data lakes.
+- Domain experts iterate on prompts while engineers focus on infrastructure and deployment.
+- Test datasets must be representative and diverse — the same curation principle as raw source collection for the wiki.
+- Live prompt engineering sessions with end users provide the human-in-the-loop feedback that the wiki's log/index pattern provides for knowledge.
+
+## Agent-Produced Content
+
+At Dropbox, Nova agents produce ~1 in 12 pull requests. This shifts the wiki-maintenance workflow: agent-produced outputs (PRs, summaries, analysis) are themselves candidates for source material, following the same capture → distill → file pattern. The wiki's anti-slop rule (distill concrete claims, not generic text) applies especially strongly to agent-generated content.
+
 ## Tooling Surface
 
 At small scale, [[index]] and [[log]] are enough for navigation and memory. As the wiki grows, local markdown search, Obsidian graph view, frontmatter queries, slide generation, charts, and local image handling can become useful extensions. These tools should stay optional; the core artifact is still a git-tracked directory of markdown files.
@@ -69,3 +83,5 @@ The wiki should preserve thinking, not just generated text. Source summaries and
 - [[sources/rag-llm-wiki-gbrain|RAG, LLM Wiki, or GBrain]]
 - [[sources/claude-code-best-practices|Claude Code Best Practices]]
 - [[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]]
+- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+- [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]

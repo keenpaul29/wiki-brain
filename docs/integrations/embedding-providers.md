@@ -36,6 +36,8 @@ The resolved provider + dimensions get persisted to `~/.gbrain/config.json` atom
 | `llama-server` | (none — runs locally) | user-set | 0 | yes | no |
 | `litellm` | `LITELLM_API_KEY` (optional) | user-set | varies | yes (proxy) | no |
 | `together` | `TOGETHER_API_KEY` | 768 | varies | no | no |
+| `puter` | (no embedding model — chat only) | — | — | — | — |
+| `clod` | (no embedding model — chat only) | — | — | — | — |
 | `anthropic` | (no embedding model — chat only) | — | — | — | — |
 | `deepseek` | (no embedding model — chat only) | — | — | — | — |
 | `groq` | (no embedding model — chat only) | — | — | — | — |
@@ -136,6 +138,18 @@ CJK-dominant content tokenizes denser than OpenAI tiktoken; gbrain declares `cha
 ### Zhipu AI (BigModel)
 
 Set `ZHIPUAI_API_KEY`. Models: `embedding-3` (current; Matryoshka 256-2048 dims), `embedding-2`. v0.32 default is 1024 (HNSW-compatible). The 2048-dim option works but falls into the exact-scan branch (see Voyage 4 Large note above).
+
+### Puter
+
+Puter provides hosted AI completions via standard OpenAI-compatible endpoints. Set `PUTER_API_KEY`. Note that Puter does not support text embeddings.
+
+**Chat**: Supports standard chat models including `gpt-4o-mini`, `gpt-4o`, `claude-3-5-sonnet`, and `deepseek-chat` routed through Puter's proxy endpoint.
+
+### Clod
+
+Clod (clod.io) provides energy-smart routed AI completions via standard OpenAI-compatible endpoints. Set `CLOD_API_KEY`. Note that Clod does not support text embeddings.
+
+**Chat**: Supports a wide range of models including `gpt-4o-mini`, `gpt-4o`, `gpt-5-mini`, `gpt-5-nano`, `gpt-5`, `claude-sonnet-4-5`, `claude-sonnet-4-0`, `gemini-2.5-flash`, `gemini-2.5-pro`, `deepseek-ai/DeepSeek-R1`, `grok-3`, and `grok-4`.
 
 ### Ollama (local)
 

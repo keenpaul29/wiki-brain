@@ -84,4 +84,18 @@ describe('buildGatewayConfig env-baseURL passthrough', () => {
       },
     );
   });
+
+  test('puter_api_key in config maps to PUTER_API_KEY in env', () => {
+    const cfg = buildGatewayConfig({
+      puter_api_key: 'puter-api-key-test',
+    } as unknown as GBrainConfig);
+    expect(cfg.env.PUTER_API_KEY).toBe('puter-api-key-test');
+  });
+
+  test('clod_api_key in config maps to CLOD_API_KEY in env', () => {
+    const cfg = buildGatewayConfig({
+      clod_api_key: 'clod-api-key-test',
+    } as unknown as GBrainConfig);
+    expect(cfg.env.CLOD_API_KEY).toBe('clod-api-key-test');
+  });
 });

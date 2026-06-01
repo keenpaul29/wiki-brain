@@ -16,7 +16,7 @@
  */
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
 import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'fs';
-import { join } from 'path';
+import { join, sep, basename } from 'path';
 import { tmpdir } from 'os';
 import { collectSyncableFiles } from '../src/commands/import.ts';
 import { withEnv } from './helpers/with-env.ts';
@@ -33,6 +33,10 @@ afterEach(() => {
 
 describe('collectSyncableFiles symlink + cycle hardening', () => {
   test('1. self-referencing symlink does not loop', async () => {
+    if (process.platform === 'win32') {
+      // Symlinks require admin privileges on Windows; skip.
+      return;
+    }
     await withEnv({ GBRAIN_EMBEDDING_MULTIMODAL: undefined }, () => {
       writeFileSync(join(tmp, 'README.md'), '# top\n');
       // Symlink "loop" inside tempdir pointing back to itself.
@@ -44,11 +48,15 @@ describe('collectSyncableFiles symlink + cycle hardening', () => {
 
       expect(ms).toBeLessThan(1000); // would hang if walker followed the loop
       expect(files).toContain(join(tmp, 'README.md'));
-      expect(files.every(f => !f.includes('/loop/'))).toBe(true);
+      expect(files.every(f => !f.includes(`${sep}loop${sep}`))).toBe(true);
     });
   });
 
   test('2. symlink chain through real dirs does not loop', async () => {
+    if (process.platform === 'win32') {
+      // Symlinks require admin privileges on Windows; skip.
+      return;
+    }
     await withEnv({ GBRAIN_EMBEDDING_MULTIMODAL: undefined }, () => {
       // a/ contains a real subdir b/, which contains a symlink "back" -> a.
       // The lstat skip catches "back" before recursion. If somehow it
@@ -82,7 +90,7 @@ describe('collectSyncableFiles symlink + cycle hardening', () => {
       const files = collectSyncableFiles(tmp, { strategy: 'markdown' });
 
       expect(files).toContain(join(tmp, 'shallow.md'));
-      expect(files.every(f => !f.includes('/d35/'))).toBe(true); // past depth 32
+      expect(files.every(f => !f.includes(`${sep}d35${sep}`))).toBe(true); // past depth 32
     });
   });
 
@@ -96,9 +104,9 @@ describe('collectSyncableFiles symlink + cycle hardening', () => {
       const markdown = collectSyncableFiles(tmp, { strategy: 'markdown' });
       const auto = collectSyncableFiles(tmp, { strategy: 'auto' });
 
-      expect(code.map(f => f.split('/').pop()).sort()).toEqual(['bar.py', 'foo.ts']);
-      expect(markdown.map(f => f.split('/').pop())).toEqual(['README.md']);
-      expect(auto.map(f => f.split('/').pop()).sort()).toEqual(['README.md', 'bar.py', 'foo.ts']);
+      expect(code.map(f => basename(f)).sort()).toEqual(['bar.py', 'foo.ts']);
+      expect(markdown.map(f => basename(f))).toEqual(['README.md']);
+      expect(auto.map(f => basename(f)).sort()).toEqual(['README.md', 'bar.py', 'foo.ts']);
     });
   });
 
@@ -113,7 +121,7 @@ describe('collectSyncableFiles symlink + cycle hardening', () => {
       writeFileSync(join(tmp, 'node_modules/foo/index.md'), 'no\n');
 
       const files = collectSyncableFiles(tmp, { strategy: 'markdown' });
-      const names = files.map(f => f.replace(tmp, ''));
+      const names = files.map(f => f.replace(tmp, '').replace(/\\/g, '/'));
 
       expect(names).toContain('/real.md');
       expect(names.every(n => !n.startsWith('/.git'))).toBe(true);
@@ -130,14 +138,14 @@ describe('collectSyncableFiles symlink + cycle hardening', () => {
     // Off → markdown only.
     await withEnv({ GBRAIN_EMBEDDING_MULTIMODAL: undefined }, () => {
       const off = collectSyncableFiles(tmp, { strategy: 'markdown' });
-      expect(off.map(f => f.split('/').pop()).sort()).toEqual(['r.md']);
+      expect(off.map(f => basename(f)).sort()).toEqual(['r.md']);
     });
 
     // On → markdown + images (preserves v0.27.1 F2 collectMarkdownFiles
     // behavior; codex C5 carve-out).
     await withEnv({ GBRAIN_EMBEDDING_MULTIMODAL: 'true' }, () => {
       const on = collectSyncableFiles(tmp, { strategy: 'markdown' });
-      expect(on.map(f => f.split('/').pop()).sort()).toEqual(['j.jpg', 'p.png', 'r.md']);
+      expect(on.map(f => basename(f)).sort()).toEqual(['j.jpg', 'p.png', 'r.md']);
     });
   });
 
@@ -156,7 +164,7 @@ describe('collectSyncableFiles symlink + cycle hardening', () => {
 
       expect(first).toEqual(second);
       // Sorted: a.md, b.md, sub/c.md (lexicographic on absolute paths).
-      expect(first.map(f => f.replace(tmp, ''))).toEqual([
+      expect(first.map(f => f.replace(tmp, '').replace(/\\/g, '/'))).toEqual([
         '/a.md', '/b.md', '/sub/c.md',
       ]);
     });

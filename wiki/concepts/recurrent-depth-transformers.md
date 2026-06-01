@@ -31,7 +31,9 @@ The OpenMythos source frames each recurrent loop as a latent reasoning step. Thi
 
 This page summarizes a speculative reconstruction, not an official model disclosure.
 
-## Source Support
+## Links
 
-- [[sources/openmythos|OpenMythos]]
+- Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
+- Related: [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]]
+- Source: [[sources/openmythos|OpenMythos]]
 

@@ -69,6 +69,8 @@ Agentic coding works better when constraints live in project structure rather th
 
 AI coding quality improves when teams formalize a context-first workflow: provide full requirement artifacts, force an implementation plan before code, challenge plan assumptions with domain context, execute in small reviewable steps, and keep test generation inside the same review loop. This keeps AI as a multiplier for judgment rather than a shortcut around it.
 
+AI-generated implementation also needs explicit anti-pattern capture. When a model repeats a bad local pattern, the durable fix is to name that pattern, add it to project instructions, and review future diffs against it. This is especially important for architecture-bearing files: if the state machine, lifecycle ordering, or source-of-truth document drops out of context, the model may invent plausible code instead of asking what is missing.
+
 ## Legacy Code and Continuous Testing
 
 Technical debt degrades into legacy code because software grows faster than human developers can remember the business intent behind it. Legacy code is defined by a lack of tests, making modifications risky. AI-driven testing workflows can run continuously to capture business intent and maintain comprehensive behavior-based test suites, breaking the cycle of legacy code decay and enabling safe refactoring.
@@ -76,6 +78,8 @@ Technical debt degrades into legacy code because software grows faster than huma
 ## Remote and Sandboxed Context
 
 Remote development makes agent context and permissions explicit. SSH hosts, dev containers, WSL environments, tunnels, and Codespaces may each have different toolchains, credentials, and blast radius. Environment-specific instructions help AI reason correctly, while scoped approvals and sandboxed targets keep agentic execution from touching sensitive local or production systems by default.
+
+Background agents raise the bar from "can clone and edit" to "can run a complete, isolated development loop." Cloud development environments, declarative devcontainer specs, automated service startup, internal-network access, and VM-level isolation become part of the AI engineering substrate rather than platform polish.
 
 ## AI Safety Boundary
 
@@ -88,6 +92,22 @@ Generated code compresses implementation costs, which exposes the engineering ju
 ## Production AI Systems
 
 Once an AI feature ships, the hard work moves to grounding, retrieval quality, inference latency, memory design, tool reliability, prompt-injection defense, cost control, and evaluation. Production AI should be treated as a distributed system with traces, fallbacks, deterministic orchestration boundaries, and offline/online eval loops.
+
+## AI Shifts Bottlenecks, It Doesn't Eliminate Them
+
+Accelerating code generation with AI simply shifts the bottleneck downstream. Review queues, CI systems, validation workflows, and release coordination become the new constraints. Engineering productivity measurement must shift from local activity metrics (PR throughput) to broader system outcomes (product velocity, quality, rework rate). Firms like Dropbox (Nova agent platform) report ~1 in 12 PRs now agent-produced, but the advantage comes from systems built around models (context, internal tooling, quality controls) rather than access to the models themselves.
+
+## Collaborative Prompt Engineering
+
+Prompt engineering creates new cross-functional collaboration patterns. Domain experts can iterate on prompts while engineers focus on infrastructure. LinkedIn built collaborative prompt engineering playgrounds using Jupyter Notebooks, where notebooks live in the code repository alongside test data, requiring code reviews and versioning for all changes. This approach enables rapid experimentation with LLM features while keeping behavior aligned with production.
+
+## Structured LLM-Assisted Coding
+
+Effective LLM coding follows a structured workflow: break tasks into small testable increments, provide rich context (codebase structure, error messages, test output), never accept output without review, and maintain strong testing discipline. The human remains the decision-maker; the LLM handles mechanical implementation. The bottleneck shifts from writing code to reviewing, testing, and integrating generated code.
+
+## GPU-Accelerated Semantic Search
+
+At LinkedIn's scale (millions of QPS), semantic search uses GPU-accelerated embedding-based retrieval with exhaustive vector search on CUDA-enabled GPUs. Query understanding modules create embeddings for retrieval; a Cross-Encoder Small Language Model (SLM) deployed on SGLang handles ranking. Optimization techniques include score caching, ranking-depth controllers, and traffic shaping. Features flow through a hybrid pipeline: offline Spark/Flyte for large-scale processing and nearline Flink for low-latency updates.
 
 ## Source Support
 
@@ -114,6 +134,9 @@ Once an AI feature ships, the hard work moves to grounding, retrieval quality, i
 - [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]]
 - [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]]
 - [[sources/dont-outsource-learning|Don't Outsource the Learning]]
+- [[sources/ai-slop-game-refactor|Scrubbing AI Slop From a Game Codebase]]
+- [[sources/localhost-cloud-dev-agents|The Last Year of Localhost]]
+- [[sources/meta-webrtc-fork-modernization|Escaping the Fork: Meta WebRTC Modernization]]
 - [[sources/no-code-ai-platforms|No-Code AI Development Platforms]]
 - [[sources/code-cheap-judgement-not|AI Code Leverage and Engineering Judgement]]
 - [[sources/end-of-legacy-code|Eradicating Legacy Code via AI-Driven Testing]]
@@ -121,3 +144,7 @@ Once an AI feature ships, the hard work moves to grounding, retrieval quality, i
 - [[sources/remote-data-migration-agent|Remote Data Migration Agentic Architecture]]
 - [[sources/effective-git|Effective Git Workflows and Commands]]
 - [[sources/effective-terminal|Effective Terminal Workflows and Productivity]]
+- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+- [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
+- [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
+- [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]

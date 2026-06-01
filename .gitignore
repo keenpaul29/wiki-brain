@@ -52,3 +52,6 @@ AGENTS.md
 
 # Private brain reports — never check these in (per CLAUDE.md privacy rule)
 reports/network-intelligence/
+
+# Backup archives
+*-backup.tar.gz

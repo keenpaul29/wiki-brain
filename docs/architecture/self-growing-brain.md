@@ -1,124 +1,102 @@
 # Self-Growing Brain
 
-A self-growing brain is a design pattern where the local wiki, the brain source, and daily automation work together so knowledge is not just stored, but also discovered, enriched, and preserved over time.
+A **Self-Growing Brain** is a design pattern where the local wiki, database storage, and daily automation work together so knowledge is not just stored, but also discovered, cross-referenced, and consolidated over time. 
 
-This repository already contains the building blocks for a self-growing brain:
+Rather than relying on static folder hierarchies, a self-growing brain dynamically learns from its own inputs, escalating entity importance and rectifying logical contradictions on autopilot.
 
-- a source-scoped local brain (`brain` source)
-- a wiki maintenance layer for `raw/` and `wiki/`
-- daily automation guidance in `docs/guides/cron-schedule.md`
-- a nightly dream cycle and autopilot runtime in `src/commands/dream.ts` and `src/commands/autopilot.ts`
+---
 
-## What makes a brain "self-growing"
+## Architectural Layers
 
-A self-growing brain is more than a searchable index. It has three connected properties:
+```mermaid
+graph TD
+    A[Raw Source Material raw/] -->|Step 1: Ingest| B[Local Wiki wiki/]
+    B -->|Step 2: Sync| C[(PGLite DB brain source)]
+    C -->|Step 3: Dream Cycle| D[Entity Escalation & Link Extraction]
+    D -->|Step 4: Consolidate| B
+    C -->|Step 5: Contradiction Check| E[Judge Model Alert]
+    C -->|Step 6: Embed| F[Recall vector(1536)]
+```
 
-1. **Continuous intake** from added wiki content and raw source documents.
-2. **Automated maintenance** that consolidates new signals into enriched pages, links, and patterns.
-3. **Day-by-day compound growth** where each cycle makes the brain fitter than the day before.
+### 1. Ingestion Layer: Wiki + Raw Source Material
+* **`raw/`**: Holds immutable raw source documents (PDFs, transcripts, markdown articles, media). Agents should never edit these files directly.
+* **`wiki/`**: Managed knowledge base organized into `sources/` (summaries), `concepts/` (intellectual map), and `synthesis/` (high-level overviews).
+* **`wiki/_state/`**: Holds scan manifests (`raw-manifest.json`) and daily delta reports (`daily-scan.md`).
 
-In this repository, those properties map to the following architectural layers.
+### 2. Source Database Layer: `brain` Source & Sync
+* Local database: `C:\Users\giftlaya\.gbrain\brain.pglite` (scoping files to `--source brain`).
+* Running `gbrain sync --source brain --no-pull --no-embed` keeps the local markdown repository and the SQLite/Postgres DB perfectly synchronized.
+* The `--no-pull` flag ensures your local changes are committed and processed locally before syncing back to any git remote.
 
-## Layers of the self-growing brain
+### 3. Automation & Dream Layer
+Overnight, the brain runs its **Dream Cycle** (`gbrain dream`) to perform heavy-lifting analysis without disrupting live user sessions:
+* **`extract`**: Idempotently extracts links and timeline events without LLM calls.
+* **`patterns`**: Identifies entity mentions and auto-generates stub pages for frequently mentioned entities.
+* **`consolidate`**: Synthesizes multiple scattered facts into unified `## Facts` tables.
+* **`wiki`**: Feeds newly ingested `raw/` files into a Sonnet-driven wiki ingest pipeline.
 
-### 1. Input layer: wiki + raw source material
+---
 
-The local wiki is the first signal source.
+## Powerful Self-Growing Features
 
-- `raw/` holds immutable source documents. Agents should not edit these files.
-- `wiki/sources/`, `wiki/concepts/`, and `wiki/synthesis/` hold curated, durable knowledge.
-- `wiki/_state/` records scan and ingest status.
+### 1. Automated Pull & Adjust Integration (`bun run pull`)
+We have automated the upstream pull process. Running `bun run pull` executes [scripts/pull-gbrain.ps1](file:///c:/Users/giftlaya/Documents/my-codes/brain/brain/scripts/pull-gbrain.ps1) which:
+1. Performs a `git pull garrytan master` to fetch the latest gbrain engine updates.
+2. Automatically resolves code formatting conflicts (like quotes or styling changes) by selecting the upstream versions (`--theirs`) for the core directories (`src/`, `test/`).
+3. Keeps your custom wiki rules (`skills/_brain-filing-rules.json`), custom documentation layouts (`scripts/llms-config.ts`), and ignores (`.gitignore`) perfectly preserved.
+4. Updates dependencies with `bun install --ignore-scripts` and applies database schema migrations.
+5. Performs a clean source sync (`gbrain sync --source brain --no-embed --no-pull`) to keep the DB in lockstep.
 
-The daily auto-update workflow in `wiki/automation.md` is the operational contract for this layer. It defines how new or changed raw files enter the wiki and how the wiki stays coherent.
+### 2. Deterministic vs. Judgment Routing (Minions)
+The self-growing brain utilizes a Postgres-native job queue (**Minions**) to optimize cost and performance:
+* **Deterministic Tasks** (sync, link extraction, file moves, indexing): Routed directly to local Minions. They run at **$0 token cost** and survive worker/system restarts.
+* **Judgment Tasks** (summarization, concept synthesis, contradiction checks): Routed to reasoning models (like Claude 3.5 Sonnet) to write and update the wiki structure.
 
-### 2. Source layer: `brain` source and sync
+### 3. Dynamic Schema Evolvement (`gbrain schema`)
+Your brain's taxonomy is not static. If you introduce a new type of source material (e.g., medical records, legal briefs, code repos), you can dynamically adjust the database schema:
+* Run `gbrain schema detect` to cluster your directory shapes.
+* Run `gbrain schema suggest` to generate an LLM proposal for custom type schemas.
+* Apply mutations with `gbrain schema use <pack>` to dynamically upgrade structural indexing.
 
-The brain database is the persistent knowledge store.
+### 4. Suspected Contradictions Solver
+During the nightly dream cycle, the brain runs an anomaly detector that pairs related claims:
+* Scans all stored facts using date ranges and semantic proximity.
+* Submits conflicting statements (e.g. "Acme raised $5M" vs "Acme raised $2M") to a critic model.
+* Adds flag markers to the database and logs unresolved conflicts in the dream cycle summary.
 
-- This checkout is attached as the `brain` source.
-- Use `--source brain` for sync and search commands.
-- `gbrain sync --source brain` is the gateway that imports the wiki into the database.
+---
 
-Source identity is critical. The self-growing brain must keep the wiki's content within the `brain` source, not leak it into a generic default source.
+## Daily CADENCE (The Loop)
 
-### 3. Automation layer: dream, wiki ingest, autopilot, and health checks
+1. **Add or Edit Raw Material**: Drop raw text, markdown, or PDFs into `raw/`.
+2. **Scan & Generate Manifest**:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
+   ```
+3. **Ingest Changed Files**:
+   ```bash
+   bun run dev dream --phase wiki
+   ```
+   *Creates summaries in `wiki/sources/` and updates concepts/synthesis files.*
+4. **Sync to Database**:
+   ```bash
+   bun run dev sync --source brain --no-embed --no-pull
+   ```
+5. **Run the Dream Cycle**:
+   ```bash
+   bun run dev dream
+   ```
+   *Overnight consolidation, link repair, and contradiction checks.*
+6. **Reindex & Refresh Recall**:
+   ```bash
+   bun run dev embed --stale
+   bun run dev doctor
+   ```
 
-The self-growing brain depends on automation to turn updates into durable knowledge.
+---
 
-- `gbrain autopilot` can run periodic maintenance and keep the brain honest.
-- `gbrain dream` is the nightly consolidation loop that detects entity signals, repairs links, fixes citations, and synthesizes patterns.
-- `gbrain dream --phase wiki` is the new LLM wiki ingestion phase that scans `raw/`, ingests changed source files, updates `wiki/index.md`, and maintains `wiki/log.md`.
-- `gbrain doctor` watches for drift, stale embeddings, broken links, and sync failures.
+## Architectural Guardrails
 
-The recommended discipline is to run a daily dream cycle plus a weekly health check. This is the compound-growth engine.
-
-### 4. Search and recall layer
-
-A growing brain must also be a reliable memory.
-
-- `gbrain embed --stale` refreshes vector search coverage after new content is added.
-- `gbrain search`, `gbrain query`, and the agent tool layer read from the brain and avoid unnecessary external lookups.
-
-Because the brain is both a source and a memory, the search layer must stay current with every sync and every automation cycle.
-
-## Day-by-day workflow
-
-A self-growing brain should run a repeatable daily cadence.
-
-1. **Add or edit wiki content** in `raw/` or `wiki/`.
-2. **Run the daily wiki ingest workflow** (`scripts/update-wiki-state.ps1`) and commit state.
-3. **Sync the project source into the brain** with `bun run src/cli.ts sync --source brain --no-embed --no-pull`.
-4. **Ingest new raw sources into the wiki** by running `bun run src/cli.ts dream --phase wiki` or the full cycle. This updates `wiki/sources/`, `wiki/concepts/`, and `wiki/synthesis/` using the same Sonnet-powered pipeline the brain already trusts.
-5. **Run the dream/autopilot cycle**:
-   - `bun run src/cli.ts dream` or
-   - `bun run src/cli.ts autopilot --install` on a machine that can run a daily daemon.
-6. **Refresh recall** with `bun run src/cli.ts embed --stale` and check health with `bun run src/cli.ts doctor`.
-7. **Review and refine**: fix any warnings from the wiki link/lint checks and continue.
-
-Over time, this cadence creates a feedback loop. New wiki content becomes indexed, then the dream cycle discovers and elevates the most important signals, and the brain becomes a stronger base for new pages and agent actions.
-
-## How new wiki content becomes advanced tasks
-
-The current implementation already wires raw source changes into higher-order maintenance work.
-
-1. `gbrain dream --phase wiki` detects new or changed files in `raw/` and runs a Sonnet-powered wiki ingest pipeline.
-2. That pipeline summarizes changed files into `wiki/sources/`, updates related concept pages in `wiki/concepts/`, and revises synthesis pages in `wiki/synthesis/`.
-3. It then updates `wiki/index.md`, appends entries to `wiki/log.md`, and stores the latest raw manifest in `wiki/_state/`.
-4. A subsequent `gbrain sync --source brain` imports the updated wiki pages into the brain database.
-5. `gbrain dream` continues with extract, patterns, and embed phases to materialize links, surface themes, and refresh vector recall.
-
-This is the actual advanced-task loop: raw changes become wiki content, wiki content becomes graph structure, and graph structure becomes better search and agent recall.
-
-## What gets better each day
-
-A self-growing brain makes the following improvements automatically:
-
-- New wiki material becomes searchable and linked.
-- Thin or underdeveloped pages are identified and enriched.
-- Entity mentions are turned into graph links instead of isolated text.
-- Citation hygiene improves as the system audits sources.
-- Patterns and themes surface from accumulated notes.
-- Stale embeddings are refreshed so recall stays fast and accurate.
-
-This is the difference between a static knowledge repository and a brain that learns from its own outputs.
-
-## Architectural guardrails
-
-To preserve the self-growing brain architecture, keep these rules:
-
-- Do not edit `raw/` files directly.
-- Prefer source-scoped commands: `--source brain`.
-- Keep `gbrain sync` after any change that should be searchable.
-- Use `gbrain dream --dry-run` when testing new automation behavior.
-- Honor quiet hours and notification gates when the brain is part of a live agent system.
-- Keep `BRAIN_CONTEXT.md`, `SESSION_HANDOFF.md`, and `GBRAIN_DEV_WORKFLOW.md` aligned with how the brain is used by agents.
-
-## Reference docs
-
-- `docs/guides/self-growing-brain.md` — daily operational runbook for the local wiki source
-- `docs/guides/cron-schedule.md` — the production schedule for daily and nightly jobs
-- `docs/guides/operational-disciplines.md` — the five non-negotiable brain maintenance rules
-- `docs/architecture/project-operating-architecture.md` — how this repo stays both an app and a wiki
-- `wiki/automation.md` — the daily wiki ingestion workflow
-
-A self-growing brain is an architectural pattern, not a one-off script. The repository is already structured for it; the next step is to keep the wiki, the sync, and the dream cycle connected every day.
+* **Do not edit `raw/` files**: They are the golden immutable records of the brain.
+* **Always run local commands with `--source brain`**: Prevents files from leaking into the generic `default` source.
+* **Review files before pushing**: Run `gbrain doctor` weekly to ensure that your local schema width matches your embedding dimension configuration.

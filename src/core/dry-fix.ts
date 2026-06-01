@@ -346,9 +346,9 @@ export function findInsertionLine(content: string): number {
   let cursor = 0;
 
   // Step 1: Skip leading frontmatter fence if present.
-  if (lines[0] === '---') {
+  if (lines[0]?.trim() === '---') {
     for (let i = 1; i < lines.length; i++) {
-      if (lines[i] === '---') {
+      if (lines[i]?.trim() === '---') {
         cursor = i + 1;
         break;
       }
@@ -359,7 +359,7 @@ export function findInsertionLine(content: string): number {
   while (cursor < lines.length && lines[cursor].trim() === '') cursor++;
 
   // Step 3: If there's a leading H1, advance past it.
-  if (cursor < lines.length && /^#\s+/.test(lines[cursor])) {
+  if (cursor < lines.length && /^#\s+/.test(lines[cursor].trim())) {
     cursor++;
     // Step 4: Skip blank lines + the leading paragraph following the H1.
     while (cursor < lines.length && lines[cursor].trim() === '') cursor++;

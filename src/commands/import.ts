@@ -544,11 +544,11 @@ export function collectSyncableFiles(dir: string, opts: CollectOpts = {}): strin
       return;
     }
     for (const entry of entries) {
-      // Skip hidden dirs (.git, .claude, .raw, etc.) and `node_modules`/`ops`.
+      // Skip hidden dirs (.git, .claude, .raw, etc.) and `node_modules`/`ops`/`test`/`tests`.
       // Same set the legacy walkers honored, surfaced once at the top of
       // every iteration.
       if (entry.startsWith('.')) continue;
-      if (entry === 'node_modules' || entry === 'ops') continue;
+      if (entry === 'node_modules' || entry === 'ops' || entry === 'test' || entry === 'tests') continue;
 
       const full = join(d, entry);
       let stat;

@@ -19,8 +19,8 @@ CHUNKING (3 strategies, configurable)
   ├── Semantic: embed sentences, cosine similarity, Savitzky-Golay smoothing
   └── LLM-guided: Claude Haiku identifies topic shifts in 128-word candidates
   ↓
-EMBEDDING (OpenAI text-embedding-3-large, 1536 dimensions)
-  → batch 100, exponential backoff, non-fatal if fails
+EMBEDDING (configurable gateway: OpenAI, Voyage, etc.)
+   → batch 100, exponential backoff, non-fatal if fails
   ↓
 DATABASE TRANSACTION (atomic: page + chunks + tags + version)
   ↓
@@ -34,7 +34,7 @@ GBrain uses Reciprocal Rank Fusion (RRF) to merge vector and keyword search:
 ```
 User Query
   ↓
-EXPANSION (optional: Claude Haiku generates 2 alternative phrasings)
+EXPANSION (optional: configured gateway provider generates alternatives)
   ↓
   ├── VECTOR SEARCH (pgvector HNSW, cosine distance)
   │     → 2x limit results per query variant
@@ -70,7 +70,7 @@ TOP N RESULTS (default 20)
 | `src/core/search/dedup.ts` | 4-layer result deduplication |
 | `src/core/search/expansion.ts` | Multi-query expansion via Claude Haiku |
 | `src/core/storage.ts` | Pluggable storage (S3, Supabase, local) |
-| `src/core/operations.ts` | Contract-first operation definitions (31 ops) |
+| `src/core/operations.ts` | Contract-first operation definitions (84 ops) |
 | `src/schema.sql` | Full DDL (10 tables, RLS, tsvector, HNSW) |
 
 ## Schema Overview
@@ -99,7 +99,7 @@ See [Thin Harness, Fat Skills](../ethos/THIN_HARNESS_FAT_SKILLS.md) for the full
 architecture philosophy.
 
 - **GBrain CLI** = thin harness (same input → same output)
-- **Skills** (ingest, query, maintain, enrich, briefing, migrate, setup) = fat skills
+- **Skills** (41 skills incl. ingest, query, maintain, enrich, briefing, migrate, setup, schema-author, skillify, etc.) = fat skills
 - **Recipes** (voice-to-brain, email-to-brain) = fat skills that install infrastructure
 
 The agent reads the skill/recipe and uses GBrain's deterministic tools to do the work.

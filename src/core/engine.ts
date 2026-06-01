@@ -749,7 +749,7 @@ export interface BrainEngine {
    *
    * Cheap by design: only slug + source_id, not the full Page row. For
    * loops that need page.compiled_truth / timeline / frontmatter, use
-   * `forEachPage` from src/core/engine-iter.ts instead.
+   * the page-level methods (getPage, getCompiledTruth) instead.
    */
   listAllPageRefs(): Promise<Array<{ slug: string; source_id: string }>>;
 

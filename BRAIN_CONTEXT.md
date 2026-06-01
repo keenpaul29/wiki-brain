@@ -6,15 +6,19 @@ Any assistant session (Claude Code, Codex, others) must read this first along wi
 ## 1) Identity and Working Style
 
 - Preferred name:
-  - [fill]
+  - Operator
 - Primary goals (current season):
-  - [fill]
+  - Maintain this repo as a self-growing LLM wiki with local PGLite GBrain recall
+  - Keep raw-to-wiki pipeline healthy
+  - Fix broken architecture, docs, and cross-references as they are discovered
 - Communication preferences:
-  - concise/detailed: [fill]
-  - tone: [fill]
-  - decision style (default if ambiguous): [fill]
+  - concise/detailed: concise (reply in 1-3 sentences unless asked for detail)
+  - tone: direct, matter-of-fact
+  - decision style (default if ambiguous): read existing docs first, ask if blocked
 - Non-negotiables:
-  - [fill]
+  - Never modify `raw/`
+  - Never commit real names/companies/funds into public artifacts
+  - Verify changes compile/build before committing
 
 ## 2) Operating Instructions (Persistent)
 
@@ -38,13 +42,18 @@ powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
 Use this section for stable personal/professional knowledge that should persist across sessions.
 
 - About me:
-  - [fill]
+  - GBrain fork user maintaining a local wiki with PGLite brain backend
 - Domains I care about:
-  - [fill]
+  - Personal knowledge management, agent-assisted workflows, wiki automation
+  - Software engineering, system design, AI/LLM patterns
 - Ongoing projects:
-  - [project -> one-line status]
+  - GBrain fork wiki maintenance (active) — keep raw→wiki pipeline running, fix architecture issues
+  - Agent skill development — learning how to use agent skills effectively
 - Important constraints (time, budget, stack, policy):
-  - [fill]
+  - Windows primary environment (PowerShell 5.1)
+  - Bun for TypeScript runtime
+  - Local PGLite (no cloud Postgres configured)
+  - Embeddings not configured (no API keys set up) — use `--no-embed`
 
 ## 4) Decision Log (Durable)
 

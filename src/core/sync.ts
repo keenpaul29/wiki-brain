@@ -243,6 +243,8 @@ const PRUNE_DIR_NAMES = new Set<string>([
   'node_modules',
   '.raw',
   'ops',
+  'test',
+  'tests',
 ]);
 
 /**

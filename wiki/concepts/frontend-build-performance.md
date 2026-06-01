@@ -37,6 +37,8 @@ Frontend performance is now part of a broader senior frontend skill set. Useful 
 
 ## Links
 
+- Parent: [[concepts/system-design|System Design]]
+- Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
+- Related: [[concepts/shared-engineering-language|Shared Engineering Language]]
 - Source: [[sources/webpack-tree-shaking-performance|Improving Site Performance With Webpack Tree Shaking]]
 - Source: [[sources/frontend-skills-2026|Frontend Skills Beyond React in 2026]]
-- Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]

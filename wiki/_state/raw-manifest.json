@@ -30,10 +30,22 @@
         "last_write_time":  "2026-04-28T17:38:08.8768995+05:30"
     },
     {
+        "path":  "raw/Beyond code generation rethinking engineering productivity in the age of AI agents.md",
+        "sha256":  "6b2be0dc9603c222bcfb41a26f55b564ddc55ca05fa4797e536993775bfa4591",
+        "length":  10552,
+        "last_write_time":  "2026-06-01T11:40:12.2494434+05:30"
+    },
+    {
         "path":  "raw/Beyond Shipped What Actually Breaks in Production AI.md",
         "sha256":  "07476379c5e367d5550aaa9094b259926a7514aaa5a84de35e3e3a923e27265a",
         "length":  7613,
         "last_write_time":  "2026-05-05T18:45:37.8237497+05:30"
+    },
+    {
+        "path":  "raw/Building collaborative prompt engineering playgrounds using Jupyter Notebook.md",
+        "sha256":  "d4934f4482027b1f3e4a834608a6d995e44916a854778dcfcc232af0832d1825",
+        "length":  12785,
+        "last_write_time":  "2026-06-01T11:49:58.1799738+05:30"
     },
     {
         "path":  "raw/Claude Code Best Practices 12 Patterns Agentic Engineers Use  by huizhou92  in Level Up Coding.md",
@@ -67,9 +79,21 @@
     },
     {
         "path":  "raw/Enhance productivity with AI + Remote Dev.md",
-        "sha256":  "a193c5e4920616b875c8ba518e434f342ca0ed4263b45c3bf2ade841d1e6434d",
-        "length":  12521,
-        "last_write_time":  "2026-05-08T12:46:07.5082614+05:30"
+        "sha256":  "e879215f334235d6036f07bcddd7aa248e34d381394244113405321f2a4deb4b",
+        "length":  12522,
+        "last_write_time":  "2026-05-26T18:52:35.4460899+05:30"
+    },
+    {
+        "path":  "raw/Escaping the Fork How Meta Modernized WebRTC Across 50+ Use Cases.md",
+        "sha256":  "92a44fd0113bbbe5871eb3ffe8ce126891507213d03eb3dca44b4674717ce2f1",
+        "length":  16746,
+        "last_write_time":  "2026-05-27T17:40:12.4818031+05:30"
+    },
+    {
+        "path":  "raw/FishDB - a generic retrieval engine for scaling LinkedIn’s feed.md",
+        "sha256":  "5a42f22d230f06b0ec1a48aab7548de38d730d54e4a112269c62bbc503eee503",
+        "length":  20354,
+        "last_write_time":  "2026-06-01T11:47:39.6959888+05:30"
     },
     {
         "path":  "raw/GPT-5.5 Agents Replaced My Python Backend. 83% Cost Cut.  by inprogrammer.md",
@@ -84,6 +108,12 @@
         "last_write_time":  "2026-05-26T12:57:29.8650409+05:30"
     },
     {
+        "path":  "raw/How Edison is helping us build a faster, more powerful Dropbox on the web.md",
+        "sha256":  "f43b161d5380b526a2ec58031f431bd818a31e907d724f90984698e3c5ad6f26",
+        "length":  30571,
+        "last_write_time":  "2026-06-01T11:42:49.3067964+05:30"
+    },
+    {
         "path":  "raw/How I Get 100% Out of AI When Coding — The Workflow Nobody Taught Me  by Udara Abeythilake  in Level Up Coding.md",
         "sha256":  "c274e862d581506e69dc5057930ffad296e4e9da3544fb9bfe91df9730881c3f",
         "length":  14313,
@@ -94,6 +124,12 @@
         "sha256":  "0529bc89f8af6be3897f141f6fe482045bfee964be7c814fe5f094ae17a470ef",
         "length":  38492,
         "last_write_time":  "2026-05-05T18:47:27.9425093+05:30"
+    },
+    {
+        "path":  "raw/How I Scrubbed 100% of the AI Slop From My Game \u0026 Cut Code by 45%.md",
+        "sha256":  "8622efd922798987f6921f179070b96018bef4408cea584d49320159f9672ed0",
+        "length":  32240,
+        "last_write_time":  "2026-06-01T10:30:41.2471367+05:30"
     },
     {
         "path":  "raw/How Kensho built a multi-agent framework with LangGraph to solve trusted financial data retrieval.md",
@@ -163,9 +199,9 @@
     },
     {
         "path":  "raw/How to Use Google Stitch\u0027s Design.md File with Claude Code for Consistent UI.md",
-        "sha256":  "f6e58b0c3f993255adec22b3bc64e9d8bcb837f4b4e6ec77bc311eefd1437aa3",
-        "length":  17334,
-        "last_write_time":  "2026-04-28T17:38:08.8788943+05:30"
+        "sha256":  "06499da55453c028b4939b1c0f7d76aadcc0aef3bda1a9c8631290264c1a2e76",
+        "length":  17335,
+        "last_write_time":  "2026-05-26T18:52:35.4699248+05:30"
     },
     {
         "path":  "raw/I Deployed Local LLMs in Production for a Year. Part 1 The Mental Model  by Mustafa Genc  in AI Advances.md",
@@ -190,6 +226,12 @@
         "sha256":  "c8061cba984180ed7c39441a9b28ac40b44dce10d8b2c0901aa3c7798030a334",
         "length":  11385,
         "last_write_time":  "2026-05-26T13:58:29.5748302+05:30"
+    },
+    {
+        "path":  "raw/I’m a 10× Dev. Here’s How I Use a $250Month LLM To Code 250% Faster Without Generating “Slop”.md",
+        "sha256":  "1480233fe6594e1ef7946ea35495abd6c2b99b3a8e51419fb06b51457bacd972",
+        "length":  8112,
+        "last_write_time":  "2026-06-01T10:45:51.3651974+05:30"
     },
     {
         "path":  "raw/Improving Site Performance With Webpack Tree Shaking.md",
@@ -234,6 +276,24 @@
         "last_write_time":  "2026-05-26T16:53:07.1194681+05:30"
     },
     {
+        "path":  "raw/Learn System Design With Me . Day 7 Chain of Responsibility \u0026 State Patterns .  by The Latency Gambler.md",
+        "sha256":  "fbfd1475f163236305bb49fe9ffa17b3ac1989714a73e768c858e0d3c4971988",
+        "length":  28093,
+        "last_write_time":  "2026-05-27T12:28:18.3404708+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 8 Load Balancing \u0026 Circuit Breaker….md",
+        "sha256":  "c8a7e6556baa378e0543a6e287d1c56b52c141cbe768bea8140568211c3ac66a",
+        "length":  26639,
+        "last_write_time":  "2026-05-27T12:29:22.0362565+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 9 Database Patterns \u0026 Repository P….md",
+        "sha256":  "60f9af6b596371fc072b5c3d71f8713d04cb1dd4d63111fb853bb20606ce0af0",
+        "length":  27807,
+        "last_write_time":  "2026-05-27T16:40:02.0868235+05:30"
+    },
+    {
         "path":  "raw/Learn System Design With Me Day 1 Building Your Architect Mindset  by The Latency Gambler.md",
         "sha256":  "0cf2a7ad71c8e830cb4c0aa8d2a966bd27a0203faa97e3980b1acd713cccb649",
         "length":  7738,
@@ -262,6 +322,12 @@
         "sha256":  "21ef9e53b753d5018084c7491b86176695d200432d3182adac720b4c0ec79b0c",
         "length":  26113,
         "last_write_time":  "2026-05-05T18:33:01.9595059+05:30"
+    },
+    {
+        "path":  "raw/Reimagining LinkedIn’s search tech stack.md",
+        "sha256":  "c014c9f248261ba85dfed1564755a0557fe536f36de8b1e2906f2b1eaf8f4eb5",
+        "length":  29030,
+        "last_write_time":  "2026-06-01T12:09:36.2161833+05:30"
     },
     {
         "path":  "raw/Retaining Computer Science Knowledge.md",
@@ -318,6 +384,12 @@
         "last_write_time":  "2026-05-05T19:07:36.8657658+05:30"
     },
     {
+        "path":  "raw/The 58-Million-Key Freeze What a HashMap Resize Taught Us About Memory Allocation at Scale.md",
+        "sha256":  "c41e88df4abbc9f4a8a4e1bdf86eff4724eedcc8aa18f043fc3f6204766c6ded",
+        "length":  19148,
+        "last_write_time":  "2026-06-01T11:45:17.7418585+05:30"
+    },
+    {
         "path":  "raw/The Anatomy of an Agent Harness.md",
         "sha256":  "ff142cb22d92c72ac0b67b41014e2d104eaa9227bc2e957cb50539ae6ffad1c9",
         "length":  13965,
@@ -334,6 +406,24 @@
         "sha256":  "6e18c241c40141be9c77e745ed25bd479b812f2e3cc19731f811a7334135ddd3",
         "length":  15509,
         "last_write_time":  "2026-05-08T11:48:38.5877648+05:30"
+    },
+    {
+        "path":  "raw/The last year of localhost.md",
+        "sha256":  "00c62b957d322b6db0e439a48ec41da9470707b57212e75a8868828b9a468ad8",
+        "length":  23922,
+        "last_write_time":  "2026-05-30T12:43:01.1095814+05:30"
+    },
+    {
+        "path":  "raw/The Packet Drop That Froze Three Requests at Once.md",
+        "sha256":  "e9345ba9e9253d267756e0409085553a7218cfee667085744a09a4302b7a582e",
+        "length":  11240,
+        "last_write_time":  "2026-06-01T10:13:44.2579521+05:30"
+    },
+    {
+        "path":  "raw/The Read That Was Killing the Write.md",
+        "sha256":  "fb4c9aa4acb6deacdeb76e5a4e20f0633dda8f3ac5b2020c3061ba116c074b10",
+        "length":  9960,
+        "last_write_time":  "2026-06-01T10:30:17.5029102+05:30"
     },
     {
         "path":  "raw/The technology behind Amazon’s GenAI-powered shopping assistant, Rufus.md",
@@ -358,5 +448,11 @@
         "sha256":  "1d7e520d3251bb2959d0a687c31b98231ecffb085d714f96d451a47739afef9b",
         "length":  10516,
         "last_write_time":  "2026-05-26T14:06:00.8559892+05:30"
+    },
+    {
+        "path":  "raw/Your Database Has Been Writing an Event Log the Whole Time.md",
+        "sha256":  "3cb70912f83919eaff8dbcea8d6b4d0b5395f5d29702522f31a46fca88b91411",
+        "length":  12500,
+        "last_write_time":  "2026-06-01T10:13:09.0110119+05:30"
     }
 ]

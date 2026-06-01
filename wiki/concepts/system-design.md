@@ -26,11 +26,29 @@ System design is the practice of defining architecture, interfaces, data, and op
 
 Important primitives from the source include IP, OSI layers, TCP/UDP, DNS, load balancing, caching, CDN, proxies, API styles, message brokers, databases, replication, sharding, consistency, rate limiting, service discovery, and observability.
 
+Recent networking and data-pattern sources sharpen two of those primitives: QUIC/HTTP3 fixes TCP-level head-of-line blocking by moving stream multiplexing into the transport layer, while CQRS and CDC show how event streams and projection models prevent reads, writes, and downstream consumers from fighting over one schema.
+
+## Deeper Sub-Concepts
+
+Several new sources add specialized design areas:
+
+- **[[concepts/fishdb|FishDB]]** — LinkedIn's Rust-based feed retrieval engine: document-oriented storage, bitmap and inverted indexes, memory-allocator interaction at scale.
+- **[[concepts/local-first-architecture|Local-First Architecture]]** — local reads/writes with background sync, optimistic UI, offline resilience, multi-tab coordination via BroadcastChannel.
+
+## New Case Studies
+
+- **Dropbox Nova** ([[sources/dropbox-beyond-code-generation|Beyond Code Generation]]): agent platform producing ~1-in-12 PRs, 4-stage measurement model, bottleneck-shift insight.
+- **Dropbox Edison** ([[sources/dropbox-edison-web-performance|Edison Web Performance]]): local-first sync engine on the web — IndexedDB, BroadcastChannel, optimistic UI.
+- **FishDB** ([[sources/linkedin-fishdb-retrieval-engine|FishDB]] + [[sources/linkedin-58m-key-hashmap-freeze|58M-Key Freeze]]): Rust feed retrieval engine, HashMap resize → kernel lock → async freeze.
+- **LinkedIn Semantic Search** ([[sources/linkedin-semantic-search-rebuild|Search Tech Stack Rebuild]]): GPU EBR + Cross-Encoder SLM, hybrid Spark/Flink pipeline, auction layer.
+
 ## Subpages
 
 - [[concepts/system-design-interview-workflow|System Design Interview Workflow]]
 - [[concepts/infrastructure-primitives|Infrastructure Primitives]]
 - [[concepts/data-storage-and-consistency|Data Storage and Consistency]]
+- [[concepts/fishdb|FishDB]] (sub-concept: storage engine architecture)
+- [[concepts/local-first-architecture|Local-First Architecture]] (sub-concept: client-side data patterns)
 - [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
 - [[concepts/reliability-and-operations|Reliability and Operations]]
 - [[concepts/system-design-case-studies|System Design Case Studies]]
@@ -59,6 +77,14 @@ Mastering system design requires active mental model construction and tradeoff e
 
 Even small data-structure choices follow system-design logic: start from access patterns. Pure membership checks point toward hash sets; mostly static ordered data can use sorted arrays and binary search; ordered range queries need tree-like structures; memory-constrained membership may justify probabilistic structures.
 
+## Sub-Concept Links
+
+- [[concepts/fishdb|FishDB]] — storage engine architecture (Rust, Tokio, jemalloc, index design)
+- [[concepts/local-first-architecture|Local-First Architecture]] — client-side sync engines, optimistic UI, offline resilience
+- [[concepts/local-llm-serving|Local LLM Serving]] — inference latency, KV cache, context length, serving operations
+- [[concepts/frontend-build-performance|Frontend Build Performance]] — bundle optimization, migration strategy, tree shaking
+- [[concepts/software-design-patterns|Software Design Patterns]] — selecting abstractions from code pain
+
 ## Source Support
 
 - [[sources/system-design-course|System Design Course]]
@@ -66,6 +92,13 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]
 - [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]]
 - [[sources/caching-patterns|Essential Caching Patterns and Strategies]]
+- [[sources/quic-head-of-line-blocking|The Packet Drop That Froze Three Requests at Once]]
+- [[sources/cqrs-read-write-separation|The Read That Was Killing the Write]]
+- [[sources/change-data-capture-event-log|Your Database Has Been Writing an Event Log the Whole Time]]
 - [[sources/google-l7-system-design|Google L7 System Design Interview Insights]]
 - [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]]
-
+- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+- [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
+- [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
+- [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
+- [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]

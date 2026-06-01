@@ -55,6 +55,10 @@ A maintainable agent setup needs a clear filesystem shape. Keep global project c
 
 Remote and containerized development environments can carry their own agent instructions. This lets an assistant know which toolchains are installed, which commands are safe, and what kind of machine it is operating in. The same principle applies to wiki automation: preserve durable rules near the workspace and use logs or queues so scheduled jobs coordinate instead of re-discovering state each run.
 
+## Production Agent Platforms
+
+Dropbox's Nova demonstrates agentic coding at production scale: Nova produces ~1 in 12 pull requests at Dropbox. Agents handle migrations, flaky test remediation, bug investigation, and dependency updates alongside feature work. The key measurement model tracks four stages: Fuel (AI usage), Adoption (workflow changes), Output (production contributions), and Impact (customer value). The insight is that agentic engineering moves more pressure upstream into product and design — sharper problem framing and specs matter more when agents execute implementation.
+
 ## Source Support
 
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]]
@@ -66,4 +70,5 @@ Remote and containerized development environments can carry their own agent inst
 - [[sources/anatomy-agent-harness|Anatomy of an AI Agent Harness]]
 - [[sources/kensho-multi-agent|Kensho Financial Multi-Agent Retrieval Architecture]]
 - [[sources/madrigal-multi-agent|Madrigal Pharmaceuticals Agentic Research Platform]]
+- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
 

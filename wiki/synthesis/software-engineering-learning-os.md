@@ -62,6 +62,24 @@ The 2026-05-19 ingest adds a sharper learning guardrail. [[sources/dont-outsourc
 
 The 2026-05-25 refresh strengthens that guardrail with the order-of-operations point: do not let the model frame unfamiliar work before the engineer has formed a first diagnosis. Learning modes, Socratic prompts, and manual re-derivation are not student-only practices; they are calibration tools for senior engineers working outside their current mental model.
 
+The 2026-06-01 ingest adds a production substrate layer. [[sources/ai-slop-game-refactor|Scrubbing AI Slop From a Game Codebase]] turns "AI slop" into concrete review targets: comments, instrumentation, state ownership, startup order, and repeated anti-patterns. [[sources/localhost-cloud-dev-agents|The Last Year of Localhost]] argues that background agents need standardized cloud development environments, not just better prompts. [[sources/meta-webrtc-fork-modernization|Escaping the Fork: Meta WebRTC Modernization]], [[sources/quic-head-of-line-blocking|The Packet Drop That Froze Three Requests at Once]], [[sources/cqrs-read-write-separation|The Read That Was Killing the Write]], and [[sources/change-data-capture-event-log|Your Database Has Been Writing an Event Log the Whole Time]] add concrete system-design examples where migration safety, transport behavior, read/write separation, and transaction-log events determine whether architecture survives real load.
+
+A second 2026-06-01 batch adds the deepest engineering-case-study layer yet. [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]] introduces the bottleneck-shift insight: accelerating code generation moves pressure to review, CI, validation, and release — it does not eliminate the SDLC bottleneck, it relocates it. Nova's 4-stage measurement model (Fuel→Adoption→Output→Impact) is a practical instrument for evaluating agentic engineering beyond PR-count vanity metrics. [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]] supplies the individual-practice counterpart: rich context, incremental review gates, and testing discipline turn AI velocity into durable output rather than "slop" accumulation.
+
+[[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]] and [[concepts/local-first-architecture|Local-First Architecture]] introduce a new system-design subdomain: the local-first sync engine. Edison's two-layer architecture (engine + sync service), BroadcastChannel multi-tab coordination, IndexedDB durable store, and optimistic UI pattern show how web clients evolve from thin shells into capable offline-first applications. This connects infrastructure primitives (client-side storage, WebSocket sync) to reliability patterns (conflict resolution, offline resilience).
+
+[[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]] and [[concepts/fishdb|FishDB]] document a production Rust-based storage engine at billion-member scale. The two-phase query execution (index scanning + result processing), specialized index types (B-tree sorted-set, bit-sliced, inverted with skip lists), and the memory-allocator interaction case study (hashbrown resize → jemalloc `brk()` → kernel `mmap_lock` → Tokio freeze) make FishDB one of the most complete system-design case studies in the wiki. The fix — `HashMap::with_capacity()` — is a single line of code that required cross-layer debugging from application data structures to kernel internals.
+
+[[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]] adds the GPU-accelerated semantic search counterpart: embedding-based retrieval on CUDA GPUs, Cross-Encoder SLM ranking on SGLang, hybrid Spark/Flink feature pipelines, and an auction layer for relevance/business balance. Together with FishDB, these two LinkedIn sources form a paired case study in retrieval infrastructure at extreme scale.
+
+[[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]] bridges back to the human layer: Jupyter Notebooks as shared prompt engineering surfaces where domain experts iterate on LLM behavior while engineers build infrastructure. This extends the wiki's own collaborative-knowledge pattern into prompt development, with the same discipline of versioning, review, and representative test data.
+
+[[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze]] is the debugging companion to FishDB: a cross-layer investigation from HashMap to kernel lock contention, with the lesson that async runtimes (Tokio) make single-task kernel lock contention a whole-runtime availability event.
+
+These 7 sources together advance the wiki's operating system on three fronts: (1) the knowledge loop now includes collaborative prompt engineering as a knowledge-production workflow; (2) the learning loop now has detailed engineering case studies at billion-user scale; (3) the engineering loop now spans client-side local-first architecture, retrieval infrastructure, semantic search, and cross-layer debugging methodology.
+
+The [[concepts/fishdb|FishDB]] and [[concepts/local-first-architecture|Local-First Architecture]] concept pages add two new system-design subdomains to the study spine, and the [[concepts/shared-engineering-language|Shared Engineering Language]] now includes terms for bottleneck shift, slop, collaborative playgrounds, local-first engines, and the Fuel→Adoption→Output→Impact measurement model.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:
@@ -74,7 +92,9 @@ Use the expanded system design notes as a study spine:
 6. [[concepts/system-design-case-studies|System Design Case Studies]] for applying the patterns.
 7. [[concepts/frontend-build-performance|Frontend Build Performance]] for client-side bundle and build-tool optimization.
 8. [[concepts/local-llm-serving|Local LLM Serving]] for inference latency, context, KV cache, and serving operations.
-9. [[concepts/software-design-patterns|Software Design Patterns]] for choosing abstractions from code pain rather than memorized names.
+9. [[concepts/fishdb|FishDB]] for storage engine architecture, index design, and memory-allocator interactions at scale.
+10. [[concepts/local-first-architecture|Local-First Architecture]] for client-side sync engines, optimistic UI, offline resilience, and multi-tab coordination.
+11. [[concepts/software-design-patterns|Software Design Patterns]] for choosing abstractions from code pain rather than memorized names.
 
 ## Everyday Workflow
 

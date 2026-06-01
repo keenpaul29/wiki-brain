@@ -13,6 +13,8 @@ writes_pages: true
 writes_to:
   - concepts/
   - projects/
+---
+
 # Brain-first analyzer matches `web_fetch` in a diagram on line 106
 # (illustrating fetch shape, not an API call) and `perplexity` in a
 # cross-reference to perplexity-research. The skill itself works on
@@ -30,6 +32,8 @@ brain_first: exempt
 > **Convention:** see [_brain-filing-rules.md](../_brain-filing-rules.md) —
 > output files by primary subject (concepts/ for general strategy, projects/
 > for problem-tied playbooks).
+
+> **Convention:** see [conventions/brain-first.md](../conventions/brain-first.md) for the lookup chain (search → query → get_page → external).
 
 ## What this is
 

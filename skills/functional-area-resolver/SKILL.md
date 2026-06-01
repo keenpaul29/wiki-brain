@@ -27,6 +27,8 @@ tools:
   - write
   - edit
 mutating: true
+---
+
 # This skill names other skills (perplexity-research, brain-publish,
 # etc.) in its dispatcher prose; the v0.36.x brain-first regex matches
 # the word `perplexity` but the skill never actually calls external
@@ -35,6 +37,8 @@ brain_first: exempt
 ---
 
 # Functional-Area Resolver — Pattern for Compressing Routing Tables
+
+> **Convention:** see [conventions/brain-first.md](../conventions/brain-first.md) for the lookup chain (search → query → get_page → external).
 
 ## Problem
 

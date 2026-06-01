@@ -29,6 +29,12 @@ AI-assisted learning should preserve ownership. Supportive AI use explains, crit
 
 The same distinction applies inside production coding. If AI closes the ticket but the engineer cannot explain the failure, reconstruct the fix, or identify the tradeoffs, the session produced output without retention. A learning-preserving workflow starts with a human hypothesis, uses the model to compare explanations, then re-derives important parts often enough to keep the mental model alive.
 
+## The Speed-vs-Retention Tension in AI-Assisted Coding
+
+Structured LLM coding workflows (break tasks into small increments, provide rich context, review every output, test incrementally) can preserve learning while accelerating output. The key insight is that the bottleneck shifts from writing code to reviewing, testing, and integrating generated code. When these review gates are maintained, the engineer still engages with correctness, tradeoffs, and edge cases — preserving learning.
+
+However, the risk of "slop" (low-quality AI-generated code that passes surface review) mirrors the cognitive debt risk identified in the learning ownership discussion. Both arise when AI output is accepted without full understanding. The guardrails are the same: maintain testing discipline, review AI code like a peer's PR, and never accept output the engineer cannot explain or defend.
+
 Learning-oriented AI modes are not only remedial tools. Socratic prompts, study mode, guided learning, and "explain before code" workflows can help experienced engineers when they are entering a new library, framework, or domain. The useful friction is intentional: it forces recall, prediction, and explanation before the generated answer becomes the path of least resistance.
 
 ## Source Support
@@ -38,4 +44,5 @@ Learning-oriented AI modes are not only remedial tools. Socratic prompts, study 
 - [[sources/karpathy-second-brain-article|Karpathy Second Brain Article]]
 - [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]
 - [[sources/dont-outsource-learning|Don't Outsource the Learning]]
+- [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
 

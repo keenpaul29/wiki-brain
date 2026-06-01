@@ -27,5 +27,7 @@ The source does not reject paid courses entirely. It suggests buying short bread
 ## Links
 
 - Supports [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
+- Supports [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
+- Supports [[concepts/system-design|System Design]]
 - Connects to [[sources/system-design-course|System Design Course]]
 

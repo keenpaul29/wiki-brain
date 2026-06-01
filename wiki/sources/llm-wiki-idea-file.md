@@ -48,4 +48,6 @@ The pattern is intentionally broad. It can support personal reflection, research
 ## Links
 
 - Supports [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]]
+- Supports [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
+- Supports [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]]
 - Supports [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]]

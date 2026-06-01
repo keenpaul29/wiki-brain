@@ -78,6 +78,36 @@ An AI coding workflow that starts with complete task context, project convention
 
 Related: [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]], [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
 
+### Bottleneck Shift
+
+The observation that accelerating code generation with AI does not eliminate SDLC bottlenecks — it moves them downstream to review queues, CI systems, validation workflows, and release coordination. Engineering productivity measurement must shift from local activity metrics (PR throughput) to broader system outcomes (product velocity, quality, rework rate).
+
+Related: [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+
+### Slop
+
+Low-quality AI-generated code or text that passes surface review but contains hidden errors, unnecessary complexity, or lacks human judgment. The anti-slop discipline requires maintaining testing rigor, reviewing AI output like a peer's PR, and never accepting output the engineer cannot explain.
+
+Related: [[sources/stop-feeding-me-ai-slop|Stop Feeding Me AI Slop]], [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
+
+### Collaborative Prompt Engineering Playground
+
+A shared environment (typically Jupyter Notebooks) where domain experts and engineers iterate on LLM prompts together. Notebooks live in the code repository, share access to production code/libraries, require code reviews and versioning, and enable rapid experimentation while keeping behavior aligned with production.
+
+Related: [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
+
+### Local-First Sync Engine
+
+A two-layer architecture with an engine (local reads/writes to a representation of the user's data) and a sync service (persistent WebSocket connection). Enables optimistic UI, offline operation, multi-tab coordination via BroadcastChannel, and conflict resolution. Converts a thin web client into a capable client-side application.
+
+Related: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]], [[concepts/local-first-architecture|Local-First Architecture]]
+
+### Fuel→Adoption→Output→Impact
+
+A 4-stage measurement model for agentic engineering productivity. Fuel measures AI usage, Adoption measures workflow changes, Output measures production contributions (e.g., PRs submitted), and Impact measures customer value delivered.
+
+Related: [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+
 ## Decision Log
 
 - 2026-05-19: Maintain a shared engineering language page in the wiki for recurring project terms and lightweight decisions, similar to a `CONTEXT.md`.

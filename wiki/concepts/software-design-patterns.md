@@ -82,11 +82,21 @@ Behavioral patterns deal with algorithms and the assignment of responsibilities 
 - **Objective**: Outlines algorithm skeletons in base classes, deferring concrete steps to subclasses.
 - **Hooks vs. Abstract Methods**: Abstract methods force subclasses to implement steps, while Hook methods provide optional behavior overrides.
 
+#### Chain of Responsibility Pattern
+- **Objective**: Passes requests along a chain of decoupled handlers. Each handler decides whether to process the request or delegate it to the next in line (e.g., HTTP middleware pipelines).
+- **Control & Branching**: Handlers can terminate the chain early (e.g. returning cached response) or branch conditionally. Keep handlers fully independent and order-agnostic.
+
+#### State Pattern
+- **Objective**: Encapsulates state-dependent behaviors inside separate state classes, making transitions explicit and eliminating nested if-else/switch blocks.
+- **Side Effects**: Transitions should trigger event broadcasts rather than embedding complex side-effect code (like database updates) directly inside state objects.
+
 ---
 
 ## Engineering Judgment
 
 Design patterns should improve reviewability and testability. If a pattern hides dependencies, creates a global state problem, turns simple flows into ceremony, or makes control flow harder to trace, it is probably solving the wrong problem.
+
+LLM-assisted coding can multiply pattern misuse because models reproduce existing local structure without understanding whether it is intentional. When state ownership, event signals, or service startup order matter, those constraints need to be explicit in project instructions and reviewed as architecture, not as incidental code style.
 
 ## Links
 
@@ -97,8 +107,9 @@ Design patterns should improve reviewability and testability. If a pattern hides
 - Source: [[sources/latency-gambler-day-4|Singleton and Builder Patterns for System Design]]
 - Source: [[sources/latency-gambler-day-5|Command and Template Method Patterns for System Design]]
 - Source: [[sources/latency-gambler-day-6|Adapter and Facade Patterns for System Design]]
+- Source: [[sources/latency-gambler-day-7|Chain of Responsibility & State Patterns]]
+- Source: [[sources/ai-slop-game-refactor|Scrubbing AI Slop From a Game Codebase]]
 - Related: [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
 - Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
 - Related: [[concepts/system-design|System Design]]
-
 

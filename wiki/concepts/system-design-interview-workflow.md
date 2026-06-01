@@ -40,5 +40,11 @@ System design interviews test how a candidate turns a vague product prompt into 
 
 - Parent concept: [[concepts/system-design|System Design]]
 - Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
+- Related: [[concepts/infrastructure-primitives|Infrastructure Primitives]]
+- Related: [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
+- Related: [[concepts/system-design-case-studies|System Design Case Studies]]
 - Source: [[sources/system-design-course|System Design Course]]
+- Source: [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]]
+- Source: [[sources/google-l7-system-design|Google L7 System Design Interview Insights]]
+- Source: [[sources/latency-gambler-day-1|Building the System Architect Mindset]]
 

@@ -127,6 +127,67 @@ Useful patterns:
 - 5-Layer WAF Model: Layering TCP Listening, HTTP parsing, rule-based signature checks, upstream proxying (Hyper), and structured tracing.
 - Signature Pre-compilation: Pre-compiling rule regular expressions at startup to avoid runtime compilation pauses.
 
+## Dropbox Nova: AI Agent Platform at Scale
+
+Core problem: let engineers describe tasks in plain language and run agentic workflows in a controlled environment, with the agent producing ~1 in 12 pull requests at Dropbox.
+
+Useful patterns:
+
+- **Bottleneck shift**: accelerating generation shifts pressure to review, CI systems, validation workflows, and release coordination — not eliminating the SDLC bottleneck, just moving it.
+- **4-stage measurement model**: Fuel (AI usage) → Adoption (workflow changes) → Output (production contributions) → Impact (customer value).
+- **Agent scope**: migrations, flaky test remediation, bug investigation, dependency updates alongside feature work.
+- **System advantage**: comes from context, internal tooling, quality controls, and workflows built around models, not model access itself.
+- **Upstream pressure**: agentic engineering moves more pressure into product and design — sharper problem framing is required when agents handle implementation.
+
+## Dropbox Edison: Local-First Sync Engine
+
+Core problem: transform a thin web UI client (dropbox.com) into a capable local-first application that can read, write, and sync asynchronously, supporting offline use and optimistic UI.
+
+Useful patterns:
+
+- **Two-layer architecture**: Edison Engine (local-first sync engine) + Sync Service (persistent WebSocket connection).
+- **Multi-tab coordination**: BroadcastChannel API for cross-tab state synchronization.
+- **Durable store**: IndexedDB with specialized schema for file metadata and content.
+- **Optimistic UI**: user actions applied immediately to local state, then synced to server.
+- **Conflict resolution**: handling concurrent edits across devices and tabs.
+- **Change propagation**: WebSocket-based notifications from server to all connected clients.
+- **Unified storage layer**: all components read/write through a shared layer instead of independent server fetches.
+
+## LinkedIn FishDB: Feed Retrieval Engine
+
+Core problem: serve LinkedIn's Feed for over a billion members with reliable millisecond latency, using a Rust-based storage and retrieval engine deployed across 48 shards.
+
+Useful patterns:
+
+- **Document-oriented model**: each document is a typed field collection, supporting Feed, Notification Center, and Jobs with a single engine.
+- **Two-phase query execution**: pre-filtering (index scanning) + result processing (projection, sorting, pagination).
+- **Index diversity**: sorted-set indexes (B-tree) for point lookups and range scans, bit-sliced indexes for numeric range queries, inverted indexes for full-text search.
+- **Memory allocation at scale**: hashbrown::HashMap at ~56-59M entries per shard (~1.75 GB). Resize at 58.7M keys triggered jemalloc `brk()` → kernel `mmap_lock` contention → Tokio runtime freeze (see [[sources/linkedin-58m-key-hashmap-freeze|58M-key freeze case study]]).
+- **Fix**: pre-allocation with `HashMap::with_capacity()`.
+
+## LinkedIn Semantic Search: GPU-Accelerated EBR
+
+Core problem: replace keyword matching with semantic search using LLMs at LinkedIn's scale — millions of real-time queries per second.
+
+Useful patterns:
+
+- **GPU-accelerated exhaustive vector search**: embedding-based retrieval on CUDA-enabled GPUs.
+- **Two-stage ranking**: Cross-Encoder SLM on SGLang for relevance/engagement scoring after EBR candidate retrieval.
+- **Hybrid feature pipeline**: offline (Spark, Flyte) for large-scale embedding generation + nearline (Flink) for low-latency feature updates.
+- **Latency optimization**: score caching, ranking-depth controllers, traffic shaping, context compression.
+- **Auction layer**: budget and pacing strategies balance relevance, engagement, and business metrics.
+
+## HashMap Freeze: Cross-Layer Debugging at Scale
+
+Core problem: intermittent 15-second freezes in FishDB (LinkedIn's Rust feed retrieval engine) with no logs, no obvious trigger, and no reproducible test case — each freeze breaching the 99.9% availability SLO for a minute before self-recovering.
+
+Useful patterns:
+
+- **Automated profiling instrumentation**: record stack traces at 1ms intervals with low overhead to catch intermittent events.
+- **Cross-layer analysis**: trace from application data structure (HashMap) → allocator (jemalloc `brk()`) → kernel (`mmap_lock` contention) → async runtime (Tokio task freeze).
+- **Root cause**: a single HashMap resize at ~58.7M keys. `HashMap::resize` → jemalloc calls `brk()` → acquires kernel `mmap_lock`. Page faults in any Tokio task contend on same lock → entire async runtime freezes.
+- **Fix**: pre-allocate with `HashMap::with_capacity()`.
+
 ## Monolith-to-Service Migration Patterns
 
 Core problem: safely decompose a monolithic application into decoupled, scale-independent microservices without risking operational downtime.
@@ -153,3 +214,8 @@ Useful patterns:
 - Source: [[sources/monolith-to-service-migration|Monolith to Service Migration Strategies]]
 - Source: [[sources/kensho-multi-agent|Kensho Financial Multi-Agent Retrieval Architecture]]
 - Source: [[sources/madrigal-multi-agent|Madrigal Pharmaceuticals Agentic Research Platform]]
+- Source: [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+- Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
+- Source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
+- Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
+- Source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
