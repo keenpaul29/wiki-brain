@@ -261,20 +261,6 @@ Fixed sync and test bugs:
 
 Verification: Checked that `bun test test/sync-walker-symlink.test.ts` runs clean on Windows and `bun run pull` successfully completes.
 
-## [2026-06-04] ingest | Career growth, passive skills, engineering blogs, Rust security, and Instagram Explore ML
-
-Processed 5 new raw sources:
-
-- `raw/Going from Junior - Senior engineer in 2 years.md`
-- `raw/What Really Makes a Succesful Software Engineer.md`
-- `raw/70+ Engineering Blogs To Follow in 2025.md`
-- `raw/Rust at Scale An Added Layer of Security for WhatsApp.md`
-- `raw/Scaling the Instagram Explore recommendations system.md`
-
-Added source summaries: [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]], [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]], [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]], [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]], and [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]].
-
-Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]], [[concepts/shared-engineering-language|Shared Engineering Language]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/system-design|System Design]], [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/data-storage-and-consistency|Data Storage and Consistency]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
-
 ## [2026-06-01] ingest | AI coding workflow, Dropbox Nova, LinkedIn search & FishDB deep dives
 
 Processed 7 new raw sources:
