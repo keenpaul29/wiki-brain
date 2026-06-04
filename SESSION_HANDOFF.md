@@ -7,9 +7,9 @@ GBrain is initialized locally and attached to this project.
 - Local brain: `C:\Users\giftlaya\.gbrain\brain.pglite`
 - Project source: `brain`
 - Attached by: `.gbrain-source`
-- Last source sync: 2026-05-26 ingestion pass
-- Imported pages: 335
-- Imported chunks: 2899
+- Last source sync: 2026-06-04 full walk sync
+- Imported pages: 381
+- Imported chunks: 3068
 - Embedded chunks: 0
 
 ## Work Completed
