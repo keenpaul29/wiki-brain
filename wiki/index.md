@@ -119,13 +119,11 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 
 ## Newest Sources
 
-- [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
-- [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
-- [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
-- [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
-- [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Faster Without Slop]]
-- [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
-- [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze]]
+- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
+- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
+- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
+- [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
+- [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
 
 ## Maintenance Notes
 

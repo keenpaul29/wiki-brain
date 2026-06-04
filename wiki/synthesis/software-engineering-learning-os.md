@@ -110,6 +110,14 @@ Use the expanded system design notes as a study spine:
 
 The daily workflow is now documented in [[automation]]. A helper script scans `raw/`, writes `wiki/_state/daily-scan.md`, and maintains a manifest of source hashes. The Codex automation should run daily, ingest new or changed sources, link-check the wiki, and commit the new source state only after a successful update.
 
+[[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] adds a blog-reading practice for real-world system-design exposure across production tradeoffs, incident stories, migration lessons, and platform constraints.
+
+[[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]] and [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]] reinforce the non-technical half of the Learning OS: patience, determination, student mindset, communication, accepting criticism, documentation, mentorship, and scope-reduction as a senior skill.
+
+[[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]] provides a production case study for memory-safety adoption and defense-in-depth in messaging infrastructure.
+
+[[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]] demonstrates multi-stage ranking at billions-scale, connecting system-design primitives (Two Tower models, cached embeddings, value-model tuning) to real ML infrastructure.
+
 ## Current Open Questions
 
 - Which technical topics should get dedicated practice plans first: distributed systems, databases, networking, or LLM architecture?

@@ -132,3 +132,5 @@ Operational reliability depends on classifying failures correctly. Expected busi
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
 - Source: [[sources/electron-screen-capture-protection|Electron Screen Capture Protection]]
+- Source: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
+- Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]

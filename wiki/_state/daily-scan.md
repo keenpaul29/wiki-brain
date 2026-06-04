@@ -1,24 +1,28 @@
 ﻿---
 title: Daily Wiki Scan
 type: state
-updated: 2026-06-01
+updated: 2026-06-04
 ---
 
 # Daily Wiki Scan
 
-Generated: 2026-06-01 12.35.45 +05:30
+Generated: 2026-06-04 19:25:34 +05:30
 
 ## Summary
 
-- Raw files: 76
-- New files: 0
+- Raw files: 81
+- New files: 5
 - Changed files: 0
 - Deleted files: 0
-- State committed: True
+- State committed: False (ingested; pending commit)
 
 ## New Files
 
-- None
+- `raw/70+ Engineering Blogs To Follow in 2025.md`
+- `raw/Going from Junior - Senior engineer in 2 years.md`
+- `raw/Rust at Scale An Added Layer of Security for WhatsApp.md`
+- `raw/Scaling the Instagram Explore recommendations system.md`
+- `raw/What Really Makes a Succesful Software Engineer.md`
 
 ## Changed Files
 

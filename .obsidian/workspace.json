@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "raw/Learn System Design With Me . Day 9 Database Patterns & Repository P….md",
+                "file": "raw/What Really Makes a Succesful Software Engineer.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Learn System Design With Me . Day 9 Database Patterns & Repository P…"
+              "title": "What Really Makes a Succesful Software Engineer"
             }
           }
         ]
@@ -185,8 +185,10 @@
   },
   "active": "1a4f7eb68882a0df",
   "lastOpenFiles": [
-    "raw/Learn System Design With Me . Day 10 Caching Patterns.md",
+    "raw/Going from Junior - Senior engineer in 2 years.md",
+    "raw/What Really Makes a Succesful Software Engineer.md",
     "raw/Learn System Design With Me . Day 9 Database Patterns & Repository P….md",
+    "raw/Learn System Design With Me . Day 10 Caching Patterns.md",
     "raw/70+ Engineering Blogs To Follow in 2025.md",
     "raw/Rust at Scale An Added Layer of Security for WhatsApp.md",
     "raw/Scaling the Instagram Explore recommendations system.md",
@@ -211,8 +213,6 @@
     "raw/I’m a 10× Dev. Here’s How I Use a $250Month LLM To Code 250% Faster Without Generating “Slop”.md",
     "raw/How I Scrubbed 100% of the AI Slop From My Game & Cut Code by 45%.md",
     "raw/The Read That Was Killing the Write.md",
-    "raw/The Packet Drop That Froze Three Requests at Once.md",
-    "raw/Your Database Has Been Writing an Event Log the Whole Time.md",
     "src/core/ai/recipes/clod.ts",
     "exports/notion/Tasks 7d2e1f5e95e4422bbd11889539bab3c1.csv",
     "exports/notion/Tasks 7d2e1f5e95e4422bbd11889539bab3c1_all.csv",

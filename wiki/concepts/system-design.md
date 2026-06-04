@@ -102,3 +102,6 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
+- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
+- [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
+- [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]

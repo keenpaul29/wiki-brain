@@ -14,16 +14,11 @@ GBrain is initialized locally and attached to this project.
 
 ## Work Completed
 
-- Ingested 23 new raw sources under `wiki/sources/`.
-- Created concept page `wiki/concepts/command-line-and-git-productivity.md` to document Git timeline control and CLI productivity hacks.
-- Expanded concept pages: `wiki/concepts/ai-era-software-engineering.md`, `wiki/concepts/self-improving-agent-workflows.md`, `wiki/concepts/system-design.md`, `wiki/concepts/system-design-case-studies.md`, and `wiki/concepts/software-design-patterns.md`.
-- Updated `wiki/index.md` and `wiki/log.md` with links and entries.
-- Validated Obsidian-style links and orphan pages using PowerShell scripts.
-- Committed daily scan manifest state with `update-wiki-state.ps1 -CommitState`.
-- Fixed a TypeScript type signature error in `src/core/think/index.ts` (replaced `sourceId: opts?.sourceId` with `source_id: opts?.sourceId` inside `persistSynthesis`).
-- Ran successful TypeScript type checks (`bun run typecheck`) and validated unit tests.
-- Staged and committed all wiki files and codebase changes cleanly to git.
-- Performed full walk database sync (`sync --full`) to import all changes into source `brain` in local database.
+- Ingested 5 new raw sources under `wiki/sources/` (engineering blogs list, junior-to-senior career path, passive software-engineering skills, WhatsApp Rust security, Instagram Explore ML).
+- Added backlinks from 9 concept/synthesis pages to the new sources (ai-era-software-engineering, structured-learning-and-retention, shared-engineering-language, system-design-case-studies, reliability-and-operations, system-design, infrastructure-primitives, data-storage-and-consistency, software-engineering-learning-os).
+- Added 4 new terms to `wiki/concepts/shared-engineering-language.md` (Golden Opportunity, Passive Skill, Kaleidoscope, Explore Recommendation Funnel).
+- Updated `wiki/index.md` Newest Sources section and `wiki/log.md` with a dated entry.
+- Validated all wiki links resolved cleanly; no orphan pages detected.
 
 ## Open Items
 

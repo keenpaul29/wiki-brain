@@ -37,6 +37,14 @@ However, the risk of "slop" (low-quality AI-generated code that passes surface r
 
 Learning-oriented AI modes are not only remedial tools. Socratic prompts, study mode, guided learning, and "explain before code" workflows can help experienced engineers when they are entering a new library, framework, or domain. The useful friction is intentional: it forces recall, prediction, and explanation before the generated answer becomes the path of least resistance.
 
+## Engineering Reading Stream
+
+A durable learning loop needs a steady input stream of real engineering material, not only courses. [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] turns company engineering blogs into a source map for production case studies. The useful practice is to read selectively, extract the tradeoff or failure mode, and file it into concept pages such as [[concepts/system-design-case-studies|System Design Case Studies]] rather than trying to follow every feed.
+
+## Career Skill Compounding
+
+[[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]] and [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]] add the career-growth side of structured learning. Growth compounds when engineers document what they learn, pair with stronger peers, learn in public, accept critique, communicate clearly, and deliberately convert project work into reusable team knowledge. The caution is that growth tactics must be bounded; overwork can create burnout even when the tactics are effective.
+
 ## Source Support
 
 - [[sources/learn-from-course-content|How to Learn from Course Content Without Paying for It]]
@@ -45,4 +53,10 @@ Learning-oriented AI modes are not only remedial tools. Socratic prompts, study 
 - [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]
 - [[sources/dont-outsource-learning|Don't Outsource the Learning]]
 - [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
+- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
+- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
+- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
+- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
+- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
+- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
 

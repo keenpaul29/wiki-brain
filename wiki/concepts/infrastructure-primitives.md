@@ -96,3 +96,5 @@ At scale, keyword-based retrieval is supplemented or replaced by embedding-based
 - Related source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - Related source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - Related source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
+- Related source: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
+- Related source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]

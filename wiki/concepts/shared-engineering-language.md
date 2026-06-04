@@ -108,9 +108,47 @@ A 4-stage measurement model for agentic engineering productivity. Fuel measures 
 
 Related: [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
 
+### Golden Opportunity
+
+A career-growth action that advances multiple goals at once: learning, delivery, communication, team trust, documentation, or leadership visibility. Pair programming, project docs, and public learning are examples when they also improve the team's base execution.
+
+Related: [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
+
+### Student Mindset
+
+The expectation that tools, practices, and domains will keep changing, so engineers must keep learning without chasing every trend. This is a career skill as much as a study tactic.
+
+Related: [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
+
 ## Decision Log
 
 - 2026-05-19: Maintain a shared engineering language page in the wiki for recurring project terms and lightweight decisions, similar to a `CONTEXT.md`.
+
+## Maintenance Rule
+
+### Golden Opportunity
+
+A high-leverage action that advances multiple goals at once — e.g., pair programming that improves technical skill, communication, and peer trust simultaneously. From career-growth sources.
+
+Related: [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
+
+### Passive Skill
+
+A non-technical capability (patience, determination, student mindset, accepting criticism, communication) that compounds over a career and matters more than the current tech stack.
+
+Related: [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
+
+### Kaleidoscope
+
+WhatsApp's ensemble of media-level security checks: non-conformant structure detection, risky embedded elements, spoofed file types, MIME/extension mismatches, and known-dangerous attachment classes — all running in Rust on billions of devices.
+
+Related: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
+
+### Explore Recommendation Funnel
+
+Instagram Explore's multi-stage funnel (retrieval → first-stage ranking → second-stage ranking → final reranking) that narrows billions of media items into personalized results using Two Tower neural nets, cached embeddings, and value-model weighted scoring.
+
+Related: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
 
 ## Maintenance Rule
 

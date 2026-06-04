@@ -107,3 +107,4 @@ Read models and downstream indexes must be treated as rebuildable projections. C
 - Source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
+- Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]

@@ -148,3 +148,5 @@ At LinkedIn's scale (millions of QPS), semantic search uses GPU-accelerated embe
 - [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
 - [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
 - [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
+- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
+- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]

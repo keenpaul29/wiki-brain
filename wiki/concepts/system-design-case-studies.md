@@ -219,3 +219,5 @@ Useful patterns:
 - Source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
+- Source: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
+- Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
