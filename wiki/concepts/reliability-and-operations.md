@@ -55,6 +55,8 @@ At search scale, reliability engineering extends beyond basic rate limiting into
 - **Traffic shaping**: balances load during peak times by adjusting query volume to downstream ranking and auction systems.
 - **Auction layer with pacing**: budget and pacing strategies balance relevance, engagement, and business metrics — a form of reliability-aware load management.
 
+Recommendation systems use a similar operational pattern. Instagram Explore narrows candidates through retrieval and staged ranking so expensive models only run on smaller candidate sets. Pre-generating recommendations during off-peak hours, caching embeddings, distilling heavy rankers into lighter first-stage models, and applying final integrity/diversity reranking all serve reliability as well as quality.
+
 ## Conflict Resolution and Offline Resilience
 
 Local-first architectures shift reliability requirements to the client:
@@ -92,6 +94,8 @@ Local LLM serving needs its own operational telemetry. Prefill duration, decode 
 Framework upgrades can make systems safer while still breaking production behavior. FastAPI `0.115` examples include stricter dependency signatures, response validation, CORS enforcement, WebSocket disconnect handling, optional query typing, and serializer changes. The safe pattern is to categorize failures, fix critical paths first, test with real frontend/configuration behavior, and roll out gradually with monitoring.
 
 Large dependency-fork migrations need the same rollout discipline at library scale. Meta's WebRTC migration used a dual-stack shim, runtime flavor dispatch, generated adapters, and A/B testing so old and new implementations could coexist until the upstream-based path proved safe.
+
+Security hardening migrations need compatibility proof as well as rollout discipline. WhatsApp rewrote its media consistency library from C++ to Rust in parallel with the original implementation, using differential fuzzing plus integration and unit tests before rolling the Rust library out broadly. The reliability lesson is that memory-safety benefits still need behavioral equivalence checks, binary-size management, and build-system support across every target platform.
 
 ## Kernel-Level Lock Contention in Async Runtimes
 
@@ -132,5 +136,5 @@ Operational reliability depends on classifying failures correctly. Expected busi
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
 - Source: [[sources/electron-screen-capture-protection|Electron Screen Capture Protection]]
-- Source: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
-- Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
+- Sub-concept: [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
+- Sub-concept: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]

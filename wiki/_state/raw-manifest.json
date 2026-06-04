@@ -12,6 +12,12 @@
         "last_write_time":  "2026-05-26T14:27:54.3090354+05:30"
     },
     {
+        "path":  "raw/70+ Engineering Blogs To Follow in 2025.md",
+        "sha256":  "dc6d5f7e7f94a8abaae1e6c45fc016e1461e40232fd5760df87c2f8c1b571aff",
+        "length":  7742,
+        "last_write_time":  "2026-06-01T19:08:40.1050370+05:30"
+    },
+    {
         "path":  "raw/A FastAPI Update Broke My Production App. Here Is the Fix.  by inprogrammer  in Artificial Intelligence in Plain English.md",
         "sha256":  "46c18ece61d0710eecde979bee03f9c3b575368513dec00f0df731539cab2ab3",
         "length":  11486,
@@ -94,6 +100,12 @@
         "sha256":  "5a42f22d230f06b0ec1a48aab7548de38d730d54e4a112269c62bbc503eee503",
         "length":  20354,
         "last_write_time":  "2026-06-01T11:47:39.6959888+05:30"
+    },
+    {
+        "path":  "raw/Going from Junior - Senior engineer in 2 years.md",
+        "sha256":  "b5688244b4b82d2190d42179a623d2cd0b72ed2cafb7ba458dd98b3ed94ff0a2",
+        "length":  14572,
+        "last_write_time":  "2026-06-04T19:24:10.1979459+05:30"
     },
     {
         "path":  "raw/GPT-5.5 Agents Replaced My Python Backend. 83% Cost Cut.  by inprogrammer.md",
@@ -336,6 +348,18 @@
         "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
     },
     {
+        "path":  "raw/Rust at Scale An Added Layer of Security for WhatsApp.md",
+        "sha256":  "b6b35fbc7e6362d185b51aabcab66cff1db59dec85827eabb89279e27ca930e1",
+        "length":  9287,
+        "last_write_time":  "2026-06-01T19:06:17.6283277+05:30"
+    },
+    {
+        "path":  "raw/Scaling the Instagram Explore recommendations system.md",
+        "sha256":  "fd4c88eff494dac6c803a2a1f90482df6ff34f70745f1909a739c67343db54a5",
+        "length":  14997,
+        "last_write_time":  "2026-06-01T16:32:09.6417231+05:30"
+    },
+    {
         "path":  "raw/Self-Evolving Hooks.md",
         "sha256":  "d3f6b5e24c9f63f7795fdb30a6887f575a18790b0154a0e29b14ce14e84d4aca",
         "length":  12853,
@@ -448,6 +472,12 @@
         "sha256":  "1d7e520d3251bb2959d0a687c31b98231ecffb085d714f96d451a47739afef9b",
         "length":  10516,
         "last_write_time":  "2026-05-26T14:06:00.8559892+05:30"
+    },
+    {
+        "path":  "raw/What Really Makes a Succesful Software Engineer.md",
+        "sha256":  "71a05259eaabe9f29231b196732e7e410c493fc22b884cb5d05dbaf8e8942048",
+        "length":  10771,
+        "last_write_time":  "2026-06-04T19:24:10.1066145+05:30"
     },
     {
         "path":  "raw/Your Database Has Been Writing an Event Log the Whole Time.md",

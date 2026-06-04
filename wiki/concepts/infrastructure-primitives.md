@@ -66,6 +66,14 @@ At scale, keyword-based retrieval is supplemented or replaced by embedding-based
 - Score caching, ranking-depth controllers, and traffic shaping to manage cost and latency.
 - Context compression to reduce the input size passed through expensive models.
 
+## Recommendation Retrieval Infrastructure
+
+Large-scale recommendation systems use retrieval infrastructure to avoid ranking the whole universe of content. Instagram Explore combines heuristic, real-time, pre-generated, and ML-based candidate sources. Two Tower models split user and item representations so item embeddings can be generated offline and cached, while online user embeddings can query an ANN service such as FAISS or HNSW. This makes heavier downstream ranking possible without violating latency budgets.
+
+## Client-Side Security Libraries
+
+Client applications also carry infrastructure primitives when they process untrusted input at scale. WhatsApp's Rust media consistency library is a cross-platform security layer distributed across phones, desktops, browsers, and wearables. Its job is to detect malformed, spoofed, risky, or dangerous attachments before downstream OS or app libraries process them.
+
 ## AI Inference at Scale
 
 - Accelerators (GPUs/TPUs/custom chips) are often required for low-latency LLM serving.
@@ -96,5 +104,5 @@ At scale, keyword-based retrieval is supplemented or replaced by embedding-based
 - Related source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - Related source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - Related source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
-- Related source: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
-- Related source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
+- Related: [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
+- Related: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]

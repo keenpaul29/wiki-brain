@@ -35,6 +35,9 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]] - Terminal efficiency patterns and advanced Git timeline mechanics for robust workflow execution.
 - [[concepts/fishdb|FishDB]] - LinkedIn's Rust-based storage and retrieval engine for Feed, using Tokio, jemalloc, and hashbrown.
 - [[concepts/local-first-architecture|Local-First Architecture]] - Local reads/writes with background sync, optimistic UI, and multi-tab coordination.
+- [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] - Non-technical growth skills: communication, feedback, patience, learning, mentorship, and scope.
+- [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]] - Memory-safe language adoption, attack-surface reduction, and Rust security migrations.
+- [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] - Retrieval, Two Tower embeddings, staged ranking, precomputation, and reranking controls.
 
 
 ## Sources
@@ -116,6 +119,12 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze]] - HashMap resize → mmap_lock contention → async runtime freeze case study.
 - [[sources/production-firewalls-rust|Production Firewall Architecture in Rust]] - Multi-layer Rust Web Application Firewall (WAF) async TCP and Regex signature inspection engine.
 - [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]] - Structured learning path using engineering blogs and case studies to develop real architectural tradeoff intuition.
+
+- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] - A curated map of company engineering blogs for ongoing case-study learning.
+- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]] - Career-growth tactics around reliable delivery, documentation, leadership, public learning, and mentorship.
+- [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]] - WhatsApp's Rust media consistency library as a cross-platform defense-in-depth security layer.
+- [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]] - Instagram Explore's multi-stage recommendation funnel with Two Tower retrieval and staged ranking.
+- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]] - Passive career skills: patience, determination, student mindset, feedback, and communication.
 
 ## Newest Sources
 

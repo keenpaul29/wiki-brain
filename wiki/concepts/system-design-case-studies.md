@@ -188,6 +188,33 @@ Useful patterns:
 - **Root cause**: a single HashMap resize at ~58.7M keys. `HashMap::resize` → jemalloc calls `brk()` → acquires kernel `mmap_lock`. Page faults in any Tokio task contend on same lock → entire async runtime freezes.
 - **Fix**: pre-allocate with `HashMap::with_capacity()`.
 
+## Instagram Explore Recommendations
+
+Core problem: recommend relevant media in real time from billions of possible items to hundreds of millions of users.
+
+Useful patterns:
+
+- **Multi-stage funnel**: retrieval, first-stage ranking, second-stage ranking, final reranking.
+- **Mixed retrieval sources**: heuristic, real-time, pre-generated, and ML-based candidate sources combined with tunable weights.
+- **Two Tower retrieval**: cacheable user and item embeddings support efficient ANN lookup without scanning all items.
+- **Distilled first-stage ranker**: lightweight model predicts which items the heavier second-stage model would select.
+- **MTML second-stage ranker**: heavier model consumes user-item interaction features and predicts multiple engagement outcomes.
+- **Value model scoring**: combines positive and negative predicted outcomes with tunable weights.
+- **Final reranking**: integrity filters, diversity rules, and business constraints adjust the scored list before presentation.
+
+## WhatsApp Rust Media Security
+
+Core problem: protect billions of users from malicious or malformed media files even when downstream OS or app libraries may contain parser vulnerabilities.
+
+Useful patterns:
+
+- **Defense in depth**: inspect media consistency before downstream libraries process untrusted files.
+- **Memory-safe rewrite**: replace high-risk C++ parsing code with Rust where untrusted inputs are processed automatically.
+- **Parallel implementation**: build Rust alongside C++ to preserve compatibility during migration.
+- **Differential fuzzing**: compare implementations to catch behavior mismatches.
+- **Risk-aware file checks**: detect malformed structures, risky PDF features, spoofed MIME/extension mismatches, and known dangerous file types.
+- **Cross-platform rollout discipline**: handle binary size, build-system support, and compatibility across mobile, desktop, browser, and wearable targets.
+
 ## Monolith-to-Service Migration Patterns
 
 Core problem: safely decompose a monolithic application into decoupled, scale-independent microservices without risking operational downtime.
@@ -219,5 +246,5 @@ Useful patterns:
 - Source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
-- Source: [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
-- Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
+- Source: [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
+- Source: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]

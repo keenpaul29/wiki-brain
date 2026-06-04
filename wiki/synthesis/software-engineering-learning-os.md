@@ -80,6 +80,8 @@ These 7 sources together advance the wiki's operating system on three fronts: (1
 
 The [[concepts/fishdb|FishDB]] and [[concepts/local-first-architecture|Local-First Architecture]] concept pages add two new system-design subdomains to the study spine, and the [[concepts/shared-engineering-language|Shared Engineering Language]] now includes terms for bottleneck shift, slop, collaborative playgrounds, local-first engines, and the Fuel→Adoption→Output→Impact measurement model.
 
+The 2026-06-04 ingest adds a career-and-case-study refresh. [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] reframes engineering blogs as a standing input stream for production system-design examples. [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]] and [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]] add the human growth loop: document learning, pair with stronger peers, communicate clearly, accept critique, learn in public, mentor, and keep ambition bounded enough to avoid burnout. The two Meta case studies deepen the engineering loop: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]] shows recommendation funnels built from retrieval, Two Tower embeddings, staged ranking, caching, and reranking controls; [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]] shows a memory-safe security migration for untrusted media parsing using Rust, differential fuzzing, and cross-platform rollout discipline.
+
 ## System Design Study Spine
 
 Use the expanded system design notes as a study spine:
@@ -110,13 +112,13 @@ Use the expanded system design notes as a study spine:
 
 The daily workflow is now documented in [[automation]]. A helper script scans `raw/`, writes `wiki/_state/daily-scan.md`, and maintains a manifest of source hashes. The Codex automation should run daily, ingest new or changed sources, link-check the wiki, and commit the new source state only after a successful update.
 
+[[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] consolidates the non-technical half of the engineer's capability: concrete promotion tactics (golden opportunities, scope reduction, mentoring) and the personal qualities (patience, determination, student mindset, accepting criticism, communication) that make growth sustainable. These skills compound over a career and are independent of the current tech stack.
+
+[[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]] is a production case study showing how WhatsApp deployed Rust at billion-device scale to harden media processing against memory-safety vulnerabilities — connecting security practice to real architecture decisions.
+
+[[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] demonstrates multi-stage ranking at billions-scale, connecting system-design primitives (Two Tower models, cached embeddings, value-model tuning, distillation, ANN retrieval) to real ML infrastructure in Instagram Explore.
+
 [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] adds a blog-reading practice for real-world system-design exposure across production tradeoffs, incident stories, migration lessons, and platform constraints.
-
-[[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]] and [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]] reinforce the non-technical half of the Learning OS: patience, determination, student mindset, communication, accepting criticism, documentation, mentorship, and scope-reduction as a senior skill.
-
-[[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]] provides a production case study for memory-safety adoption and defense-in-depth in messaging infrastructure.
-
-[[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]] demonstrates multi-stage ranking at billions-scale, connecting system-design primitives (Two Tower models, cached embeddings, value-model tuning) to real ML infrastructure.
 
 ## Current Open Questions
 

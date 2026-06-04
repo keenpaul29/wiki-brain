@@ -42,6 +42,9 @@ Several new sources add specialized design areas:
 - **FishDB** ([[sources/linkedin-fishdb-retrieval-engine|FishDB]] + [[sources/linkedin-58m-key-hashmap-freeze|58M-Key Freeze]]): Rust feed retrieval engine, HashMap resize → kernel lock → async freeze.
 - **LinkedIn Semantic Search** ([[sources/linkedin-semantic-search-rebuild|Search Tech Stack Rebuild]]): GPU EBR + Cross-Encoder SLM, hybrid Spark/Flink pipeline, auction layer.
 
+- **Instagram Explore** ([[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]): multi-stage recommendation funnel, Two Tower retrieval, cached embeddings, MTML ranking, value-model scoring, final integrity/diversity reranking.
+- **WhatsApp Rust Security** ([[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]): client-side defense-in-depth for untrusted media, differential fuzzing, memory-safe rewrite, and large-scale cross-platform rollout.
+
 ## Subpages
 
 - [[concepts/system-design-interview-workflow|System Design Interview Workflow]]
@@ -73,6 +76,8 @@ Caching is a core primitive for low-latency scale, but it introduces consistency
 
 Mastering system design requires active mental model construction and tradeoff evaluation under pressure. Relying on passive video consumption leads to poor retention. Candidates should practice live mock sessions, QPS estimation, and reading engineering post-mortems to develop architect intuition.
 
+Engineering blogs are a practical case-study stream for that active practice. [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] is valuable mainly as a source map: read company blogs for real constraints, migrations, and failures, then distill each article into reusable primitives or case studies.
+
 ## Access Pattern First
 
 Even small data-structure choices follow system-design logic: start from access patterns. Pure membership checks point toward hash sets; mostly static ordered data can use sorted arrays and binary search; ordered range queries need tree-like structures; memory-constrained membership may justify probabilistic structures.
@@ -102,6 +107,5 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
-- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
-- [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
-- [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
+- [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
+- [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]

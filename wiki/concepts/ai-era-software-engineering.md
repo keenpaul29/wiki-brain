@@ -26,6 +26,7 @@ AI-era software engineering shifts value away from typing code and toward direct
 - Accountability: reviewing AI output for safety, license, privacy, and ethical risk.
 - Human alignment: building trust, managing incidents, and keeping product work grounded in real users.
 - Feature Refusal & Curation: Filtering and rejecting plausible but unnecessary features to keep the system maintainable.
+- Career compounding: documenting learning, communicating clearly, accepting critique, mentoring, and creating team-level leverage from individual work.
 
 ## Connection to System Design
 
@@ -42,6 +43,8 @@ Agentic systems fit best where requirements are dynamic, input is messy, and out
 ## Communication Standard
 
 AI assistance raises the standard for technical communication. The useful artifact is not polished generic prose, but human distillation: the specific decision, rejected alternatives, constraints, and lived context. A generated design doc, PRD, code review, or runbook is weak if the author cannot explain and defend it.
+
+Career-growth sources reinforce the same point outside AI tooling. Strong engineers do not only produce code; they explain tradeoffs, help peers learn, give and receive feedback, and translate product asks into smaller technical paths that still preserve user value.
 
 ## Mechanical Change Review
 
@@ -148,5 +151,4 @@ At LinkedIn's scale (millions of QPS), semantic search uses GPU-accelerated embe
 - [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
 - [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
 - [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
-- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
-- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
+- [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]

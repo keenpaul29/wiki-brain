@@ -66,6 +66,10 @@ Search at scale increasingly uses dense vector representations for semantic unde
 - **Hybrid feature pipeline**: embeddings are generated offline (Spark, Flyte) and updated nearline (Flink) to balance throughput and latency.
 - **Context compression**: reduces the input token count passed through expensive cross-encoder models during ranking, improving cost and latency.
 
+## Recommendation Embedding Stores
+
+Recommendation systems use the same embedding-storage idea in a personalized setting. Instagram Explore stores item embeddings from a Two Tower model in an ANN service and computes fresh user embeddings online. The cacheability tradeoff is important: user-item interaction features are powerful, but they cannot be consumed by Two Tower retrieval without losing independently cacheable user/item embeddings.
+
 ## Client-Side Storage (Local-First)
 
 Local-first web architectures introduce new storage patterns:
@@ -107,4 +111,5 @@ Read models and downstream indexes must be treated as rebuildable projections. C
 - Source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
+- Related: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
 - Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]

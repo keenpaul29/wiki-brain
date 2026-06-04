@@ -7,6 +7,22 @@ updated: 2026-04-28
 
 # Wiki Log
 
+## [2026-06-04] ingest | Engineering learning and Meta-scale case studies
+
+Processed new raw sources:
+
+- `raw/70+ Engineering Blogs To Follow in 2025.md`
+- `raw/Going from Junior - Senior engineer in 2 years.md`
+- `raw/Rust at Scale An Added Layer of Security for WhatsApp.md`
+- `raw/Scaling the Instagram Explore recommendations system.md`
+- `raw/What Really Makes a Succesful Software Engineer.md`
+
+Added source summaries for engineering-blog reading streams, junior-to-senior career growth, WhatsApp's Rust media-security rollout, Instagram Explore recommendations, and passive software-engineering success skills.
+
+Created new concept pages: [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]], [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]], and [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]].
+
+Updated [[concepts/ai-era-software-engineering|AI-Era Software Engineering]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]], [[concepts/shared-engineering-language|Shared Engineering Language]], [[concepts/system-design|System Design]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/data-storage-and-consistency|Data Storage and Consistency]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
 ## [2026-06-01] ingest | Agents, transport, data projections, and fork migration
 
 Processed new/changed raw sources:

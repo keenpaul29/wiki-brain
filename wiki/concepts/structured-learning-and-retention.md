@@ -56,7 +56,4 @@ A durable learning loop needs a steady input stream of real engineering material
 - [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
 - [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
 - [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
-- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
-- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
-- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
 
