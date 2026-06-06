@@ -50,12 +50,18 @@ Search infrastructure at LinkedIn's scale uses a multi-stage pipeline with disti
 
 ## API and Realtime Patterns
 
-- REST is resource-oriented and widely interoperable.
-- GraphQL lets clients request shaped data but can add server complexity.
-- gRPC uses strongly typed contracts and efficient binary transport.
+- REST is resource-oriented and widely interoperable. Best for public/external APIs (Stripe, GitHub, Twitter). HTTP caching works naturally. Over-fetches ~30% in complex UIs.
+- GraphQL lets clients request shaped data but can add server complexity. Best when multiple client types need different data shapes. Adds resolver layer, schema, query complexity analysis, and N+1 hazard.
+- gRPC uses strongly typed contracts (Protocol Buffers) and efficient binary transport over HTTP/2. Best for internal service-to-service communication at high frequency. Payloads ~4x smaller than REST JSON. Native streaming, code generation. Does not work natively in browsers (needs gRPC-Web or ConnectRPC).
 - Long polling simulates realtime updates over repeated requests.
-- WebSockets provide bidirectional persistent communication.
+- WebSockets provide bidirectional persistent communication after an HTTP `Upgrade: websocket` handshake and `101 Switching Protocols` response.
 - Server-Sent Events provide server-to-client streaming over HTTP.
+
+WebSockets remove repeated polling overhead for high-frequency updates, but they replace stateless request handling with persistent connection management. Designs must account for heartbeats, disconnect detection, load balancing, sticky routing or shared connection state, and the fact that WebSocket messages are not cacheable like static HTTP responses.
+
+### API Protocol Decision Framework
+
+Default to REST; add GraphQL when the frontend team is bottlenecked by endpoint changes; add gRPC when internal service latency profiling shows a bottleneck. Benchmarks (Node.js 22, user + 5 orders): gRPC P50 4ms / 312 bytes, GraphQL 15ms / 834 bytes, REST 12ms / 1247 bytes. For browser-to-server calls the performance gap is negligible — network latency dominates. The best architectures use all three at the layer where they belong.
 
 ## Design Warning
 
@@ -80,3 +86,5 @@ CQRS and CDC are similarly conditional tools. They are valuable when read/write 
 - Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
 - Source: [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - Source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
+- Source: [[sources/intro-to-websockets|Intro to WebSockets]]
+- Source: [[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]]

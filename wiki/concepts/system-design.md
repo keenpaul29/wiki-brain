@@ -26,6 +26,8 @@ System design is the practice of defining architecture, interfaces, data, and op
 
 Important primitives from the source include IP, OSI layers, TCP/UDP, DNS, load balancing, caching, CDN, proxies, API styles, message brokers, databases, replication, sharding, consistency, rate limiting, service discovery, and observability.
 
+The 2026-06-06 ingest adds four new building blocks. **Observability** (logs/metrics/traces + four golden signals + SLO burn-rate alerting) turns reactive monitoring into structured investigation. **Integration testing with real services** (Testcontainers, Toxiproxy, clean-before strategy) catches schema and network failures that mocks miss. **CI/CD pipeline design** (trunk-based development, immutable artifacts, deployment strategies, DORA metrics) formalizes the path from commit to production. **Raft consensus** (leader election, log replication, quorum math, CP semantics) explains how etcd and similar stores maintain correctness across node failures.
+
 Recent networking and data-pattern sources sharpen two of those primitives: QUIC/HTTP3 fixes TCP-level head-of-line blocking by moving stream multiplexing into the transport layer, while CQRS and CDC show how event streams and projection models prevent reads, writes, and downstream consumers from fighting over one schema.
 
 ## Deeper Sub-Concepts
@@ -44,6 +46,12 @@ Several new sources add specialized design areas:
 
 - **Instagram Explore** ([[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]): multi-stage recommendation funnel, Two Tower retrieval, cached embeddings, MTML ranking, value-model scoring, final integrity/diversity reranking.
 - **WhatsApp Rust Security** ([[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]): client-side defense-in-depth for untrusted media, differential fuzzing, memory-safe rewrite, and large-scale cross-platform rollout.
+- **API Protocol Decision Framework** ([[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]]): layered protocol architecture with benchmarks and decision criteria for REST, GraphQL, and gRPC at public, frontend, and internal layers.
+- **Cloudinary Image Transformations** ([[sources/image-transformations-for-developers|Image Transformations for Developers]]): CDN-based dynamic image transformation via URL parameters, chained transformations, automatic format selection, face detection, and smart cropping.
+- **Observability Diagnosis Workflow** ([[sources/observability-in-distributed-systems|Observability in Distributed Systems]]): three pillars plus four golden signals with metrics→traces→logs investigation pipeline and SLO burn-rate alerting.
+- **Raft Consensus** ([[sources/raft-consensus-explained|Raft Consensus Explained]]): leader election, log replication, ConflictTerm backtracking, commit index rule, quorum math, and CP semantics for etcd/CockroachDB.
+- **Integration Testing Without Mocks** ([[sources/integration-testing-real-services|Testing with Real Services]]): Testcontainers, Toxiproxy failure injection, clean-before strategy, and the 50/40/10 coverage pyramid.
+- **Bulletproof CI/CD Pipeline** ([[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]): trunk-based development, immutable artifacts, deployment strategies, rollback automation, and DORA metrics.
 
 ## Subpages
 
@@ -109,3 +117,9 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
 - [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
 - [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
+- [[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]]
+- [[sources/image-transformations-for-developers|Image Transformations for Developers]]
+- [[sources/observability-in-distributed-systems|Observability in Distributed Systems]]
+- [[sources/raft-consensus-explained|Raft Consensus Explained]]
+- [[sources/integration-testing-real-services|Testing with Real Services]]
+- [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]

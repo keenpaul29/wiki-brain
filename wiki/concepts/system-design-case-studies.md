@@ -56,6 +56,11 @@ Useful patterns:
 
 - Object storage for media.
 - CDN for video delivery.
+- Edge appliances inside ISP networks for high-volume video bytes.
+- Control plane/data plane split: cloud services authorize playback and steer clients; edge caches serve the media segments.
+- Predictive off-peak fill: pre-position likely content before demand spikes.
+- Client-side fallback across ranked edge endpoints.
+- Per-title encoding and adaptive bitrate variants.
 - Resume playback state.
 - Geo-blocking.
 - Analytics and metrics.
@@ -153,6 +158,18 @@ Useful patterns:
 - **Change propagation**: WebSocket-based notifications from server to all connected clients.
 - **Unified storage layer**: all components read/write through a shared layer instead of independent server fetches.
 
+## WebSocket Realtime Applications
+
+Core problem: deliver low-latency bidirectional updates without repeated request/response overhead.
+
+Useful patterns:
+
+- **Protocol upgrade**: start with HTTP, then switch protocols through the WebSocket handshake.
+- **Full-duplex channel**: both client and server can send messages independently.
+- **Heartbeat management**: ping/pong frames detect dead connections.
+- **Stateful connection operations**: load balancing and failover need sticky routing or shared state.
+- **Use-case fit**: chat, collaboration, multiplayer games, financial ticks, and live score/media updates.
+
 ## LinkedIn FishDB: Feed Retrieval Engine
 
 Core problem: serve LinkedIn's Feed for over a billion members with reliable millisecond latency, using a Rust-based storage and retrieval engine deployed across 48 shards.
@@ -215,6 +232,30 @@ Useful patterns:
 - **Risk-aware file checks**: detect malformed structures, risky PDF features, spoofed MIME/extension mismatches, and known dangerous file types.
 - **Cross-platform rollout discipline**: handle binary size, build-system support, and compatibility across mobile, desktop, browser, and wearable targets.
 
+## Cloudinary Image Transformations
+
+Core problem: deliver dynamically transformed images (resize, crop, format, effects) on the fly from a single source image, served through a global CDN with caching.
+
+Useful patterns:
+
+- **URL-based transformation syntax**: parameters encoded in the delivery URL (`/c_thumb,g_face,h_200,w_200/r_max/f_auto/`), enabling on-the-fly derived asset generation without pre-processing.
+- **Chained transformations**: each action applies to the result of the previous one (`fill → round → optimize`), composed via slash-separated URL components.
+- **Action/qualifier separation**: action parameters perform operations (crop, resize, effect); qualifier parameters adjust behavior (gravity, color, position). One action per component, qualifiers in the same component.
+- **Automatic format selection** (`f_auto`): delivers WebP or AVIF based on browser support. Quality auto (`q_auto`): balances file size and visual quality.
+- **Smart cropping**: face detection (`g_face`), auto gravity (`g_auto`), and thumbnails (`c_thumb`) focus crops on the most relevant region.
+- **CDN caching and versioning**: derived assets cached at edge; version component bypasses cache for updated assets. Transformation operations count toward billing.
+
+## API Protocol Decision Framework
+
+Core problem: choose and compose API protocols across public, frontend, and internal service boundaries to balance performance, maintainability, and compatibility.
+
+Useful patterns:
+
+- **Layer-specific protocol selection**: REST for public/external APIs (universal compatibility, HTTP caching), GraphQL for frontend-to-backend (flexible queries, no over-fetching), gRPC for service-to-service (binary protocol, streaming, strong contracts).
+- **Performance layering**: benchmarks show gRPC ~4x smaller payloads than REST and ~3x lower P50 latency for service-to-service calls, but for browser-to-server the gap is negligible — network latency dominates.
+- **Decision framework**: default to REST; add GraphQL when the frontend team is bottlenecked by endpoint changes; add gRPC when internal service latency profiling shows a bottleneck.
+- **Migration path**: start simple (REST), add complexity only when specific pain justifies it. API gateway translates between layers.
+
 ## Monolith-to-Service Migration Patterns
 
 Core problem: safely decompose a monolithic application into decoupled, scale-independent microservices without risking operational downtime.
@@ -224,6 +265,53 @@ Useful patterns:
 - Parallel Run Pattern: Routing traffic concurrently to both monolith and service to verify output equivalence before final cutover.
 - Collaborator Pattern: Decorating monolithic modules with service wrappers instead of changing legacy codebase logic directly.
 - Change Data Capture (CDC): Streaming real-time database write streams (e.g. from transaction logs) to synchronise microservice databases.
+
+## Observability in Distributed Systems
+
+Core problem: diagnose failures in distributed systems where a single user request spans multiple services, each generating its own signals.
+
+Useful patterns:
+- **Three pillars**: logs (structured JSON with trace_id/span_id), metrics (counters, gauges, histograms), traces (distributed spans linked by trace ID).
+- **Four golden signals** (Google SRE): latency at p50/p95/p99/p99.9, requests per second (traffic), error rate (explicit 5xx + implicit failures), and saturation of the most constrained resource.
+- **Diagnosis workflow**: metrics identify scope → traces identify location → logs identify root cause.
+- **OpenTelemetry**: instrument once via API/SDK, export to any backend via the Collector. Avoids vendor lock-in.
+- **SLO burn-rate alerting**: fires when error budget is consumed too fast, reducing false positives from transient spikes.
+
+## Raft Consensus
+
+Core problem: maintain a consistent replicated log across nodes that tolerate (N-1)/2 failures without split-brain, used by etcd (Kubernetes), Consul, CockroachDB, and TiKV.
+
+Useful patterns:
+- **Leader election**: randomized timeouts (150-300ms) prevent split-brain. Candidates need up-to-date logs (higher last-term wins, longer log on tie).
+- **Log replication**: leader appends uncommitted entries, sends AppendEntries to followers in parallel, commits on majority ack. ConflictTerm backtracking skips entire terms on rejection.
+- **Commit index rule**: only advance commitIndex for current-term entries; prior-term entries commit transitively via the Log Matching Property (Raft paper Figure 8).
+- **Production operations**: alert on leader churn (`etcd_server_leader_changes_seen_total[10m] > 3`), separate Raft timeout from request context, practice snapshot/restore quarterly.
+- **Quorum math**: 3 nodes → 1 failure, 5 nodes → 2, 7 nodes → 3. CP system — minority rejects reads/writes during partition.
+
+## Integration Testing with Real Services
+
+Core problem: catch schema mismatches, network failures, database constraints, auth flow issues, and serialization errors that mock-heavy suites miss.
+
+Useful patterns:
+- **Testcontainers + Docker**: spin up real databases/services with exact production versions. Run actual migration scripts.
+- **Credential hierarchy**: local `.env.test` → CI vault → secret manager. Tests degrade gracefully when credentials are missing.
+- **Clean before tests**: crashed tests never run after-cleanup. Use try-finally for external services. Unique identifiers (`test-${pid}-${counter}`) for parallel test isolation.
+- **Toxiproxy error injection**: latency → test retry logic, connection reset → test circuit breakers, rate limiting → test backoff behavior.
+- **Coverage pyramid**: 50-60% unit (fast, business logic), 30-40% integration (real services), 5-10% E2E (critical journeys only).
+- **CI staging**: unit on every commit, integration on main/ready PRs, E2E on main only. Cache Docker layers, parallelize independent suites.
+
+## Bulletproof CI/CD Pipeline
+
+Core problem: build a deployment pipeline that fails safely, fails early, recovers quickly, and never surprises production.
+
+Useful patterns:
+- **Core principles**: consistency (same path for every change), automation by default, fast feedback (<10-15 min CI), least privilege, and observability.
+- **Trunk-based development**: short-lived branches, small frequent commits, mandatory but lightweight code review.
+- **Build once, deploy everywhere**: immutable artifacts built exactly once. Never modify a built artifact.
+- **Deployment strategies**: rolling (gradual updates), blue-green (traffic switch), canary (subset exposure). The safest strategy is the one your team understands under pressure.
+- **Rollback**: single command or automated trigger. Feature flags complement rollback by allowing feature disable without redeploy.
+- **DORA metrics**: deployment frequency, change failure rate, lead time for changes, mean time to recovery. Metrics guide improvement, not punishment.
+- **Security integration**: SAST, dependency scanning, secrets scanning in CI. Ephemeral build agents, short-lived credentials.
 
 ## Links
 
@@ -237,6 +325,8 @@ Useful patterns:
 - Source: [[sources/unlock-system-design-production|Unlock Production System Design Case Study]]
 - Source: [[sources/snapchat-billion-predictions|Snapchat Bento ML Platform Architecture]]
 - Source: [[sources/netflix-multimodal-video-search|Netflix Multimodal Video Search Architecture]]
+- Source: [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]]
+- Source: [[sources/intro-to-websockets|Intro to WebSockets]]
 - Source: [[sources/production-firewalls-rust|Production Firewall Architecture in Rust]]
 - Source: [[sources/monolith-to-service-migration|Monolith to Service Migration Strategies]]
 - Source: [[sources/kensho-multi-agent|Kensho Financial Multi-Agent Retrieval Architecture]]
@@ -248,3 +338,9 @@ Useful patterns:
 - Source: [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze: HashMap Resize at Scale]]
 - Source: [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
 - Source: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
+- Source: [[sources/image-transformations-for-developers|Image Transformations for Developers]]
+- Source: [[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]]
+- Source: [[sources/observability-in-distributed-systems|Observability in Distributed Systems]]
+- Source: [[sources/raft-consensus-explained|Raft Consensus Explained]]
+- Source: [[sources/integration-testing-real-services|Testing with Real Services]]
+- Source: [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]

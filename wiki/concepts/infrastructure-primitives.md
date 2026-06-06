@@ -25,6 +25,8 @@ Infrastructure primitives are the reusable building blocks that appear across sy
 
 - Load balancers distribute traffic across servers and reduce single points of failure.
 - CDNs place static or cacheable content closer to users.
+- Purpose-built edge CDNs can move the data plane into ISP networks while keeping authorization, manifests, and steering in a cloud control plane.
+- Dynamic media CDNs (such as the Cloudinary model) embed transformation parameters directly in delivery URLs, generating derived images on the fly and caching them at the edge. Automatic format selection, smart cropping, and quality optimization happen at request time without pre-processing.
 - Forward proxies act on behalf of clients.
 - Reverse proxies act on behalf of servers.
 - Tunnels let a connector establish outbound connectivity so local services or private network ranges can be reached through a managed edge without opening direct inbound ports.
@@ -58,6 +60,14 @@ Local-first web applications introduce infrastructure primitives on the client s
 - **BroadcastChannel API**: cross-tab state synchronization without server round-trips.
 - **WebSocket change notifications**: persistent connections for propagating server-side changes to all connected clients.
 - **Optimistic updates**: mutations apply locally first, then sync — the infrastructure must support rollback and conflict resolution.
+
+## Persistent Realtime Connections
+
+WebSockets upgrade an HTTP request into a long-lived TCP channel. They are useful when clients and servers both need to push updates, such as chat, collaborative editing, games, live financial data, and live media. The infrastructure cost is connection state: heartbeats, memory per active connection, load balancing, failover, and session/state sharing.
+
+## Storage Performance Provisioning
+
+Storage infrastructure must provision both capacity and access velocity. Throughput measures large sequential transfer volume; IOPS measures discrete operation count. Databases and highly concurrent workloads can saturate IOPS while using little of the available byte capacity, which is why cloud storage products price provisioned IOPS separately from raw GB/TB.
 
 ## GPU-Accelerated Vector Search
 
@@ -106,3 +116,6 @@ Client applications also carry infrastructure primitives when they process untru
 - Related source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
 - Related: [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
 - Related: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
+- Related source: [[sources/intro-to-websockets|Intro to WebSockets]]
+- Related source: [[sources/byte-storage-vs-io|Byte Storage vs. I/O]]
+- Related source: [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]]

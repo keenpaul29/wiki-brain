@@ -48,10 +48,22 @@
         "last_write_time":  "2026-05-05T18:45:37.8237497+05:30"
     },
     {
+        "path":  "raw/Building a Bulletproof CI CD Pipeline.md",
+        "sha256":  "0a17d9cae3d8b060dba90d2567f34e77371a2b5b7f934f741e6ae928359b322f",
+        "length":  3046,
+        "last_write_time":  "2026-06-06T18:57:48.2786104+05:30"
+    },
+    {
         "path":  "raw/Building collaborative prompt engineering playgrounds using Jupyter Notebook.md",
         "sha256":  "d4934f4482027b1f3e4a834608a6d995e44916a854778dcfcc232af0832d1825",
         "length":  12785,
         "last_write_time":  "2026-06-01T11:49:58.1799738+05:30"
+    },
+    {
+        "path":  "raw/Byte Storage vs. IO.md",
+        "sha256":  "0d17c0f8f07fe19af41127d42e13129074a584dea896b760541183daf4532c01",
+        "length":  7154,
+        "last_write_time":  "2026-06-05T10:38:57.8022955+05:30"
     },
     {
         "path":  "raw/Claude Code Best Practices 12 Patterns Agentic Engineers Use  by huizhou92  in Level Up Coding.md",
@@ -246,10 +258,28 @@
         "last_write_time":  "2026-06-01T10:45:51.3651974+05:30"
     },
     {
+        "path":  "raw/Image Transformations for Developers.md",
+        "sha256":  "5aa8089ac04d56184ebe93b504f7291212ad7baf32c13cf9443f63265987074e",
+        "length":  29153,
+        "last_write_time":  "2026-06-06T18:50:54.1741596+05:30"
+    },
+    {
         "path":  "raw/Improving Site Performance With Webpack Tree Shaking.md",
         "sha256":  "148ecf81c7b1e7847ac142a1d270d227b21b250d4b5695f4e5391846098b6a26",
         "length":  9641,
         "last_write_time":  "2026-05-05T18:19:28.5160178+05:30"
+    },
+    {
+        "path":  "raw/Integration Testing with Real Services - A Pragmatic Guide.md",
+        "sha256":  "f5b76d6d65836eb5d9e38c7fdacea0d066c5fda0f15be309977d74bd5b2fbbf6",
+        "length":  2900,
+        "last_write_time":  "2026-06-06T18:57:41.2547237+05:30"
+    },
+    {
+        "path":  "raw/Intro to WebSockets.md",
+        "sha256":  "c0c4cf63dbcbdd77539c796d0b6d47ce19e44ea77a99b3ad24de7fb636a6486d",
+        "length":  8963,
+        "last_write_time":  "2026-06-05T11:32:54.8051472+05:30"
     },
     {
         "path":  "raw/Junior Devs Use try-catch Everywhere. Senior Devs Use These 4 Exception Handling Patterns.md",
@@ -324,10 +354,34 @@
         "last_write_time":  "2026-04-28T17:38:08.8808888+05:30"
     },
     {
+        "path":  "raw/Netflix\u0027s CDN Strategy Delivering Video to 300M Users Instantly.md",
+        "sha256":  "fb7fee557c19a5be91c5d7343ce3a53c5447946ed633052bc564db121a623e68",
+        "length":  10231,
+        "last_write_time":  "2026-06-05T11:46:14.3073134+05:30"
+    },
+    {
+        "path":  "raw/Observability in Distributed Systems - Logs, Metrics and Traces.md",
+        "sha256":  "31a02e6e1d510975e863702fec167dfe198bc17fc23acffacee0c10da488261c",
+        "length":  3206,
+        "last_write_time":  "2026-06-06T18:57:13.6501240+05:30"
+    },
+    {
         "path":  "raw/OpenMythos - a theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research literature.md",
         "sha256":  "8e5498b60be77e9359dff7ebfa964bb386a00c4dd0cc61e3d469293d4d65bac4",
         "length":  22654,
         "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
+    },
+    {
+        "path":  "raw/PostgreSQL Advanced Indexing - GIN, GiST, BRIN, and Partial Index.md",
+        "sha256":  "eee7c5cb0698fa5cc75f9fa1f604c0eaad1a62a4508d6137c08ee5276b0fa985",
+        "length":  3483,
+        "last_write_time":  "2026-06-06T18:57:23.8164559+05:30"
+    },
+    {
+        "path":  "raw/Raft Consensus Explained for Engineers.md",
+        "sha256":  "e20068dd4274a501cd6bc3ac35fb995e769765c9a5ddeca8b6352ea436e7bac8",
+        "length":  3518,
+        "last_write_time":  "2026-06-06T18:57:33.3544585+05:30"
     },
     {
         "path":  "raw/RAG, LLM Wiki, or Gbrain -  How Your Agent Remembers Changes Everything.md",
@@ -340,6 +394,12 @@
         "sha256":  "c014c9f248261ba85dfed1564755a0557fe536f36de8b1e2906f2b1eaf8f4eb5",
         "length":  29030,
         "last_write_time":  "2026-06-01T12:09:36.2161833+05:30"
+    },
+    {
+        "path":  "raw/REST vs GraphQL vs gRPC Which Should You Actually Use.md",
+        "sha256":  "6be8675a0a42ac46eb853ec1bb4eb9e2c5148043c3298e3d3a83284f61e9055c",
+        "length":  8211,
+        "last_write_time":  "2026-06-06T18:50:54.4135878+05:30"
     },
     {
         "path":  "raw/Retaining Computer Science Knowledge.md",
@@ -475,9 +535,9 @@
     },
     {
         "path":  "raw/What Really Makes a Succesful Software Engineer.md",
-        "sha256":  "71a05259eaabe9f29231b196732e7e410c493fc22b884cb5d05dbaf8e8942048",
-        "length":  10771,
-        "last_write_time":  "2026-06-04T19:24:10.1066145+05:30"
+        "sha256":  "7f2aaa0c40e62495d525cf9c7f5e1cc9fa78794169f5a27f15487e5abe8b7bd1",
+        "length":  10650,
+        "last_write_time":  "2026-06-04T19:34:59.8610613+05:30"
     },
     {
         "path":  "raw/Your Database Has Been Writing an Event Log the Whole Time.md",

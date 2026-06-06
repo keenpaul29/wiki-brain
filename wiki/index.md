@@ -119,20 +119,30 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/linkedin-58m-key-hashmap-freeze|The 58-Million-Key Freeze]] - HashMap resize → mmap_lock contention → async runtime freeze case study.
 - [[sources/production-firewalls-rust|Production Firewall Architecture in Rust]] - Multi-layer Rust Web Application Firewall (WAF) async TCP and Regex signature inspection engine.
 - [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]] - Structured learning path using engineering blogs and case studies to develop real architectural tradeoff intuition.
+- [[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]] - A practical decision framework for choosing REST, GraphQL, and gRPC across public, frontend, and internal service layers.
 
 - [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] - A curated map of company engineering blogs for ongoing case-study learning.
 - [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]] - Career-growth tactics around reliable delivery, documentation, leadership, public learning, and mentorship.
 - [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]] - WhatsApp's Rust media consistency library as a cross-platform defense-in-depth security layer.
 - [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]] - Instagram Explore's multi-stage recommendation funnel with Two Tower retrieval and staged ranking.
+- [[sources/image-transformations-for-developers|Image Transformations for Developers]] - Cloudinary's dynamic image transformation via URL parameters, smart cropping, automatic format selection, and CDN caching.
+- [[sources/integration-testing-real-services|Testing with Real Services]] - Integration testing with Testcontainers, Toxiproxy error injection, clean-before strategy, and the 50/40/10 coverage pyramid.
 - [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]] - Passive career skills: patience, determination, student mindset, feedback, and communication.
+- [[sources/observability-in-distributed-systems|Observability in Distributed Systems]] - Three pillars (logs/metrics/traces), four golden signals, OpenTelemetry, and SLO burn-rate alerting.
+- [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]] - GIN, GiST, BRIN, Partial, and Expression index types with PostgreSQL operational discipline.
+- [[sources/raft-consensus-explained|Raft Consensus Explained]] - Leader election, log replication, ConflictTerm backtracking, quorum math, and production operations for etcd-based distributed consensus.
+- [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]] - Trunk-based development, immutable artifacts, deployment strategies, rollback automation, and DORA metrics for resilient pipelines.
+- [[sources/byte-storage-vs-io|Byte Storage vs. I/O]] - Separates raw capacity from throughput and IOPS as storage design constraints.
+- [[sources/intro-to-websockets|Intro to WebSockets]] - Realtime communication primer covering polling, the WebSocket handshake, full-duplex channels, and operational tradeoffs.
+- [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]] - Netflix Open Connect as an edge CDN case study with ISP-local appliances, predictive fill, and control/data-plane separation.
 
 ## Newest Sources
 
-- [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
-- [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
-- [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
-- [[sources/whatsapp-rust-security|Rust at Scale: WhatsApp Security]]
-- [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
+- [[sources/observability-in-distributed-systems|Observability in Distributed Systems]]
+- [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]]
+- [[sources/raft-consensus-explained|Raft Consensus Explained]]
+- [[sources/integration-testing-real-services|Testing with Real Services]]
+- [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
 
 ## Maintenance Notes
 

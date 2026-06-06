@@ -19,6 +19,8 @@ Data choices determine much of a system's scalability, correctness, and operatio
 - Object storage: blob-like objects with metadata, useful for media and large files.
 - NAS and distributed file systems: shared or distributed access patterns.
 
+Capacity and I/O are different design axes. Byte storage answers how much data can be held; I/O answers how fast the system can move data under active reads and writes. Throughput matters for large sequential transfers such as media files and backups. IOPS matters for many small, fragmented operations such as transactional database lookups. A system can have plenty of unused storage capacity and still fail because provisioned IOPS is exhausted.
+
 ## Database Families
 
 - SQL databases: relational schema, structured queries, strong consistency patterns, and joins.
@@ -56,6 +58,18 @@ Retrieval engines at scale use specialized index types beyond simple B-trees and
 - **Skip-list based posting lists**: instead of linear scanning, posting lists use skip pointers so union/intersection operations on common terms skip irrelevant segments.
 
 The memory-footprint interaction with the allocator matters at scale. A `hashbrown::HashMap` (SwissTable) at ~58.7M entries per shard consumed ~1.75 GB. Resizing this map triggered jemalloc `brk()` → kernel `mmap_lock` contention. Pre-allocating with `HashMap::with_capacity()` prevents resize events entirely.
+
+## PostgreSQL Advanced Indexing
+
+PostgreSQL offers six index types beyond B-tree and hash:
+
+- **GIN (Generalized Inverted Index)**: inverted index for JSONB containment queries (`@>`, `?`), full-text search (`tsvector`), and array indexing. High write overhead — tune `gin_pending_list_limit` and use `fastupdate=on`.
+- **GiST (Generalized Search Tree)**: extensible R-tree framework for spatial queries (PostGIS `ST_DWithin`), range type operators (`&&` overlap), and KNN search (`<->` with `ORDER BY ... LIMIT`). Searches follow multiple paths due to overlapping bounding boxes.
+- **BRIN (Block Range Index)**: min/max summary per physical block range. A 50M-row time-series index can be 128 KB vs 1 GB for B-tree (~8500x smaller). Requires strong column-to-storage correlation (check `pg_stats.correlation`). Best for append-only time-series.
+- **Partial Index**: indexes only a subset of rows (`WHERE status IN ('pending', 'processing')`), reducing size and write overhead.
+- **Expression Index**: indexes function results (`lower(email)`, `(metadata->>'category')`). Query must use the exact same expression.
+
+Operational discipline: check `pg_stat_user_indexes` for unused scans (`idx_scan = 0`), monitor bloat via `pgstatindex()` (reindex when >20%), and use `REINDEX CONCURRENTLY` to avoid table locks.
 
 ## Vector Embeddings and Semantic Search
 
@@ -113,3 +127,6 @@ Read models and downstream indexes must be treated as rebuildable projections. C
 - Source: [[sources/dropbox-edison-web-performance|Dropbox Edison: Local-First Web Client]]
 - Related: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
 - Source: [[sources/instagram-explore-recommendations|Scaling Instagram Explore Recommendations]]
+- Source: [[sources/byte-storage-vs-io|Byte Storage vs. I/O]]
+- Source: [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]]
+- Source: [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]]

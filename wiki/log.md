@@ -7,6 +7,44 @@ updated: 2026-04-28
 
 # Wiki Log
 
+## [2026-06-06] ingest | Observability, Postgres indexing, Raft, integration testing, and CI/CD pipelines
+
+Processed new raw sources:
+
+- `raw/Observability in Distributed Systems - Logs, Metrics and Traces.md`
+- `raw/PostgreSQL Advanced Indexing - GIN, GiST, BRIN, and Partial Index.md`
+- `raw/Raft Consensus Explained for Engineers.md`
+- `raw/Integration Testing with Real Services - A Pragmatic Guide.md`
+- `raw/Building a Bulletproof CI CD Pipeline.md`
+
+Added source summaries: [[sources/observability-in-distributed-systems|Observability in Distributed Systems]] (three pillars, four golden signals, OpenTelemetry, SLO burn-rate alerting), [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]] (GIN, GiST, BRIN, Partial, Expression indexes with operational discipline), [[sources/raft-consensus-explained|Raft Consensus Explained]] (leader election, log replication, ConflictTerm backtracking, quorum math, production etcd operations), [[sources/integration-testing-real-services|Testing with Real Services]] (Testcontainers, Toxiproxy, clean-before strategy, 50/40/10 coverage pyramid), and [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]] (trunk-based development, immutable artifacts, deployment strategies, DORA metrics).
+
+Added 4 new case studies to [[concepts/system-design-case-studies|System Design Case Studies]]: Observability Diagnosis Workflow, Raft Consensus, Integration Testing with Real Services, and Bulletproof CI/CD Pipeline. Expanded [[concepts/data-storage-and-consistency|Data Storage and Consistency]] with a PostgreSQL Advanced Indexing section covering all six index types. Added Observability and CI/CD Pipeline Reliability sections to [[concepts/reliability-and-operations|Reliability and Operations]]. Updated [[concepts/system-design|System Design]] with four new building blocks and eight new case study references. Updated [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], [[index]], and [[log]].
+
+## [2026-06-06] ingest | API protocol decision framework and image transformations
+
+Processed new raw sources:
+
+- `raw/REST vs GraphQL vs gRPC Which Should You Actually Use.md`
+- `raw/Image Transformations for Developers.md`
+
+Added source summaries: [[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]] (protocol comparison with benchmarks and layered architecture decision framework) and [[sources/image-transformations-for-developers|Image Transformations for Developers]] (Cloudinary URL-based dynamic image transformation model with CDN caching, smart cropping, and automatic format selection).
+
+Added two new case studies to [[concepts/system-design-case-studies|System Design Case Studies]]: API Protocol Decision Framework (layered REST/GraphQL/gRPC architecture) and Cloudinary Image Transformations (CDN-based on-the-fly media transformation). Expanded [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] with the API decision framework and updated [[concepts/infrastructure-primitives|Infrastructure Primitives]] with dynamic media CDN patterns. Updated [[concepts/system-design|System Design]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
+## [2026-06-05] ingest | Storage, realtime transport, and CDN delivery
+
+Processed new/changed raw sources:
+
+- `raw/Byte Storage vs. IO.md`
+- `raw/Intro to WebSockets.md`
+- `raw/Netflix's CDN Strategy Delivering Video to 300M Users Instantly.md`
+- `raw/What Really Makes a Succesful Software Engineer.md` (changed)
+
+Added source summaries for storage capacity vs. I/O performance, WebSocket realtime communication, and Netflix Open Connect CDN delivery. Refreshed the successful-software-engineer summary with the planning-before-PR-review point.
+
+Updated [[concepts/data-storage-and-consistency|Data Storage and Consistency]], [[concepts/infrastructure-primitives|Infrastructure Primitives]], [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]], [[concepts/system-design-case-studies|System Design Case Studies]], [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]], and [[index]].
+
 ## [2026-06-04] ingest | Engineering learning and Meta-scale case studies
 
 Processed new raw sources:

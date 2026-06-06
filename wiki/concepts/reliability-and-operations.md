@@ -38,6 +38,27 @@ Reliability and operations convert an architecture from a diagram into a system 
 - **Backpressure**: Prevents producers from overwhelming consumers.
 - **Microservice Boundaries**: Turn local function calls into fallible network calls, so retries, timeouts, circuit breakers, and monitoring become part of the architecture rather than optional polish.
 
+## Observability
+
+Observability answers *why* a system is behaving as it does, beyond monitoring's scope of detecting known failure modes.
+
+**Three pillars:**
+- **Logs**: timestamped events with structured (JSON) format. Mandatory fields: timestamp, severity, service, trace_id, span_id, request_id, message. Unstructured logs are nearly useless in distributed systems.
+- **Metrics**: numerical measurements at regular intervals. Counters (monotonically increase), gauges (current state), histograms (latency distributions for percentiles).
+- **Traces**: a distributed trace follows a single request across services. Each span represents one unit of work. The trace ID connects all three signals.
+
+**Four Golden Signals** (Google SRE):
+- Latency measured at p50/p95/p99/p99.9, distinguishing success vs error latency
+- Traffic (requests per second) establishes the demand baseline
+- Errors (explicit 5xx + implicit semantic failures)
+- Saturation of the most constrained resource
+
+**OpenTelemetry**: vendor-neutral CNCF instrumentation standard. API (instrumentation interface) + SDK (configurable exporters/samplers) + Collector (standalone agent). Instrument once, export to any backend.
+
+**Incident diagnosis workflow**: metrics identify scope → traces identify location → logs identify root cause.
+
+**SLO burn-rate alerting**: fires when error budget is consumed too fast, not on transient spikes. Reduces false positives compared to fixed-threshold alerting.
+
 ## Service Operations
 
 - SLA: external promise to users or customers.
@@ -110,6 +131,24 @@ Key lessons:
 
 Operational reliability depends on classifying failures correctly. Expected business outcomes should remain explicit control flow, while exceptional failures should propagate into centralized handlers, structured logs, and alerting paths. Blanket `try-catch` blocks that swallow context reduce observability and delay incident detection.
 
+## CI/CD Pipeline Reliability
+
+A bulletproof pipeline fails safely, fails early, recovers quickly, and never surprises production.
+
+**Core principles**: consistency (every change follows the same path), automation by default, fast feedback (<10-15 min CI), least privilege (pipelines have only needed access), and observability (failure reasons are obvious).
+
+**CI discipline**: static analysis, dependency checks, fast unit tests, immutable artifact builds. Build once, deploy the same artifact everywhere. Use containers for consistent build environments. Run jobs in parallel.
+
+**Testing strategy**: unit (fast, business logic) → integration (component boundaries with real services via Testcontainers) → E2E (critical flows only). Contract testing (Pact) for distributed system boundaries. Flaky tests are worse than no tests.
+
+**Deployment strategies**: rolling (gradual updates), blue-green (traffic switch between environments), canary (subset exposure). The safest strategy is the one the team understands under pressure.
+
+**Rollback**: single command or automated trigger. Practice before you need it. Feature flags complement rollback by allowing feature disable without redeploy.
+
+**DORA metrics**: track build time trends, deployment frequency, change failure rate, and mean time to recovery. Metrics guide improvement, not punishment.
+
+**Security integration**: SAST, dependency scanning, secrets scanning in CI. Ephemeral build agents, short-lived credentials. Not every finding blocks release — severity and context matter.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -138,3 +177,7 @@ Operational reliability depends on classifying failures correctly. Expected busi
 - Source: [[sources/electron-screen-capture-protection|Electron Screen Capture Protection]]
 - Sub-concept: [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]
 - Sub-concept: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
+- Source: [[sources/observability-in-distributed-systems|Observability in Distributed Systems]]
+- Source: [[sources/integration-testing-real-services|Testing with Real Services]]
+- Source: [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
+- Source: [[sources/raft-consensus-explained|Raft Consensus Explained]]

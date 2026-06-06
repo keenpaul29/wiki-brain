@@ -24,10 +24,12 @@ Argues that technical skill is only half of software engineering success. Long-t
 - Code review and performance feedback are learning mechanisms when the engineer separates useful critique from empty negativity.
 - Communication is a practiced skill; writing about work can improve both written and spoken explanations.
 - Technical knowledge gets engineers through the door, but interpersonal and learning skills compound over the career.
+- Planning before implementation keeps code review from becoming the first architecture discussion; strong engineers align on approach early so PR review can validate rather than redesign.
 
 ## Links
 
 - Supports [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
 - Supports [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
 - Supports [[concepts/shared-engineering-language|Shared Engineering Language]]
+- Supports [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]
 - Supports [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]]
