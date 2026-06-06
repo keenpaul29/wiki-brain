@@ -6,23 +6,25 @@ updated: 2026-06-06
 
 # Daily Wiki Scan
 
-Generated: 2026-06-06 19.00.59 +05:30
+Generated: 2026-06-06 19.25.25 +05:30
 
 ## Summary
 
-- Raw files: 91
-- New files: 5
+- Raw files: 98
+- New files: 7
 - Changed files: 0
 - Deleted files: 0
 - State committed: True
 
 ## New Files
 
-- `raw/Building a Bulletproof CI CD Pipeline.md`
-- `raw/Integration Testing with Real Services - A Pragmatic Guide.md`
-- `raw/Observability in Distributed Systems - Logs, Metrics and Traces.md`
-- `raw/PostgreSQL Advanced Indexing - GIN, GiST, BRIN, and Partial Index.md`
-- `raw/Raft Consensus Explained for Engineers.md`
+- `raw/Backend Performance Engineering - Profiling Bottleneck Analysis and Optimization.md`
+- `raw/Code Smells and Refactoring Techniques - A Practical Catalog.md`
+- `raw/Developer Time Management - Deep Work GTD Calendar Blocking and Burnout Prevention.md`
+- `raw/Software Estimation Techniques - Story Points T-Shirt Sizing and Beyond.md`
+- `raw/SRE Incident Management - From Detection to Blameless Postmortem.md`
+- `raw/Structured Engineering Hiring - A Practical Guide.md`
+- `raw/Team Topologies - Engineering Organization Design for Fast Flow.md`
 
 ## Changed Files
 

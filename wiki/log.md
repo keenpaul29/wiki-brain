@@ -7,6 +7,31 @@ updated: 2026-04-28
 
 # Wiki Log
 
+## [2026-06-06] ingest | Code smells, estimation, incident management, team topologies, hiring, time management, and backend performance
+
+Processed 7 new raw sources covering entry-, mid-, and senior-level engineering topics:
+
+- `raw/Code Smells and Refactoring Techniques - A Practical Catalog.md`
+- `raw/Software Estimation Techniques - Story Points T-Shirt Sizing and Beyond.md`
+- `raw/SRE Incident Management - From Detection to Blameless Postmortem.md`
+- `raw/Team Topologies - Engineering Organization Design for Fast Flow.md`
+- `raw/Structured Engineering Hiring - A Practical Guide.md`
+- `raw/Developer Time Management - Deep Work GTD Calendar Blocking and Burnout Prevention.md`
+- `raw/Backend Performance Engineering - Profiling Bottleneck Analysis and Optimization.md`
+
+Added source summaries: [[sources/code-smells-refactoring-techniques|Code Smells and Refactoring Techniques]] (five smell families, refactoring categories, operational discipline), [[sources/software-estimation-techniques|Software Estimation Techniques]] (story points, Planning Poker, T-shirt sizing, Monte Carlo, affinity estimation), [[sources/sre-incident-management|SRE Incident Management]] (five-phase lifecycle, Incident Command System, blameless postmortem culture), [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]] (four team types, three interaction modes, Conway's Law, TVP), [[sources/structured-engineering-hiring|Structured Engineering Hiring]] (rubric scoring, behavioral/hypothetical questions, score-first debrief, bias mitigation), [[sources/developer-time-management|Developer Time Management]] (deep work, GTD, calendar blocking, burnout prevention, 12-item checklist), and [[sources/backend-performance-engineering|Backend Performance Engineering]] (performance budgets, profiling, load testing, N+1 fixes, indexing strategy, caching).
+
+Created new concept page: [[concepts/team-topologies|Team Topologies]] (org design with stream-aligned, enabling, complicated-subsystem, and platform team types).
+
+Updated concept pages:
+- [[concepts/reliability-and-operations|Reliability and Operations]]: added SRE Incident Management section (incident lifecycle, ICS roles, on-call, blameless postmortem, action item discipline) and Backend Performance Engineering section (performance budgets, profiling, load testing types, database optimization, caching).
+- [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]: added Developer Time Management section (deep work, GTD, calendar blocking, maker vs manager, burnout prevention) and Structured Engineering Hiring section (rubric-based interviews, process design, bias mitigation).
+- [[concepts/system-design-case-studies|System Design Case Studies]]: added three new case studies — Code Smells and Refactoring (smell families, Extract Method, Replace Conditional with Polymorphism), Software Estimation (relative sizing, Planning Poker, Monte Carlo, affinity estimation), Backend Performance Engineering (profiling, load testing, N+1 fixes, indexing, connection pooling, caching).
+
+Added content to [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]] with a coverage analysis across entry (time management), mid (refactoring, estimation, performance), and senior (incident mgmt, org design, hiring) levels.
+
+Updated [[index]], [[log]].
+
 ## [2026-06-06] ingest | Observability, Postgres indexing, Raft, integration testing, and CI/CD pipelines
 
 Processed new raw sources:

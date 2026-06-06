@@ -38,7 +38,7 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] - Non-technical growth skills: communication, feedback, patience, learning, mentorship, and scope.
 - [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]] - Memory-safe language adoption, attack-surface reduction, and Rust security migrations.
 - [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] - Retrieval, Two Tower embeddings, staged ranking, precomputation, and reranking controls.
-
+- [[concepts/team-topologies|Team Topologies]] - Engineering organization design with stream-aligned, enabling, complicated-subsystem, and platform team types.
 
 ## Sources
 
@@ -76,6 +76,7 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]] - A local markdown AI brain built from raw files, wiki pages, schema files, queues, logs, and cadenced automation.
 - [[sources/ai-work-safety|How to Use AI at Work Without Breaking Your Systems]] - AI coding assistant guardrails for production access, destructive commands, backups, and deployment gates.
 - [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]] - Selecting OO design patterns by identifying creation, structure, or behavior pain.
+- [[sources/developer-time-management|Developer Time Management]] - Deep work, GTD for developers, calendar blocking, maker vs manager schedule, burnout prevention, and a productivity checklist.
 - [[sources/dictionary-problem-fast-lookups|The Dictionary Problem - Fast Lookups in Large Collections]] - Data-structure tradeoffs for membership and key-value lookup workloads.
 - [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] - A plan-first, context-rich AI coding workflow with review gates and clarification loops.
 - [[sources/exception-handling-patterns|Exception Handling Patterns Over Blanket try-catch]] - Validation-first error handling, typed exceptions, centralized handlers, and expected-failure result types.
@@ -131,10 +132,17 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/observability-in-distributed-systems|Observability in Distributed Systems]] - Three pillars (logs/metrics/traces), four golden signals, OpenTelemetry, and SLO burn-rate alerting.
 - [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]] - GIN, GiST, BRIN, Partial, and Expression index types with PostgreSQL operational discipline.
 - [[sources/raft-consensus-explained|Raft Consensus Explained]] - Leader election, log replication, ConflictTerm backtracking, quorum math, and production operations for etcd-based distributed consensus.
+- [[sources/backend-performance-engineering|Backend Performance Engineering]] - Performance budgets, profiling with flame graphs, load testing types, database optimization, N+1 queries, indexing strategy, and caching discipline.
 - [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]] - Trunk-based development, immutable artifacts, deployment strategies, rollback automation, and DORA metrics for resilient pipelines.
 - [[sources/byte-storage-vs-io|Byte Storage vs. I/O]] - Separates raw capacity from throughput and IOPS as storage design constraints.
+- [[sources/code-smells-refactoring-techniques|Code Smells and Refactoring Techniques]] - A catalog of code smell families (bloaters, OO abusers, change preventers, dispensables, couplers) and refactoring techniques to fix them.
+- [[sources/developer-time-management|Developer Time Management]] - Deep work, GTD for developers, calendar blocking, maker vs manager schedule, burnout prevention, and a productivity checklist.
 - [[sources/intro-to-websockets|Intro to WebSockets]] - Realtime communication primer covering polling, the WebSocket handshake, full-duplex channels, and operational tradeoffs.
 - [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]] - Netflix Open Connect as an edge CDN case study with ISP-local appliances, predictive fill, and control/data-plane separation.
+- [[sources/software-estimation-techniques|Software Estimation Techniques]] - Story points, Planning Poker, T-shirt sizing, Monte Carlo simulation, affinity estimation, and velocity tracking for forecasting engineering work.
+- [[sources/sre-incident-management|SRE Incident Management]] - Incident lifecycle, Incident Command System, on-call engineering, blameless postmortem culture, and action item discipline.
+- [[sources/structured-engineering-hiring|Structured Engineering Hiring]] - Rubric-based scoring, behavioral and hypothetical questions, score-first debrief, bias mitigation, and process design for consistent hiring.
+- [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]] - Four team types (stream-aligned, enabling, complicated-subsystem, platform), interaction modes, Conway's Law, and cognitive load management.
 
 ## Newest Sources
 
@@ -143,6 +151,13 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/raft-consensus-explained|Raft Consensus Explained]]
 - [[sources/integration-testing-real-services|Testing with Real Services]]
 - [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
+- [[sources/backend-performance-engineering|Backend Performance Engineering]]
+- [[sources/code-smells-refactoring-techniques|Code Smells and Refactoring Techniques]]
+- [[sources/developer-time-management|Developer Time Management]]
+- [[sources/software-estimation-techniques|Software Estimation Techniques]]
+- [[sources/sre-incident-management|SRE Incident Management]]
+- [[sources/structured-engineering-hiring|Structured Engineering Hiring]]
+- [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]]
 
 ## Maintenance Notes
 

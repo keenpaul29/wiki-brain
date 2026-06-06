@@ -36,6 +36,12 @@
         "last_write_time":  "2026-04-28T17:38:08.8768995+05:30"
     },
     {
+        "path":  "raw/Backend Performance Engineering - Profiling Bottleneck Analysis and Optimization.md",
+        "sha256":  "abf21031b38b4411c2acd8e6f24c0d1ebda706d9ef53d70c24692f9531c9f7c9",
+        "length":  4080,
+        "last_write_time":  "2026-06-06T19:20:46.4167626+05:30"
+    },
+    {
         "path":  "raw/Beyond code generation rethinking engineering productivity in the age of AI agents.md",
         "sha256":  "6b2be0dc9603c222bcfb41a26f55b564ddc55ca05fa4797e536993775bfa4591",
         "length":  10552,
@@ -78,10 +84,22 @@
         "last_write_time":  "2026-05-26T12:54:09.9664050+05:30"
     },
     {
+        "path":  "raw/Code Smells and Refactoring Techniques - A Practical Catalog.md",
+        "sha256":  "e0b29a9a78fd16fb918f845c099475edc27db965a5a56b256c3ccf0ba17adaec",
+        "length":  4458,
+        "last_write_time":  "2026-06-06T19:19:40.7496079+05:30"
+    },
+    {
         "path":  "raw/Create a tunnel (dashboard).md",
         "sha256":  "073c854a9963674e6241051f47a6b1583a6b2645f6665dfdb32e7e55b3366e4c",
         "length":  4461,
         "last_write_time":  "2026-05-05T18:16:25.8915387+05:30"
+    },
+    {
+        "path":  "raw/Developer Time Management - Deep Work GTD Calendar Blocking and Burnout Prevention.md",
+        "sha256":  "f68d5a44e8a30a179d2b574d83cac6e1dbb8300515e2a9b4f3a38b284d6d1ed5",
+        "length":  4453,
+        "last_write_time":  "2026-06-06T19:20:34.8002436+05:30"
     },
     {
         "path":  "raw/Docker Was Slowing My Deploys. Podman Fixed It in 45 Seconds.  by inprogrammer.md",
@@ -432,6 +450,18 @@
         "last_write_time":  "2026-04-28T17:38:08.8828837+05:30"
     },
     {
+        "path":  "raw/Software Estimation Techniques - Story Points T-Shirt Sizing and Beyond.md",
+        "sha256":  "f06f11db014044acfe60272e1feecfa5439f683223c61e855cbb237d5fb22d2d",
+        "length":  3223,
+        "last_write_time":  "2026-06-06T19:19:49.0524065+05:30"
+    },
+    {
+        "path":  "raw/SRE Incident Management - From Detection to Blameless Postmortem.md",
+        "sha256":  "33cfe62958e18b0eb733479db33c59eee3086d06e359a892f5c1419d0fb03c0b",
+        "length":  4153,
+        "last_write_time":  "2026-06-06T19:20:00.0147769+05:30"
+    },
+    {
         "path":  "raw/Stop Feeding Me AI Slop.md",
         "sha256":  "b993dc33fa6425acf38f3b9b147fc5deace2277c05229061f9e4359dfb90f121",
         "length":  10407,
@@ -448,6 +478,18 @@
         "sha256":  "5f887ba8976c3848c9247c554fb22fd0e29ce9096cba290d4fd334f7df13c787",
         "length":  19656,
         "last_write_time":  "2026-05-05T18:28:31.3707897+05:30"
+    },
+    {
+        "path":  "raw/Structured Engineering Hiring - A Practical Guide.md",
+        "sha256":  "9b783a852bd908837983abfc478820396c7e42c40f6669f8dc9afba95bdc6248",
+        "length":  4387,
+        "last_write_time":  "2026-06-06T19:20:22.4002322+05:30"
+    },
+    {
+        "path":  "raw/Team Topologies - Engineering Organization Design for Fast Flow.md",
+        "sha256":  "ef3c1bbd5c9ffa937b86df019fc4ed2ccf7c8cad64dd7db706a6e07c501a03f7",
+        "length":  4086,
+        "last_write_time":  "2026-06-06T19:20:10.4286387+05:30"
     },
     {
         "path":  "raw/Tech Companies Are Tracking AI Usage, And The Employees Have Already Figured Out How To Beat It  by Vivek Naskar.md",

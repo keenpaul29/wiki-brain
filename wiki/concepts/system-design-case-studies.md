@@ -300,6 +300,49 @@ Useful patterns:
 - **Coverage pyramid**: 50-60% unit (fast, business logic), 30-40% integration (real services), 5-10% E2E (critical journeys only).
 - **CI staging**: unit on every commit, integration on main/ready PRs, E2E on main only. Cache Docker layers, parallelize independent suites.
 
+## Code Smells and Refactoring
+
+Core problem: code accumulates structural problems (smells) that increase maintenance cost and bug rate. A systematic approach is needed to identify and fix these patterns without changing observable behavior.
+
+Useful patterns:
+
+- **Smell families**: bloaters (Long Method, Large Class), OO abusers (Switch Statements, Temporary Field), change preventers (Shotgun Surgery), dispensables (Duplicate Code, Dead Code, Lazy Class, Speculative Generality), couplers (Feature Envy, Message Chains, Middle Man).
+- **Extract Method**: when a comment explains a block, extract it into a method named after the comment. The most frequently useful refactoring.
+- **Replace Conditional with Polymorphism**: eliminate switch/if-else chains on type codes.
+- **Replace Magic Number with Symbolic Constant**: simplest high-impact readability refactoring.
+- **Operational discipline**: identify smells during code review, apply one refactoring at a time with test verification, never conflate restructuring with feature work.
+- **Refactoring is not adding features** — observable behavior must remain identical before and after.
+
+## Software Estimation
+
+Core problem: predict how long engineering work will take, given that uncertainty grows with task size and human bias distorts single-point forecasts.
+
+Useful patterns:
+
+- **Story points + modified Fibonacci**: relative sizing (1, 2, 3, 5, 8, 13, 20, 40, 100). Larger gaps reflect lower precision for larger tasks.
+- **Planning Poker**: simultaneous independent estimates neutralize anchoring bias. Estimates within 20% of actual ~60% of the time.
+- **T-shirt sizing** (XS-XXL): deliberately imprecise, best for roadmap-level planning and cross-functional communication.
+- **Monte Carlo simulation**: probability distributions from historical throughput ("85% within 14 weeks") over deterministic dates.
+- **Affinity estimation**: silent card sorting for large backlogs — 50-80 stories in under an hour.
+- **Velocity tracking**: after 5-6 sprints, velocity stabilizes enough to forecast capacity.
+- **Common mistakes**: converting points to hours, comparing team velocities, precise scales for uncertain work, switching scales mid-project.
+
+## Backend Performance Engineering
+
+Core problem: systematically identify and eliminate performance bottlenecks in backend services while maintaining correctness and reliability.
+
+Useful patterns:
+
+- **Performance budget**: define p50/p95/p99 latency, error rate, throughput targets before tuning.
+- **Observe → Profile → Fix → Verify**: measure first, optimize second. Percentiles over averages.
+- **CPU flame graphs**: wider frames consume more CPU time. Profile under realistic load, not isolation.
+- **Load testing types**: smoke (basic verification), load (normal peak), stress (breaking point), spike (instant surge), soak (long-term stability), breakpoint (exact capacity).
+- **N+1 query fix**: eager loading (JOIN), prefetch (batch IN), DataLoader (auto-batch).
+- **Indexing discipline**: find slow queries via pg_stat_statements, use EXPLAIN ANALYZE, composite indexes with most selective column first, CREATE INDEX CONCURRENTLY.
+- **Connection pool sizing**: (core_count × 2) + effective_spindle_count. 10-20 is sufficient. Increase when utilization >80%.
+- **80/20 rule**: proper indexing solves ~80% of database performance problems. Read every slow query's execution plan.
+- **Caching**: frequently-read rarely-changed data, 30-60 sec TTL, monitor hit rate (below 80% means ineffective).
+
 ## Bulletproof CI/CD Pipeline
 
 Core problem: build a deployment pipeline that fails safely, fails early, recovers quickly, and never surprises production.
@@ -344,3 +387,8 @@ Useful patterns:
 - Source: [[sources/raft-consensus-explained|Raft Consensus Explained]]
 - Source: [[sources/integration-testing-real-services|Testing with Real Services]]
 - Source: [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
+- Source: [[sources/code-smells-refactoring-techniques|Code Smells and Refactoring Techniques]]
+- Source: [[sources/software-estimation-techniques|Software Estimation Techniques]]
+- Source: [[sources/backend-performance-engineering|Backend Performance Engineering]]
+- Source: [[sources/sre-incident-management|SRE Incident Management]]
+- Source: [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]]

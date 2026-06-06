@@ -99,6 +99,112 @@ Background coding agents add an environment-reliability requirement: an agent th
 
 Local LLM serving needs its own operational telemetry. Prefill duration, decode duration, token counts, queue depth, GPU memory, loaded models, truncation checks, and p50/p95/p99 latency by request type are required to distinguish prefill, decode, queuing, eviction, and memory pressure problems.
 
+## SRE Incident Management
+
+Incident management follows a five-phase lifecycle adapted from production operations best practices:
+
+1. **Detection:** SLO-based alerting, monitoring signals, user reports. Every page must be actionable.
+2. **Triage:** Determine severity, assign Incident Commander (IC), create communication channel, start timeline.
+3. **Mitigation:** Restore service first (rollback, traffic drain, feature flag). Never conflate mitigation with root cause resolution.
+4. **Resolution:** Deploy permanent fix after mitigation is stable.
+5. **Postmortem:** Written record with timeline, contributing factors, action items.
+
+### Incident Command System
+
+Adapted from US wildland firefighting. Core roles and invariant:
+
+- **Incident Commander (IC):** coordinates but does NOT fix. Delegates all repair actions.
+- **Scribe:** documents timeline, decisions, actions in real time.
+- **Subject Matter Expert (SME):** investigates and fixes.
+- **Communications Lead:** manages internal and external status updates.
+- **Status cadence:** every 15-30 minutes during SEV-1. Fixed structure: what's broken, what we're doing, when next update.
+
+**Self-host dependency trap:** Do not store incident documents or tools behind the service being fixed — maintain out-of-band access paths.
+
+### On-Call Engineering
+
+- **Rotation structure:** Primary handles pages, secondary escalates in 5 min. Follow-the-sun requires 6+ engineers per site; single-site 24/7 requires 8+.
+- **Pager budget:** Google SRE caps at 2 distinct incidents per 12-hour shift. Above that, response quality degrades.
+- **Alert hygiene:** Every page must be actionable. If no runbook exists, the alert should not page. Review paging rules quarterly.
+
+### Blameless Postmortem Culture
+
+The shift from "who broke it" to "what system condition allowed this." All actors assumed to have acted on best available information.
+
+Postmortem template: Summary (2-3 sentences), Impact (users, duration, SLO budget, revenue), Timeline (UTC-timestamped), Contributing factors (2-5 systemic causes via 5 Whys), What went well, Action items (specific, owned, due-dated).
+
+### Action Item Discipline
+
+- Specific: "Add rate limiting to /search at 100 req/s" not "improve rate limiting."
+- Owned: one named person, not "the team."
+- Due-dated: specific date, not "soon."
+- Track completion rate: below 50% means postmortems are theater. Target 80%+.
+
+### Measuring Postmortem Effectiveness
+
+- Action item completion rate: target 80%+
+- Incident recurrence rate: below 5% is excellent, above 30% means learning loop is broken
+- Postmortem completion time: target under 48 hours from resolution
+
+## Backend Performance Engineering
+
+Performance engineering is the practice of systematically measuring and optimizing system throughput and latency. The core loop: Observe → Profile → Fix → Verify.
+
+### Performance Budget
+
+Define measurable targets before tuning:
+
+```
+p50_latency_ms: 50
+p95_latency_ms: 200
+p99_latency_ms: 500
+error_rate_percent: 0.1
+throughput_rps: 1000
+```
+
+Percentiles over averages — p95 and p99 show what users actually experience.
+
+### Profiling Techniques
+
+- **CPU flame graphs:** Visually show where CPU time is spent. Profile under realistic load, not in isolation.
+- **Memory profiling:** Track allocation rates (high allocation causes GC pauses), object retention, and leak candidates.
+- **I/O profiling:** Measure disk read/write latency, network I/O, database call duration.
+
+### Load Testing Types
+
+| Type | Purpose | Load Pattern |
+|------|---------|-------------|
+| Smoke | Verify basic functionality | Minimal load |
+| Load | Expected peak behavior | Normal peak traffic |
+| Stress | Find breaking point | Ramp beyond expected |
+| Spike | Sudden traffic surge | Instant high load |
+| Soak | Long-term stability | Sustained over hours |
+| Breakpoint | Exact capacity limit | Ramp until failure |
+
+### Database Optimization
+
+**N+1 Query Problem:** After querying N parent entities, each child is queried individually. Fixes: eager loading (JOIN), prefetch (batch IN), DataLoader pattern (auto-batch).
+
+**Indexing Strategy:**
+- Find slow queries via pg_stat_statements sorted by total time
+- Use EXPLAIN (ANALYZE, BUFFERS) to check for Seq Scan on large tables
+- Composite indexes with most selective column first
+- Partial indexes for WHERE subset queries
+- CREATE INDEX CONCURRENTLY to avoid table locks
+- Check pg_stat_user_indexes for unused indexes (idx_scan = 0)
+
+**Connection Pool Sizing:** HikariCP formula = (core_count × 2) + effective_spindle_count. 10-20 is generally sufficient. Increase when utilization exceeds 80%, immediately when waiting threads appear.
+
+**Query Patterns:** Convert subqueries to JOINs, use cursor-based pagination WHERE id > cursor LIMIT N over OFFSET, batch writes (1000 individual INSERTs vs one batch = ~100x throughput difference).
+
+### Caching Strategy
+
+Cache at the right level: in-memory or Redis for frequently-read, rarely-changed data. Set appropriate TTLs (start with 30-60 seconds). Monitor hit rate — below 80% means cache is barely doing its job.
+
+### The 80/20 of Database Tuning
+
+Proper indexing solves ~80% of database performance problems. Read every slow query's execution plan, check for full table scans, index the WHERE clause columns, prefer composite indexes.
+
 ## Security and Identity
 
 - OAuth 2.0 delegates authorization.
@@ -181,3 +287,5 @@ A bulletproof pipeline fails safely, fails early, recovers quickly, and never su
 - Source: [[sources/integration-testing-real-services|Testing with Real Services]]
 - Source: [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
 - Source: [[sources/raft-consensus-explained|Raft Consensus Explained]]
+- Source: [[sources/sre-incident-management|SRE Incident Management]]
+- Source: [[sources/backend-performance-engineering|Backend Performance Engineering]]

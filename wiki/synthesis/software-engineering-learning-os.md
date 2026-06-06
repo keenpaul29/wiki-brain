@@ -120,13 +120,27 @@ Use the expanded system design notes as a study spine:
 
 The daily workflow is now documented in [[automation]]. A helper script scans `raw/`, writes `wiki/_state/daily-scan.md`, and maintains a manifest of source hashes. The Codex automation should run daily, ingest new or changed sources, link-check the wiki, and commit the new source state only after a successful update.
 
-[[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] consolidates the non-technical half of the engineer's capability: concrete promotion tactics (golden opportunities, scope reduction, mentoring) and the personal qualities (patience, determination, student mindset, accepting criticism, communication) that make growth sustainable. These skills compound over a career and are independent of the current tech stack.
+[[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] consolidates the non-technical half of the engineer's capability: concrete promotion tactics (golden opportunities, scope reduction, mentoring), personal qualities (patience, determination, student mindset, accepting criticism, communication), time management (deep work, GTD, calendar blocking, burnout prevention), and structured hiring practices that make growth and team-building sustainable.
 
 [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]] is a production case study showing how WhatsApp deployed Rust at billion-device scale to harden media processing against memory-safety vulnerabilities — connecting security practice to real architecture decisions.
+
+[[concepts/team-topologies|Team Topologies]] adds the organization-design layer: how team structure (stream-aligned, enabling, complicated-subsystem, platform) and interaction modes (collaboration, X-as-a-Service, facilitation) determine software architecture through Conway's Law, cognitive load management, and Thinnest Viable Platform strategy.
 
 [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] demonstrates multi-stage ranking at billions-scale, connecting system-design primitives (Two Tower models, cached embeddings, value-model tuning, distillation, ANN retrieval) to real ML infrastructure in Instagram Explore.
 
 [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] adds a blog-reading practice for real-world system-design exposure across production tradeoffs, incident stories, migration lessons, and platform constraints.
+
+The 2026-06-06 ingest adds seven sources across entry-, mid-, and senior-level engineering coverage, filling the wiki's largest remaining coverage gaps.
+
+**Entry-level (developer fundamentals):** [[sources/developer-time-management|Developer Time Management]] adds deep work calendars (Cal Newport), GTD adapted for developers, maker vs manager schedule, calendar blocking with buffer rules, Slack/email triage, burnout prevention, and a 12-item productivity checklist. This gives junior engineers a structured time-management framework independent of any specific tech stack.
+
+**Mid-level (engineering craftsmanship):** [[sources/code-smells-refactoring-techniques|Code Smells and Refactoring Techniques]] adds five smell families (bloaters, OO abusers, change preventers, dispensables, couplers) and refactoring technique categories — giving mid-level engineers a systematic vocabulary for code improvement during review and maintenance. [[sources/software-estimation-techniques|Software Estimation Techniques]] adds relative sizing, Planning Poker, T-shirt sizing, Monte Carlo simulation, and affinity estimation — practical forecasting skills for planning and stakeholder communication. [[sources/backend-performance-engineering|Backend Performance Engineering]] adds performance budgets, CPU/memory/I/O profiling, flame graphs, load testing types, N+1 query fixes, indexing strategy, connection pool sizing, and caching discipline — closing the performance optimization gap.
+
+**Senior/lead level (operations, org design, hiring):** [[sources/sre-incident-management|SRE Incident Management]] adds the five-phase incident lifecycle, Incident Command System roles, on-call rotation design, blameless postmortem culture with templates, and action item discipline. [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]] adds Conway's Law, four team types (stream-aligned, enabling, complicated-subsystem, platform), three interaction modes, cognitive load management, and Thinnest Viable Platform strategy — connecting org structure directly to software architecture. [[sources/structured-engineering-hiring|Structured Engineering Hiring]] adds rubric-based scoring, behavioral vs hypothetical questions, score-first debrief, bias mitigation, and process design — turning hiring from intuition into a repeatable system.
+
+The concept pages now reflect all seven sources. [[concepts/reliability-and-operations|Reliability and Operations]] gained SRE incident management and backend performance engineering sections. [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] gained time management and structured hiring sections. [[concepts/system-design-case-studies|System Design Case Studies]] added refactoring, estimation, and performance engineering as design patterns. [[concepts/team-topologies|Team Topologies]] was created as a new concept page for org design.
+
+These seven sources complete a significant coverage expansion: the wiki now spans from daily developer productivity practices through mid-level technical craftsmanship to senior-level operational, organizational, and hiring systems.
 
 ## Current Open Questions
 
