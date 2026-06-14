@@ -1,98 +1,91 @@
 # BRAIN_CONTEXT
 
-This file is the portable memory layer for cross-session/cross-tool continuity.
-Any assistant session (Claude Code, Codex, others) must read this first along with `AGENTS.md`.
+Portable memory layer for cross-session/tool continuity.
+**Brain-first protocol:** read this, then query GBrain, then work.
 
 ## 1) Identity and Working Style
 
-- Preferred name:
-  - Operator
-- Primary goals (current season):
-  - Maintain this repo as a self-growing LLM wiki with local PGLite GBrain recall
+- Preferred name: Operator
+- Primary goals:
+  - Maintain self-growing wiki + GBrain with local PGLite recall
   - Keep raw-to-wiki pipeline healthy
-  - Fix broken architecture, docs, and cross-references as they are discovered
-- Communication preferences:
-  - concise/detailed: concise (reply in 1-3 sentences unless asked for detail)
-  - tone: direct, matter-of-fact
-  - decision style (default if ambiguous): read existing docs first, ask if blocked
+  - Fix broken architecture, docs, cross-references as discovered
+- Communication: concise (1-3 sentences unless asked); direct, matter-of-fact
 - Non-negotiables:
   - Never modify `raw/`
   - Never commit real names/companies/funds into public artifacts
-  - Verify changes compile/build before committing
+  - Verify changes before committing
 
 ## 2) Operating Instructions (Persistent)
 
-- Repository root:
-  - `C:\Users\giftlaya\Documents\my-codes\brain\brain`
+- Repository root: `D:\my prog\wiki-brain`
 - Follow `AGENTS.md` exactly.
-- Never modify `raw/`.
-- Treat `wiki/` as maintained output.
-- Before work, run:
+- Never modify `raw/`. Treat `wiki/` as maintained output.
+- **Brain-first:** before any work, query GBrain for relevant context.
+- Run health check `powershell -ExecutionPolicy Bypass -File scripts/wiki-health.ps1` before starting a content session.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
-```
+## 3) Current GBrain State
 
-- Read:
-  - `wiki/_state/daily-scan.md`
-- If new/changed sources exist, execute full workflow in `AGENTS.md`.
+- Engine: PGLite at `C:\Users\ANIRU\.gbrain\brain.pglite`
+- Pages: 902 indexed, 6758 chunks with embeddings
+- Embedding model: zeroentropyai:zembed-1 (1280d)
+- Source: `brain` (this repo), attached by `.gbrain-source`
+- Sync mode: full walk, last sync healthy (910 files, 6 imported, 904 unchanged)
+- Search mode: tokenmax
+- Health score: brain 45/100 (embed 35/35, links 0/25, timeline 0/15, orphans 0/15, dead-links 10/10)
+- Primary gap: no wikilinks → no link graph → no timeline entries
 
-## 3) Long-Term Knowledge Index
+## 4) Brain-First Startup Protocol
 
-Use this section for stable personal/professional knowledge that should persist across sessions.
+Every session must run this sequence:
 
-- About me:
-  - GBrain fork user maintaining a local wiki with PGLite brain backend
-- Domains I care about:
-  - Personal knowledge management, agent-assisted workflows, wiki automation
-  - Software engineering, system design, AI/LLM patterns
-- Ongoing projects:
-  - GBrain fork wiki maintenance (active) — keep raw→wiki pipeline running, fix architecture issues
-  - Agent skill development — learning how to use agent skills effectively
-- Important constraints (time, budget, stack, policy):
-  - Windows primary environment (PowerShell 5.1)
-  - Bun for TypeScript runtime
-  - Local PGLite (no cloud Postgres configured)
-  - Embeddings not configured (no API keys set up) — use `--no-embed`
+1. Query GBrain for context: `gbrain query "project state recent changes" --top-k 3`
+2. Check `wiki/_state/daily-scan.md` for changed raw files
+3. Run `scripts/wiki-health.ps1` to see dashboard
+4. Pick highest-priority action from AGENTS.md priority table
+5. Work, then update SESSION_HANDOFF.md before ending
 
-## 4) Decision Log (Durable)
+## 5) Long-Term Knowledge Index
 
-Record decisions that future sessions should treat as default unless explicitly changed.
+- About: GBrain wiki maintainer, local PGLite backend
+- Domains: PKM, agent-assisted workflows, wiki automation, system design, AI/LLM patterns
+- Environment: Windows (PowerShell 5.1), Bun runtime, local PGLite
+- `gbrain` CLI is on PATH (global install via `bun install -g`)
 
-| Date | Decision | Why | Applies To |
-|---|---|---|---|
-| YYYY-MM-DD | [fill] | [fill] | [fill] |
-| 2026-05-09 | Use local PGLite GBrain source `brain` for this project. | Keeps repo/wiki recall available without requiring external Postgres. | Local development, wiki maintenance, future agent sessions |
-| 2026-05-09 | Use `bun run src/cli.ts` for GBrain commands until a global `gbrain` binary is on PATH. | The source repo CLI works locally; global command is not currently installed. | Local command examples and automation |
-| 2026-05-14 | Treat source identity as part of the import architecture, not only sync bookkeeping. | Source-scoped full syncs must not leak pages into `default`. | `src/commands/sync.ts`, `src/commands/import.ts`, `src/core/import-file.ts`, engine implementations |
-| 2026-05-26 | Use full walk database sync (`sync --full`) to index local uncommitted markdown edits. | Incremental git diff sync skips uncommitted files; `--full` walks the filesystem. | Local command execution, synchronization, wiki update |
+## 4) Session Log
 
-## 5) Current Priorities (Update Weekly)
+### 14 June 2026
 
-1. Keep the wiki ingestion workflow current.
-2. Keep the local GBrain source `brain` synced after meaningful markdown changes.
-3. Configure embeddings later if vector search is needed.
+- **Orphans eliminated**: 10 to 0 by adding backlinks from `production-ai-operations`, `self-improving-agent-workflows`, `command-line-and-git-productivity`, `system-design`, `microservices-architecture`, `communication-and-architecture-patterns`, `ai-era-software-engineering`, `observability-and-monitoring`, `ci-cd-pipeline-and-deployment`, `ai-coding-workflow-productivity`
+- **Thin concepts deepened**: 5 pages past 80 lines (project-operating-architecture 36 to 108, recurrent-depth-transformers 59 to 106, local-first-architecture 66 to 109, system-design-interview-workflow 74 to 113, frontend-build-performance 79 to 115)
+- **Integrity check**: 898 pages scanned, 0 auto-repaired, 29 review items (all in gbrain docs, not wiki)
+- **Dream cycle**: 9.4s, all phases OK
 
-## 6) Active Work Context (Update Daily)
+### Next session priorities
 
-- Current objective:
-  - Maintain this project as an LLM-maintained wiki with local GBrain recall.
-- Current blockers:
-  - Embeddings are not generated yet because provider credentials were not configured during integration.
-- Next concrete action:
-  - Run the wiki daily scan, then run `bun run src/cli.ts sync --source brain --no-embed --no-pull --full` after accepted markdown changes.
-- Related files/pages:
-  - `AGENTS.md`
-  - `SESSION_HANDOFF.md`
-  - `GBRAIN_DEV_WORKFLOW.md`
-  - `docs/architecture/project-operating-architecture.md`
-  - `wiki/concepts/project-operating-architecture.md`
-  - `wiki/automation.md`
-  - `.gbrain-source`
+- Investigate gbrain reindex-frontmatter PGLite lock timeout (low pri)
+- Consider gbrain-base-v2 pack upgrade (manual, operator approval)
+- Process any new raw files from daily scan
 
-## 7) Knowledge Canon
+## 5) Decision Log
 
-When uncertain, assistants should resolve conflicts in this order:
+| Date | Decision | Why |
+|------|----------|-----|
+| 2026-05-09 | Use local PGLite source `brain` | Keeps recall available without external Postgres |
+| 2026-05-09 | Prefer `--source brain` on sync/search cmds | Source-scoped ops don't pollute `default` |
+| 2026-05-14 | Source identity is import architecture | Full syncs must not leak pages into `default` |
+| 2026-05-26 | Use `sync --full` for uncommitted edits | Incremental git diff skips uncommitted files |
+| 2026-06-14 | Enabled zeroentropyai:zembed-1 embeddings | Vector search now available |
+| 2026-06-14 | Tokenmax search mode | Balanced relevance + speed |
+
+## 7) Current Priorities
+
+1. Monitor daily scan for new/changed raw files
+2. Investigate gbrain reindex-frontmatter PGLite lock (low pri)
+3. Consider gbrain-base-v2 pack upgrade (manual, operator approval)
+4. Keep GBrain synced after wiki changes
+
+## 8) Knowledge Canon (Conflict Resolution)
 
 1. `AGENTS.md`
 2. `BRAIN_CONTEXT.md`
@@ -100,25 +93,10 @@ When uncertain, assistants should resolve conflicts in this order:
 4. `wiki/_state/daily-scan.md`
 5. `GBRAIN_DEV_WORKFLOW.md`
 6. Existing `wiki/` pages
+7. GBrain query results
 
-## 8) Session Bootstrap Prompt (Use in Any New Claude/Codex Session)
+## 9) End-of-Session Rule
 
-```text
-Read these files first and treat them as authoritative memory/instructions for this session:
-1) AGENTS.md
-2) BRAIN_CONTEXT.md
-3) SESSION_HANDOFF.md
-4) wiki/_state/daily-scan.md
-5) GBRAIN_DEV_WORKFLOW.md
-
-Then continue the daily wiki workflow end-to-end, without modifying raw/.
-```
-
-## 9) End-of-Session Update Rule
-
-Before ending a session, update:
-
-- `SESSION_HANDOFF.md` sections for state/work done/open items
-- `BRAIN_CONTEXT.md` sections 4, 5, and 6 if new durable decisions or priorities emerged
-
-This keeps memory portable across all future sessions.
+Before ending a session:
+- Update `SESSION_HANDOFF.md` (state, work done, open items)
+- Update sections 4-6 here if new decisions/priorities emerged

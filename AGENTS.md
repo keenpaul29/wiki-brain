@@ -29,22 +29,58 @@ start here.
 4. Read [`./INSTALL_FOR_AGENTS.md`](./INSTALL_FOR_AGENTS.md) for the full 9-step flow
    (API keys, identity, cron, verification).
 
+## Startup Protocol (Brain-First)
+
+Every session MUST follow this sequence before doing any work:
+
+```powershell
+# Step 1 — Read this file (AGENTS.md) for protocol + priority queue
+# Step 2 — Read BRAIN_CONTEXT.md for current state and identity
+# Step 3 — Query the brain for context relevant to this session
+powershell -ExecutionPolicy Bypass -File scripts/wiki-health.ps1
+gbrain query "project state recent changes wiki sync status" --top-k 3
+# Step 4 — Check for pending raw file changes
+powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
+Get-Content wiki/_state/daily-scan.md
+# Step 5 — Pick highest-priority action from the queue below
+# Step 6 — Work. Update SESSION_HANDOFF.md before ending.
+```
+
+Key principle: **GBrain is faster than file reads.** Query the brain first,
+fall back to static files only when the brain's answer is insufficient.
+
+## Priority Action Queue
+
+Pick the highest unblocked action. Rows are cost-sorted (cheapest first).
+
+| Priority | Action | When | Cost |
+|----------|--------|------|------|
+| P0 | Process changed raw files → wiki sources | Daily scan shows changes | 2-5 min/file |
+| P1 | Deepen thin concept pages (<80 lines) | Health dashboard shows thin | 3-8 min/page |
+| P1 | Fix broken wikilinks + orphan pages | Health dashboard shows orphans | 1-3 min/page |
+| P2 | Run GBrain sync after wiki changes | After any wiki/ edit | 30s |
+| P2 | Re-run dream cycle for freshness | After sync | 10s |
+| P3 | Process integrity review queue | When queue > 10 items | 5-10 min |
+| P3 | Dig into stale pages (>30d old) | Cyclical maintenance | 3-5 min/page |
+| P4 | Upgrade schema pack to gbrain-base-v2 | Manual, needs operator approval | 10 min |
+| P4 | Enable extract_atoms in schema pack | After pack upgrade | 5 min |
+
 ## Read this order
 
-1. `./AGENTS.md` (this file) — install + operating protocol.
-2. [`./CLAUDE.md`](./CLAUDE.md) — architecture reference, key files, trust boundaries,
+1. `./AGENTS.md` (this file) — install + operating protocol + priority queue.
+2. [`./BRAIN_CONTEXT.md`](./BRAIN_CONTEXT.md) — project memory, current state.
+3. [`./SESSION_HANDOFF.md`](./SESSION_HANDOFF.md) — last session's work.
+4. [`./CLAUDE.md`](./CLAUDE.md) — architecture reference, key files, trust boundaries,
    test layout.
-3. [`./docs/architecture/brains-and-sources.md`](./docs/architecture/brains-and-sources.md)
+5. [`./docs/architecture/brains-and-sources.md`](./docs/architecture/brains-and-sources.md)
    — the two-axis mental model (brain = which DB, source = which repo in the DB). Every
    query routes on both axes. Read before writing anything that touches brain ops.
-4. [`./skills/conventions/brain-routing.md`](./skills/conventions/brain-routing.md) —
+6. [`./skills/conventions/brain-routing.md`](./skills/conventions/brain-routing.md) —
    agent-facing decision table: when to switch brain, when to switch source, how
    cross-brain federation works (latent-space only; the agent decides).
-5. [`./skills/RESOLVER.md`](./skills/RESOLVER.md) — skill dispatcher. Read before any task.
-6. [`./BRAIN_CONTEXT.md`](./BRAIN_CONTEXT.md), [`./SESSION_HANDOFF.md`](./SESSION_HANDOFF.md),
-   and [`./GBRAIN_DEV_WORKFLOW.md`](./GBRAIN_DEV_WORKFLOW.md) — local project memory,
-   current state, and source-sync commands for this checkout.
-7. [`./docs/architecture/project-operating-architecture.md`](./docs/architecture/project-operating-architecture.md)
+7. [`./skills/RESOLVER.md`](./skills/RESOLVER.md) — skill dispatcher. Read before any task.
+8. [`./GBRAIN_DEV_WORKFLOW.md`](./GBRAIN_DEV_WORKFLOW.md) — source-sync commands.
+9. [`./docs/architecture/project-operating-architecture.md`](./docs/architecture/project-operating-architecture.md)
    — local operating architecture tying GBrain source routing, wiki maintenance,
    source-scoped sync/import, and agent handoff together.
 
@@ -172,5 +208,148 @@ powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1 -CommitSt
 bun run src/cli.ts sync --source brain --no-embed --no-pull
 ```
 
+11. Or run the full cycle in one command:
+    ```powershell
+    powershell -ExecutionPolicy Bypass -File scripts/run-daily-cycle.ps1 -AutoDeepen
+    ```
+
 Do not modify `raw/`.
 
+---
+
+# gstack — AI Engineering Workflow
+
+This repository also contains gstack — a collection of SKILL.md files that give AI agents
+structured roles for software development. Each skill is a specialist: CEO reviewer, eng
+manager, designer, QA lead, release engineer, debugger, and more.
+
+## Available skills
+
+Skills live in `.agents/skills/` (or `~/.claude/skills/gstack/` on Claude Code).
+Invoke them by name (e.g., `/office-hours`).
+
+### Plan-mode reviews
+
+| Skill | What it does |
+|-------|-------------|
+| `/office-hours` | Start here. Reframes your product idea before you write code. |
+| `/plan-ceo-review` | CEO-level review: find the 10-star product in the request. |
+| `/plan-eng-review` | Lock architecture, data flow, edge cases, and tests. |
+| `/plan-design-review` | Rate each design dimension 0-10, explain what a 10 looks like. |
+| `/plan-devex-review` | DX-mode review: TTHW, magical moments, friction points, persona traces. |
+| `/plan-tune` | Self-tune AskUserQuestion sensitivity per question. |
+| `/autoplan` | One command runs CEO → design → eng → DX review. |
+| `/design-consultation` | Build a complete design system from scratch. |
+| `/spec` | Turn vague intent into a precise, executable spec in five phases. Files a GitHub issue, optionally spawns a Claude Code agent in a fresh worktree, and lets `/ship` close the source issue on merge. |
+
+### Implementation + review
+
+| Skill | What it does |
+|-------|-------------|
+| `/review` | Pre-landing PR review. Finds bugs that pass CI but break in prod. |
+| `/codex` | Second opinion via OpenAI Codex. Review, challenge, or consult modes. |
+| `/investigate` | Systematic root-cause debugging. No fixes without investigation. |
+| `/design-review` | Live-site visual audit + fix loop with atomic commits. |
+| `/design-shotgun` | Generate multiple AI design variants, comparison board, iterate. |
+| `/design-html` | Generate production-quality Pretext-native HTML/CSS. |
+| `/devex-review` | Live developer experience audit (TTHW measured against the real flow). |
+| `/qa` | Open a real browser, find bugs, fix them, re-verify. |
+| `/qa-only` | Same methodology as /qa but report only — no code changes. |
+| `/scrape` | Pull data from a web page. First call prototypes; codified call runs in ~200ms. |
+| `/skillify` | Codify the most recent successful `/scrape` flow into a permanent browser-skill. |
+
+### Release + deploy
+
+| Skill | What it does |
+|-------|-------------|
+| `/ship` | Run tests, review, push, open PR. Workspace-aware version queue. |
+| `/land-and-deploy` | Merge the PR, wait for CI and deploy, verify production health. |
+| `/canary` | Post-deploy monitoring loop using the browse daemon. |
+| `/landing-report` | Read-only dashboard for the workspace-aware ship queue. |
+| `/document-release` | Update all docs to match what you just shipped. |
+| `/document-generate` | Generate Diataxis docs (tutorial / how-to / reference / explanation) from code. |
+| `/setup-deploy` | One-time deploy config detection (Fly.io, Render, Vercel, etc.). |
+| `/gstack-upgrade` | Update gstack to the latest version. |
+
+### Operational + memory
+
+| Skill | What it does |
+|-------|-------------|
+| `/context-save` | Save working context (git state, decisions, remaining work). |
+| `/context-restore` | Resume from a saved context, even across Conductor workspaces. |
+| `/learn` | Manage what gstack learned across sessions. |
+| `/retro` | Weekly retro with per-person breakdowns and shipping streaks. |
+| `/health` | Code quality dashboard (type checker, linter, tests, dead code). |
+| `/benchmark` | Performance regression detection (page load, Core Web Vitals). |
+| `/benchmark-models` | Cross-model benchmark for skills (Claude, GPT, Gemini side-by-side). |
+| `/cso` | OWASP Top 10 + STRIDE security audit. |
+| `/setup-gbrain` | Set up gbrain for cross-machine session memory sync. |
+| `/sync-gbrain` | Keep gbrain current with this repo's code; refresh agent search guidance in CLAUDE.md. |
+
+### Browser + agent integration
+
+| Skill | What it does |
+|-------|-------------|
+| `/browse` | Headless browser — real Chromium, real clicks, ~100ms/command. |
+| `/open-gstack-browser` | Launch the visible GStack Browser with sidebar + stealth. |
+| `/setup-browser-cookies` | Import cookies from your real browser for authenticated testing. |
+| `/pair-agent` | Pair a remote AI agent (OpenClaw, Codex, etc.) with your browser. |
+
+### iOS QA — drive real iPhones over USB or Tailscale (v1.43.0.0+)
+
+| Skill | What it does |
+|-------|-------------|
+| `/ios-qa` | Live-device iOS QA via USB CoreDevice tunnel + embedded StateServer. Optionally exposes the device over Tailscale so remote agents can drive it. |
+| `/ios-fix` | Autonomous iOS bug fixer with regression snapshot capture. |
+| `/ios-design-review` | Designer's-eye QA on a real iPhone — 10-dimension Apple HIG rubric. |
+| `/ios-clean` | Convenience: strip DebugBridge + #if DEBUG wiring before a Release build. |
+| `/ios-sync` | Regenerate the iOS debug bridge against the latest upstream templates. |
+
+Companion CLIs (run on the Mac that's plugged into the device):
+
+| Command | What it does |
+|---------|-------------|
+| `gstack-ios-qa-daemon` | Mac-side broker. Loopback by default; `--tailnet` adds a Tailscale-facing listener with capability tiers and audit logging. |
+| `gstack-ios-qa-mint` | Owner-grant CLI for the tailnet allowlist (`grant`/`revoke`/`list`). |
+
+End-to-end walkthrough: [docs/howto-ios-testing-with-gstack.md](docs/howto-ios-testing-with-gstack.md).
+
+### Safety + scoping
+
+| Skill | What it does |
+|-------|-------------|
+| `/careful` | Warn before destructive commands (rm -rf, DROP TABLE, force-push). |
+| `/freeze` | Lock edits to one directory. Hard block, not just a warning. |
+| `/guard` | Activate both careful + freeze at once. |
+| `/unfreeze` | Remove directory edit restrictions. |
+| `/make-pdf` | Turn any markdown file into a publication-quality PDF. |
+| `/diagram` | English in, diagram out: mermaid source + editable .excalidraw + SVG/PNG, offline. |
+
+## Build commands
+
+```bash
+bun install              # install dependencies
+bun test                 # run free tests (no API spend)
+bun run test:windows     # curated Windows-safe subset (runs on windows-latest)
+bun run build            # generate docs + compile binaries
+bun run gen:skill-docs   # regenerate SKILL.md files from templates
+bun run skill:check      # health dashboard for all skills
+```
+
+## Platform support
+
+- **macOS** + **Linux**: full test suite supported.
+- **Windows**: curated Windows-safe subset runs on `windows-latest` via the
+  `windows-free-tests` CI job. Setup script (`./setup`) requires Git Bash or
+  MSYS today; native PowerShell support is a future expansion. The `bin/gstack-paths`
+  helper resolves state roots through `CLAUDE_PLUGIN_DATA` / `GSTACK_HOME` so plugin
+  installs work on every platform.
+
+## Key conventions
+
+- SKILL.md files are **generated** from `.tmpl` templates. Edit the template, not the output.
+- Run `bun run gen:skill-docs --host codex` to regenerate Codex-specific output.
+- The browse binary provides headless browser access. Use `$B <command>` in skills.
+- Safety skills (careful, freeze, guard) use inline advisory prose — always confirm before destructive operations.
+- State paths resolve via `bin/gstack-paths` (sourced via `eval "$(...)"`). Honors `GSTACK_HOME`, `CLAUDE_PLUGIN_DATA`, `CLAUDE_PLANS_DIR`.
+- The `claude` CLI binary resolves via `browse/src/claude-bin.ts` (`Bun.which()` + `GSTACK_CLAUDE_BIN` override). Set `GSTACK_CLAUDE_BIN=wsl` plus `GSTACK_CLAUDE_BIN_ARGS='["claude"]'` to run Claude through WSL on Windows.

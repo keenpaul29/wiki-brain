@@ -339,6 +339,8 @@ Start with a modular monolith. Extract services when a clear boundary, scaling n
 - Related: [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]]
 - Related: [[concepts/distributed-coordination|Distributed Coordination and Consensus]]
 - Related: [[concepts/data-storage-and-consistency|Data Storage and Consistency]]
+- Related: [[concepts/event-driven-architecture|Event-Driven Architecture]]
+- Related: [[concepts/team-topologies|Team Topologies]]
 - Source: [[sources/latency-gambler-day-15|Microservices Patterns]]
 - Source: [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
 - Source: [[sources/latency-gambler-day-12|Message Queue Patterns]]

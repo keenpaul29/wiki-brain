@@ -70,6 +70,32 @@ Frontend build performance connects to the broader system design infrastructure:
 
 Performance is not a frontend-only concern. The CDN strategy, API design, caching layer, and error handling all determine what load the frontend sees and how fast it can render.
 
+## Build Tool Evolution
+
+The frontend build tool landscape is shifting from Webpack-centric to Rust-based tools:
+
+- **Webpack** (2012-present): most mature ecosystem, widest plugin support. Best for large complex configurations and legacy migration. Tradeoff: slowest incremental builds.
+- **Vite** (2021-present): dev server uses native ESM for sub-second hot reload; production build uses Rollup. Best for new projects. Tradeoff: less mature plugin ecosystem for non-standard transforms.
+- **Turbopack** (2023-present, Next.js): Rust-based incremental bundler. Fastest for Next.js workloads. Tradeoff: Next.js-only, limited standalone use.
+- **Rspack** (2024-present): Rust port of Webpack API. Webpack-compatible configuration with 5-10x faster builds. Best path for Webpack migration. Tradeoff: some plugin incompatibilities.
+- **esbuild** (2020-present): Go-based bundler. Fastest single-file builds. Used by Vite under the hood. Tradeoff: no code splitting, limited plugin API.
+
+### Migration Guidance
+
+- **Webpack → Rspack**: drop-in replacement for 80%+ of configs. Best ROI for existing large projects.
+- **Webpack → Vite**: requires config rewrite but provides significantly better DX. Start with new pages/modules, not the full app.
+- **Vite → Turbopack**: automatic when using Next.js. No standalone migration path.
+
+## Bundle Analysis Workflow
+
+Bundle analysis should be a regular CI check, not a debugging afterthought:
+
+1. **Generate stats**: `webpack --json stats.json` or `vite build --mode analyze`.
+2. **Visualize**: use `webpack-bundle-analyzer` or `vite-bundle-visualizer` to identify oversized modules.
+3. **Track over time**: store bundle size in CI artifacts and alert on regressions > 5%.
+4. **Set budgets**: configure `performance.maxAssetSize` and `performance.maxEntrypointSize` in Webpack to fail the build when bundles exceed thresholds.
+5. **Action on duplicates**: use `webpack-deduplication-plugin` to detect and warn when the same library appears multiple times at different versions.
+
 ## Links
 
 - Parent: [[concepts/system-design|System Design]]

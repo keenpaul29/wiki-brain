@@ -77,6 +77,16 @@ powershell -ExecutionPolicy Bypass -File scripts/lint-wiki.ps1
 The script reports wiki pages with no inbound links (excluding
 index/log/workflow/state pages) and exits non-zero when orphan pages are found.
 
+## One-Command Cycle
+
+Run the full pipeline:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-daily-cycle.ps1 -AutoDeepen
+```
+
+Options: `-AutoIngest`, `-AutoDeepen`, `-SkipGbrain`, `-SkipCommit`, `-SkipLinks`, `-Help`.
+
 ## Related Skills
 
 - `skills/wiki-maintain/SKILL.md` — full lifecycle orchestration

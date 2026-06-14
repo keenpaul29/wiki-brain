@@ -168,4 +168,10 @@ At LinkedIn's scale (millions of QPS), semantic search uses GPU-accelerated embe
 - [[sources/linkedin-prompt-engineering-playgrounds|Collaborative Prompt Engineering Playgrounds]]
 - [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Without Slop]]
 - [[sources/linkedin-semantic-search-rebuild|Reimagining LinkedIn's Search Tech Stack]]
+
+## Related Concepts
+
 - [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]
+- [[concepts/recurrent-depth-transformers|Recurrent-Depth Transformers]]
+- [[concepts/vector-semantic-search-architecture|Vector and Semantic Search Architecture]]
+- [[concepts/ai-coding-workflow-productivity|AI Coding Workflow and Productivity]]

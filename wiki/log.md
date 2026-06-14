@@ -530,3 +530,27 @@ Performed 10 deep-content expansion passes across the wiki concept and synthesis
 
 Updated [[index]], [[log]]. Link check and lint pass clean.
 
+
+## 2026-06-14 13:11 daily cycle | Auto-deepen: 9 thin concept(s) flagged
+
+## 2026-06-14 13:12 daily cycle | Wiki state committed
+
+## [2026-06-14] ingest | Garry Tan's Claude Code Senior Engineer Prompt
+
+Processed new raw source: Garry Tan's Claude Code Senior Engineer Prompt — a Plan Mode prompt template using four review pillars (architecture, code quality, tests, performance) with structured issue reporting and BIG/SMALL change branching.
+
+Added source summary: [[sources/garry-tan-claude-code-senior-engineer-prompt|Garry Tan's Claude Code Senior Engineer Prompt]].
+
+Updated [[index]], [[log]].
+
+## [2026-06-14] ingest | HLD network protocols, incremental rollup tables, pcell A2A protocol, sycophancy drift
+
+Processed 4 new raw sources covering network protocol fundamentals, materialized rollup table analytics, agent-to-agent knowledge economies, and LLM sycophancy bias.
+
+Added source summaries:
+- [[sources/hld-network-protocols|HLD Fundamentals #1 - Network Protocols]] (TCP, UDP, QUIC, HTTP/3, DNS, WebSocket tradeoffs for system design).
+- [[sources/incremental-rollup-tables|Incremental Rollup Tables for Dashboard Analytics]] (materialized precomputed rollups replacing full-query refreshes).
+- [[sources/pcell-agent-society-a2a-protocol|pcell Agent-to-Agent Protocol]] (decentralized agent society with emergent specialization).
+- [[sources/sycophancy-drift-reflective-layer|Sycophancy Drift — A Reflective Layer]] (agreement bias in LLMs and reflective-layer mitigation).
+
+Updated [[index]], [[log]].

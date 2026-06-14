@@ -117,6 +117,8 @@ Event-driven systems need explicit error handling for poisoned events:
 - Parent concept: [[concepts/system-design|System Design]]
 - Related: [[concepts/infrastructure-primitives|Infrastructure Primitives]]
 - Related: [[concepts/software-design-patterns|Software Design Patterns]]
+- Sub-concept: [[concepts/api-protocol-selection|API Protocol Selection]]
+- Sub-concept: [[concepts/event-driven-architecture|Event-Driven Architecture]]
 - Source: [[sources/system-design-course|System Design Course]]
 - Source: [[sources/microservices-vs-monoliths|Microservices vs. Monoliths]]
 - Source: [[sources/design-pattern-decision-tree|Stop Memorizing Design Patterns - Use This Decision Tree Instead]]

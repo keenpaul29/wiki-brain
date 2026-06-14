@@ -6,13 +6,13 @@ updated: 2026-06-14
 
 # Daily Wiki Scan
 
-Generated: 2026-06-14 12:18:28 +05:30
+Generated: 2026-06-14 14:12:46 +05:30
 
 ## Summary
 
-- Raw files: 110
+- Raw files: 115
 - New files: 0
-- Changed files: 1
+- Changed files: 3
 - Deleted files: 0
 - State committed: True
 
@@ -22,7 +22,9 @@ Generated: 2026-06-14 12:18:28 +05:30
 
 ## Changed Files
 
-- `raw/Learn System Design With Me . Day 20 Security Patterns.md`
+- `raw/Enhance productivity with AI + Remote Dev.md`
+- `raw/Garry Tan's Claude Code Senior Engineer Prompt.md`
+- `raw/How to Use Google Stitch's Design.md File with Claude Code for Consistent UI.md`
 
 ## Deleted Files
 

@@ -95,6 +95,7 @@ Tying CLI utilities together turns the terminal into a cohesive workflow engine.
 - Parent concept: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
 - Related: [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
 - Related: [[concepts/shared-engineering-language|Shared Engineering Language]]
+- Related: [[concepts/cloud-devboxes-for-agent-execution|Cloud Devboxes for Agent Execution]]
 - Source: [[sources/effective-git|Effective Git Workflows and Commands]]
 - Source: [[sources/effective-terminal|Effective Terminal Workflows and Productivity]]
 - Source: [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]]

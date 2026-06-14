@@ -1,5 +1,5 @@
 ---
-title: Beyond Code Generation: Rethinking Engineering Productivity in the Age of AI Agents
+title: "Beyond Code Generation: Rethinking Engineering Productivity in the Age of AI Agents"
 type: source
 created: 2026-06-01
 tags:

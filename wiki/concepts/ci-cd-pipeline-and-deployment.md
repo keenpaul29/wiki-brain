@@ -115,6 +115,7 @@ Metrics guide improvement, not punishment. Teams with low deployment frequency a
 - Related: [[concepts/integration-testing-and-test-strategy|Integration Testing and Test Strategy]]
 - Related: [[concepts/infrastructure-primitives|Infrastructure Primitives]]
 - Related: [[concepts/microservices-architecture|Microservices Architecture]]
+- Related: [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]]
 - Source: [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
 - Source: [[sources/docker-image-security-optimization|Docker Image Security and Optimization]]
 - Source: [[sources/podman-python-deploys|Podman for Faster Python Deploys]]

@@ -121,6 +121,7 @@ AI coding accelerates strong engineers and also accelerates weak or absent reaso
 - Related: [[concepts/code-quality-and-ai-slop|Code Quality and AI Slop Management]]
 - Related: [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]]
 - Related: [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
+- Related: [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]]
 - Source: [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]]
 - Source: [[sources/medium-10x-dev-llm-coding-faster|10x Dev: LLM Coding Faster Without Slop]]
 - Source: [[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]]

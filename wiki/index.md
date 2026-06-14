@@ -174,9 +174,15 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/sre-incident-management|SRE Incident Management]] - Incident lifecycle, Incident Command System, on-call engineering, blameless postmortem culture, and action item discipline.
 - [[sources/structured-engineering-hiring|Structured Engineering Hiring]] - Rubric-based scoring, behavioral and hypothetical questions, score-first debrief, bias mitigation, and process design for consistent hiring.
 - [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]] - Four team types (stream-aligned, enabling, complicated-subsystem, platform), interaction modes, Conway's Law, and cognitive load management.
-
+- [[sources/garry-tan-claude-code-senior-engineer-prompt|Garry Tan's Claude Code Senior Engineer Prompt]] - Plan Mode prompt with four engineering review pillars for AI-assisted development.
+- [[sources/hld-network-protocols|HLD Fundamentals #1 - Network Protocols]] - Network protocol fundamentals for system design: TCP, UDP, QUIC, HTTP/3, DNS, and WebSocket tradeoffs.
+- [[sources/incremental-rollup-tables|Incremental Rollup Tables for Dashboard Analytics]] - Materialized incremental rollup tables replacing full-query refreshes for sub-50ms dashboard analytics.
+- [[sources/pcell-agent-society-a2a-protocol|pcell Agent-to-Agent Protocol]] - Decentralized agent knowledge economy with 135 agents, A2A protocol, and emergent specialization.
+- [[sources/sycophancy-drift-reflective-layer|Sycophancy Drift — A Reflective Layer]] - The AI agreement bias and a reflective-layer mitigation for LLM-assisted decision making.
+ 
 ## Newest Sources
 
+- [[sources/garry-tan-claude-code-senior-engineer-prompt|Garry Tan's Claude Code Senior Engineer Prompt]]
 - [[sources/prod-web-application-components|Key Components of a Prod Web Application]]
 - [[sources/latency-gambler-day-10|Caching Patterns]]
 - [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
@@ -201,7 +207,11 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 - [[sources/sre-incident-management|SRE Incident Management]]
 - [[sources/structured-engineering-hiring|Structured Engineering Hiring]]
 - [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]]
-
+- [[sources/hld-network-protocols|HLD Fundamentals #1 - Network Protocols]]
+- [[sources/incremental-rollup-tables|Incremental Rollup Tables for Dashboard Analytics]]
+- [[sources/pcell-agent-society-a2a-protocol|pcell Agent-to-Agent Protocol]]
+- [[sources/sycophancy-drift-reflective-layer|Sycophancy Drift — A Reflective Layer]]
+ 
 ## Maintenance Notes
 
 - [[maintenance|Maintenance]] - Everyday workflow for ingesting, querying, and linting the wiki.

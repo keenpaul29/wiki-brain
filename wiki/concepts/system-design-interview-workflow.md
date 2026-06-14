@@ -60,6 +60,40 @@ Accumulating technical vocabulary without practicing verbal tradeoff reasoning u
 - Spend detail time where the system is most constrained or most likely to fail.
 - Use back-of-the-envelope calculations (QPS, storage, bandwidth) to validate choices rather than relying on intuition.
 
+## Back-of-the-Envelope Reference
+
+Common estimates that ground design decisions:
+
+| Calculation | Formula | Example |
+|---|---|---|
+| QPS from DAU | (DAU × avg_actions_per_user) / seconds_in_day | 100M DAU × 10 actions / 86400 ≈ 11.6K QPS |
+| Peak QPS | avg_QPS × 5-10x peak factor | 11.6K × 5 ≈ 58K peak |
+| Storage per day | QPS_write × avg_write_size | 1K writes/s × 1KB × 86400 ≈ 86 GB/day |
+| Bandwidth | avg_response_size × QPS | 50KB × 10K QPS ≈ 500 MB/s |
+| Cache memory | working_set × replication_factor | 10M objects × 1KB × 2 replicas ≈ 20 GB |
+
+The interviewer cares about the reasoning, not the precise number. Rounding to orders of magnitude (10K QPS, 100 GB/day) is fine.
+
+## Follow-Up Question Patterns
+
+Interviewers probe depth through specific follow-up categories:
+
+- **Failure modes**: "What happens when the database goes down?" — tests understanding of failover, degradation, and graceful fallback.
+- **Scale leap**: "What breaks at 10x this traffic?" — tests whether the design has linear scaling or hits a hard wall.
+- **Consistency choice**: "Can you use weaker consistency here?" — tests whether the candidate understands what the consistency tradeoff actually costs.
+- **Cost sensitivity**: "This design costs too much. Where do you cut?" — tests ability to distinguish essential from nice-to-have.
+- **Team topology**: "How many teams would need to own parts of this?" — tests Conway's Law awareness and organizational feasibility.
+
+## Presenting Tradeoffs
+
+The strongest interview responses follow a three-part structure:
+
+1. **State the constraint**: "Our primary requirement is P99 latency under 100ms."
+2. **Name the options**: "We could use in-memory cache (fast, expensive, lossy) or read replicas (slower, cheaper, consistent)."
+3. **Choose with justification**: "I'll start with cache because the latency requirement is strict. If the cache miss rate exceeds 20%, we'll promote hot data to read replicas."
+
+Avoid claiming one technology is universally superior. Every choice is a tradeoff; naming the tradeoff explicitly is the signal the interviewer looks for.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]

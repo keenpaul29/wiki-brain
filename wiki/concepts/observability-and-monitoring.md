@@ -269,6 +269,7 @@ Alert when both windows exceed their thresholds. The short window catches the pr
 - Related: [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]]
 - Related: [[concepts/infrastructure-primitives|Infrastructure Primitives]]
 - Related: [[concepts/incident-management-sre|Incident Management and SRE Practice]]
+- Related: [[concepts/performance-engineering|Performance Engineering]]
 - Source: [[sources/observability-in-distributed-systems|Observability in Distributed Systems]]
 - Source: [[sources/sre-incident-management|SRE Incident Management]]
 - Source: [[sources/backend-performance-engineering|Backend Performance Engineering]]

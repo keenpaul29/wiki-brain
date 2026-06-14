@@ -107,6 +107,10 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] — retry, timeout, circuit breaker, fallback, graceful degradation, bulkhead
 - [[concepts/api-management|API Management]] — API gateway, rate limiting, versioning, BFF pattern
 - [[concepts/microservices-architecture|Microservices Architecture]] — service discovery, bulkhead, Netflix OSS patterns, health checks
+- [[concepts/api-protocol-selection|API Protocol Selection]] — REST vs GraphQL vs gRPC decision framework
+- [[concepts/event-driven-architecture|Event-Driven Architecture]] — events, CQRS, CDC, event sourcing, sagas
+- [[concepts/performance-engineering|Performance Engineering]] — profiling, load testing, caching, database optimization
+- [[concepts/team-topologies|Team Topologies]] — Conway's Law, team types, cognitive load, platform teams
 
 ## Source Support
 

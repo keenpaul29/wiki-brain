@@ -115,9 +115,9 @@
     },
     {
         "path":  "raw/Enhance productivity with AI + Remote Dev.md",
-        "sha256":  "dd4bc117b47f836564caf1cf974cd5b2fdbe97dfd1aabc80020b1ef5f3ab84b0",
-        "length":  12665,
-        "last_write_time":  "2026-06-14T10:31:25.4686263+05:30"
+        "sha256":  "e6045221aafc6a049ee1d5a37b6f39ae6faab3da93c81152875dd9b103ede943",
+        "length":  12664,
+        "last_write_time":  "2026-06-14T13:39:41.3031094+05:30"
     },
     {
         "path":  "raw/Escaping the Fork How Meta Modernized WebRTC Across 50+ Use Cases.md",
@@ -130,6 +130,24 @@
         "sha256":  "7e0d9dcec9826aa1263ec692d5fb750b7f9f3aab5e0fa3bf5ddda77e2339545b",
         "length":  20530,
         "last_write_time":  "2026-06-14T10:31:25.4696442+05:30"
+    },
+    {
+        "path":  "raw/From 5 Seconds to 50ms How I Stopped Nuking My Database Every Time I Deleted an Order.md",
+        "sha256":  "a380aca408f568a7d532ff86c996afd90b752b7f242c33c783dc7ee61a3bac20",
+        "length":  15701,
+        "last_write_time":  "2026-06-14T12:25:46.6043638+05:30"
+    },
+    {
+        "path":  "raw/From Solo Tools to Agent Societies How 135 AI Agents Built Their Own Knowledge Economy.md",
+        "sha256":  "590d1c4d99588047772ffd51229cc1532670d4371b0d1dc573c88706e3ea83b0",
+        "length":  5564,
+        "last_write_time":  "2026-06-14T12:21:41.5399351+05:30"
+    },
+    {
+        "path":  "raw/Garry Tan\u0027s Claude Code Senior Engineer Prompt.md",
+        "sha256":  "81f71dfdb61d1f30276a826d5887eadc1a5a41e726790717359948c5df9a0055",
+        "length":  6163,
+        "last_write_time":  "2026-06-14T13:39:41.3056411+05:30"
     },
     {
         "path":  "raw/Going from Junior - Senior engineer in 2 years.md",
@@ -148,6 +166,12 @@
         "sha256":  "47af8de0da9aa0b6628155bdcf2206bf0f924fe574984b9370f61b7a2f92e2d1",
         "length":  13406,
         "last_write_time":  "2026-06-14T10:31:25.4706443+05:30"
+    },
+    {
+        "path":  "raw/HLD Fundamentals 1 Network Protocols.md",
+        "sha256":  "16f08bceb9e7d21ff2d749f6fd530358ceaa9106e575d28b745b385f6620ab3d",
+        "length":  11020,
+        "last_write_time":  "2026-06-14T12:31:01.8979716+05:30"
     },
     {
         "path":  "raw/How Edison is helping us build a faster, more powerful Dropbox on the web.md",
@@ -241,9 +265,9 @@
     },
     {
         "path":  "raw/How to Use Google Stitch\u0027s Design.md File with Claude Code for Consistent UI.md",
-        "sha256":  "be15582d83c26d64724c29682ad9d24e4c8f8bb93ae6bda28a21819a7f6376b9",
-        "length":  17336,
-        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
+        "sha256":  "06499da55453c028b4939b1c0f7d76aadcc0aef3bda1a9c8631290264c1a2e76",
+        "length":  17335,
+        "last_write_time":  "2026-06-14T13:39:41.3192167+05:30"
     },
     {
         "path":  "raw/I Deployed Local LLMs in Production for a Year. Part 1 The Mental Model  by Mustafa Genc  in AI Advances.md",
@@ -277,9 +301,9 @@
     },
     {
         "path":  "raw/Image Transformations for Developers.md",
-        "sha256":  "7409f64f5b6bb3812410bdaf40352129756c1b9ecb901bd9646a75890e0096f6",
-        "length":  28783,
-        "last_write_time":  "2026-06-14T10:39:16.3003731+05:30"
+        "sha256":  "5aa8089ac04d56184ebe93b504f7291212ad7baf32c13cf9443f63265987074e",
+        "length":  29153,
+        "last_write_time":  "2026-06-14T12:54:37.1844853+05:30"
     },
     {
         "path":  "raw/Improving Site Performance With Webpack Tree Shaking.md",
@@ -379,9 +403,9 @@
     },
     {
         "path":  "raw/Learn System Design With Me . Day 2 Strategy \u0026 Observer Patterns for System Design  by The Latency Gambler.md",
-        "sha256":  "a4732651a990e8ec98c162c49b304a080be5ddad2c18e10f0f213997e1f7c817",
-        "length":  14548,
-        "last_write_time":  "2026-06-14T10:40:29.4401357+05:30"
+        "sha256":  "a10b3d64f6559f76325b61eb6e5885a069694ccde9338ddab7bd48a891b1ffca",
+        "length":  15010,
+        "last_write_time":  "2026-06-14T12:54:37.1855050+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 20 Security Patterns.md",
@@ -391,51 +415,51 @@
     },
     {
         "path":  "raw/Learn System Design With Me . Day 3 Decorator \u0026 Proxy Patterns. Adding Superpowers Without Surgery  by The Latency Gambler.md",
-        "sha256":  "2ba0155ad24fbd9f3033c3357f0d18db03fe94b7a39a76a1a43f97ca57fa55fa",
-        "length":  18727,
-        "last_write_time":  "2026-06-14T10:40:41.3746688+05:30"
+        "sha256":  "8697b535ea385e161f496af4afb8a016937351d217e3911d58c627ebca72a1fa",
+        "length":  19314,
+        "last_write_time":  "2026-06-14T12:54:37.1863257+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 4 Singleton \u0026 Builder Patterns (The Right Way)  by The Latency Gambler.md",
-        "sha256":  "ebbdf4e6532605f38eb220d71481f2d11db26dd9e26e0e0ed60dd2e165c8234b",
-        "length":  17705,
-        "last_write_time":  "2026-06-14T10:40:40.1731744+05:30"
+        "sha256":  "3cb73c25ee2191c4d03c5451d9fe9f2ee5b160c4487d87cea14d4ea713307825",
+        "length":  18285,
+        "last_write_time":  "2026-06-14T12:54:37.1868397+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 5 Command \u0026 Template Method Patterns  by The Latency Gambler.md",
-        "sha256":  "939c2f5689718a0cf9cb15a868f9213af9d2bb81a0c762ee7462a27b52dd8dff",
-        "length":  26077,
-        "last_write_time":  "2026-06-14T10:40:37.3890243+05:30"
+        "sha256":  "a18118bd846ea09fce79e4f5bb25c6b53fff786dec757d363d7096706a2aa9cd",
+        "length":  26853,
+        "last_write_time":  "2026-06-14T12:54:37.1878629+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 7 Chain of Responsibility \u0026 State Patterns .  by The Latency Gambler.md",
-        "sha256":  "fbfd1475f163236305bb49fe9ffa17b3ac1989714a73e768c858e0d3c4971988",
-        "length":  28093,
-        "last_write_time":  "2026-06-14T10:40:36.3178341+05:30"
+        "sha256":  "993f1a546e83df21b068744854f618e5a989375cafac207469f4fe01d0823aba",
+        "length":  28900,
+        "last_write_time":  "2026-06-14T12:54:37.1888601+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 8 Load Balancing \u0026 Circuit Breaker….md",
-        "sha256":  "c8a7e6556baa378e0543a6e287d1c56b52c141cbe768bea8140568211c3ac66a",
-        "length":  26639,
-        "last_write_time":  "2026-06-14T10:40:35.0247977+05:30"
+        "sha256":  "67633b9989917782ad60c071fd07e5987e6cd6578581a4a5625b008eeb791001",
+        "length":  27277,
+        "last_write_time":  "2026-06-14T12:54:37.1898741+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 9 Database Patterns \u0026 Repository P….md",
-        "sha256":  "60f9af6b596371fc072b5c3d71f8713d04cb1dd4d63111fb853bb20606ce0af0",
-        "length":  27807,
-        "last_write_time":  "2026-06-14T10:40:48.6185421+05:30"
+        "sha256":  "1ec8d391435e027948debe327c201a72df2e189fc38d2aba4f23544c6433cafb",
+        "length":  28527,
+        "last_write_time":  "2026-06-14T12:54:37.1910397+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me Day 1 Building Your Architect Mindset  by The Latency Gambler.md",
-        "sha256":  "0cf2a7ad71c8e830cb4c0aa8d2a966bd27a0203faa97e3980b1acd713cccb649",
-        "length":  7738,
-        "last_write_time":  "2026-06-14T10:40:33.3559521+05:30"
+        "sha256":  "bef817113d1532a40bdb3952e089058b23e7e4e1d6c49973cc7b703ff2ce2bf0",
+        "length":  7941,
+        "last_write_time":  "2026-06-14T12:54:37.1920511+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me Part 6  by The Latency Gambler.md",
-        "sha256":  "b0c676e25b25af3f69ee094b13f101bf25bf9b150b8b13f3c28fac58a39ecb3f",
-        "length":  25852,
-        "last_write_time":  "2026-06-14T10:40:31.5715058+05:30"
+        "sha256":  "97857c55d4596719094eab71fd22690904334a9af892b69c2eed23bfe884901e",
+        "length":  26523,
+        "last_write_time":  "2026-06-14T12:54:37.1931569+05:30"
     },
     {
         "path":  "raw/Microservices vs. Monoliths When to Choose What (and Why It Matters).md",
@@ -610,6 +634,12 @@
         "sha256":  "8fad692d9b135289aafdb0deb2fe5b258df77603aaad31323e63a798e7089551",
         "length":  24074,
         "last_write_time":  "2026-06-14T10:31:25.4914607+05:30"
+    },
+    {
+        "path":  "raw/The Most Dangerous Bias of Your AI Assistant Is That It Agrees With You.md",
+        "sha256":  "a921f8c6f9d1d17c6cbd3545cca4b4d51958b80871153342207c314e28ad4ffd",
+        "length":  10078,
+        "last_write_time":  "2026-06-14T12:25:37.1337998+05:30"
     },
     {
         "path":  "raw/The Packet Drop That Froze Three Requests at Once.md",

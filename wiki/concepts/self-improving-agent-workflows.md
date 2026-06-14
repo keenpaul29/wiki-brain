@@ -87,6 +87,13 @@ Key design properties:
 
 The learning loop: Madrigal's capture→assert→test cycle is the behavioral equivalent of the wiki's ingest→summarize→link cycle. Both turn transient execution outcomes into durable system knowledge.
 
+## Links
+
+- Parent concept: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
+- Related: [[concepts/ai-coding-workflow-productivity|AI Coding Workflow and Productivity]]
+- Related: [[concepts/cloud-devboxes-for-agent-execution|Cloud Devboxes for Agent Execution]]
+- Related: [[concepts/multi-agent-orchestration|Multi-Agent Orchestration]]
+
 ## Source Support
 
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]]

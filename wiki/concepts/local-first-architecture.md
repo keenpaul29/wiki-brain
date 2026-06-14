@@ -44,6 +44,27 @@ Local-first systems must handle concurrent edits from multiple devices or tabs. 
 
 For file-level sync (Dropbox, Google Drive), LWW is standard because files are opaque blobs. For real-time collaborative editing (Notion, Figma, Google Docs), CRDTs or OT are required.
 
+### CRDT Types in Practice
+
+Different CRDT data types serve different collaborative primitives:
+
+| CRDT Type | Use Case | Examples | Storage Overhead |
+|---|---|---|---|
+| LWW Register | Single-value fields (title, status) | Basic KV sync | Negligible |
+| GCounter / PNCounter | Counters, vote tallies | Like counts, view counts | Per-replica metadata |
+| GSet / ORSet | Membership, tags | Label sets, participant lists | Tombstone-free vs. tombstone |
+| Text sequence (RGA, Fugue) | Rich text editing | Google Docs, Notion blocks | Positional metadata per character |
+| Map (LWW Map, OR Map) | Nested objects | JSON document sync | Per-field metadata |
+
+### Sync Protocol Design
+
+The sync protocol connecting local engines to the server or between peers has its own design decisions:
+
+- **Delta sync vs. full state**: delta sync sends only the changes since last sync (bandwidth efficient, requires change tracking). Full state sync sends the entire document (simple, but wasteful for large documents).
+- **Push vs. pull vs. push-pull**: push sends local changes to the server immediately; pull fetches remote changes on a timer or trigger; push-pull combines both for near-real-time sync.
+- **Streaming vs. batch**: WebSocket-based streaming sync (Edison, Figma) provides sub-second propagation. Periodic batch sync (offline-first mobile apps) conserves battery and bandwidth at the cost of staleness.
+- **Authority model**: client-authoritative (local changes win until conflict), server-authoritative (server validates and can reject), or hybrid (server validates structural constraints, client controls content).
+
 ## Offline Resilience
 
 Local-first architecture enables offline operation as a natural consequence of the local read/write pattern:
