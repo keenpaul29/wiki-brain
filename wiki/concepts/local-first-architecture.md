@@ -20,13 +20,40 @@ Local-first architecture enables web applications to read and write to a local r
 - **Background sync**: a sync engine handles uploads, change notifications, and conflict resolution asynchronously.
 - **Optimistic UI**: actions appear instant; the server is the source of truth but the client does not block on it.
 
-## Implementation Patterns
+## Edison Engine Architecture (Dropbox)
 
-- **Two-layer architecture**: a local-first sync engine (read/write to local representation) and a sync service (persistent WebSocket connection for change propagation).
-- **Multi-tab coordination**: using BroadcastChannel API for cross-tab state synchronization.
-- **Durable store**: IndexedDB with specialized schemas for file metadata and content.
-- **Change notifications**: WebSocket-based to propagate changes from server to all connected clients.
-- **Conflict resolution**: handling concurrent edits from multiple devices or tabs.
+Dropbox's [[sources/dropbox-edison-web-performance|Edison]] replaces the older architecture where each UI feature independently fetched from the server. The two-layer design:
+
+```
+User Action → Edison Engine (local read/write) → Sync Service (WebSocket) → Dropbox Server
+```
+
+- **Edison Engine**: the local-first sync engine. All file operations (list, search, preview) read from and write to a local representation. The engine restructures the web client's data access so components share a single storage layer instead of each maintaining independent server fetches.
+- **Sync Service**: maintains a persistent WebSocket connection to the server. Handles uploads, change propagation, and conflict resolution in the background while the UI remains interactive.
+- **Multi-tab coordination**: uses BroadcastChannel API so all open tabs see state changes immediately. When one tab renames a file, all other tabs update without a server round-trip.
+- **Durable store**: IndexedDB with a specialized schema for file metadata, content chunks, and sync state. The schema is designed for the read patterns of file browsing — directory listings, search results, and content previews — not for generic key-value storage.
+- **Optimistic UI**: every user action applies to local state first. If sync fails (offline, conflict), the engine retries in the background or surfaces the conflict.
+
+## Conflict Resolution Strategies
+
+Local-first systems must handle concurrent edits from multiple devices or tabs. The common strategies in order of sophistication:
+
+1. **Last-Writer-Wins (LWW)**: simplest strategy. Each change carries a timestamp; the most recent wins. Risk: silent data loss when two users edit different parts of the same document.
+2. **Operational Transform (OT)**: edits are represented as operations (insert, delete, format) that can be transformed against concurrent operations. Used by Google Docs. Requires a central server to coordinate transformation.
+3. **CRDT (Conflict-Free Replicated Data Type)**: each replica applies operations independently; the data type's merge semantics guarantee eventual consistency without a central coordinator. Used by Automerge, Yjs, and Figma. Tradeoff: higher storage overhead for metadata.
+
+For file-level sync (Dropbox, Google Drive), LWW is standard because files are opaque blobs. For real-time collaborative editing (Notion, Figma, Google Docs), CRDTs or OT are required.
+
+## Offline Resilience
+
+Local-first architecture enables offline operation as a natural consequence of the local read/write pattern:
+
+- **Reads always work**: local data is available regardless of connectivity. The user sees the last-synced state immediately.
+- **Writes queue locally**: offline mutations are stored in a pending operation queue. When connectivity returns, the sync engine replays the queue in order.
+- **Conflict detection on reconnect**: if the same data was modified on another device while offline, the system detects the divergence and applies the conflict resolution strategy.
+- **Sync state visibility**: the UI should communicate sync status — "saved locally," "syncing," "conflict detected" — so the user is never surprised by data loss.
+
+This connects to [[concepts/reliability-and-operations|Reliability and Operations]]: offline resilience is a reliability pattern, not just a UX feature. It prevents data loss during network interruptions and reduces server load during reconnection storms.
 
 ## Benefits
 

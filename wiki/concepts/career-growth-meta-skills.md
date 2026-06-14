@@ -115,6 +115,31 @@ Use both types in the same interview.
 - Pass rate by stage (above 60% at screen means bar is too low)
 - 90-day performance correlation with interview scores
 
+## Software Estimation as a Senior Skill
+
+Senior engineers are expected to scope work and set expectations. [[sources/software-estimation-techniques|Software Estimation Techniques]] covers the practical toolkit:
+
+- **Relative sizing (story points)** — Measure complexity + uncertainty + volume, not time. Modified Fibonacci gaps (1, 2, 3, 5, 8, 13, 21) reflect lower precision for larger tasks.
+- **Planning Poker** — Simultaneous independent estimates neutralize anchoring bias. The most vocal person should not set the estimate.
+- **T-shirt sizing** — XS-XXL suits roadmap-level planning and early discovery when details are thin.
+- **Monte Carlo simulation** — Run historical throughput through a probabilistic model to get confidence intervals ("85% within 14 weeks") instead of deterministic date promises.
+- **Affinity estimation** — Silent card sorting for 50-80 stories in under an hour by a team of 5. Good for fast backlog trimming.
+- **Common mistakes** — Converting points to hours (creates false precision), comparing cross-team velocity (meaningless), using precise scales for uncertain work, switching scales mid-project.
+
+The meta-skill is not the technique itself but choosing the right technique for the context and communicating the uncertainty honestly.
+
+## Engineering Judgment When Code Is Cheap
+
+As AI lowers code-generation cost, the bottleneck in engineering productivity shifts from writing to reviewing, testing, integrating, and verifying. [[sources/dropbox-beyond-code-generation|Dropbox's Nova platform]] measured this explicitly: for every 1 hour spent writing code, engineers needed 2 hours of review and 3 hours of testing, even before agent-produced code became common.
+
+[[sources/code-cheap-judgement-not|AI Code Leverage and Engineering Judgement]] argues that the most valuable senior skill becomes *feature curation and refusal* — deciding what not to build. When every feature can be generated quickly, the scarce resource is attention to verify, the cognitive capacity to understand the system effects, and the discipline to say no to unnecessary complexity.
+
+The practical strategy:
+- **Bias toward removal and simplification** — If you can cut 200 lines instead of adding 50, cut.
+- **Challenge the request before implementing** — "What problem does this solve?" should precede "How do we build this?"
+- **Maintain review discipline** — AI-generated code needs the same or stricter review as peer code, because the model has no understanding of your system's implicit contracts.
+- **Track the bottleneck** — When generation speed outpaces integration capacity, the bottleneck is not the model; it is the team's review and testing bandwidth.
+
 ## Warning
 
 Growth tactics need explicit limits. Copying all tactics at once creates burnout risk. The recommendation is to pick one action, apply it, and let the pattern compound naturally.
@@ -129,3 +154,5 @@ Growth tactics need explicit limits. Copying all tactics at once creates burnout
 - Source: [[sources/developer-time-management|Developer Time Management]]
 - Source: [[sources/structured-engineering-hiring|Structured Engineering Hiring]]
 - Source: [[sources/software-estimation-techniques|Software Estimation Techniques]]
+- Source: [[sources/code-cheap-judgement-not|AI Code Leverage and Engineering Judgement]]
+- Source: [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]

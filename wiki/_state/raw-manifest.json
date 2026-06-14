@@ -1,590 +1,662 @@
 ﻿[
     {
         "path":  "raw/10 No-Code AI Platforms Making Anyone an AI Developer  by Souradip Pal.md",
-        "sha256":  "452ed45cf4a67bb41ceb0d2778e5ca38bc496856cd2c88549f60e7872c451d66",
-        "length":  8314,
-        "last_write_time":  "2026-05-26T13:19:37.1816461+05:30"
+        "sha256":  "d65675c8a4370273771b3a03056ca2815c419c54cccdf6d6f495a110a717cf03",
+        "length":  8520,
+        "last_write_time":  "2026-06-14T10:31:25.4640926+05:30"
     },
     {
         "path":  "raw/12 Caching Patterns Every Engineer Should Know From Cache-Aside to Bloom Filters.md",
-        "sha256":  "7db55e92826b23ff1e1d552cdee82d99f507355ea422bd66bb1934b92f7300ed",
-        "length":  8432,
-        "last_write_time":  "2026-05-26T14:27:54.3090354+05:30"
+        "sha256":  "6884b0e0617cb53af9f4044ad50b9ab9a3221e04fb9c67e95b3e0977ef51b895",
+        "length":  8555,
+        "last_write_time":  "2026-06-14T10:31:25.4640926+05:30"
     },
     {
         "path":  "raw/70+ Engineering Blogs To Follow in 2025.md",
-        "sha256":  "dc6d5f7e7f94a8abaae1e6c45fc016e1461e40232fd5760df87c2f8c1b571aff",
-        "length":  7742,
-        "last_write_time":  "2026-06-01T19:08:40.1050370+05:30"
+        "sha256":  "968d248df3bda98524e3dacfde3b6fda38a0bfd646fbbf98842390f7467e56f3",
+        "length":  7862,
+        "last_write_time":  "2026-06-14T10:31:25.4640926+05:30"
     },
     {
         "path":  "raw/A FastAPI Update Broke My Production App. Here Is the Fix.  by inprogrammer  in Artificial Intelligence in Plain English.md",
-        "sha256":  "46c18ece61d0710eecde979bee03f9c3b575368513dec00f0df731539cab2ab3",
-        "length":  11486,
-        "last_write_time":  "2026-05-05T18:43:44.0564290+05:30"
+        "sha256":  "55290d73f33333bb076b11d2bafdda5694f73830d578069936a3811a11cb906b",
+        "length":  11728,
+        "last_write_time":  "2026-06-14T10:31:25.4650892+05:30"
     },
     {
         "path":  "raw/AI Replaced 80% of Coding — Master These 7 Skills Instead.  by Prakash Sharma.md",
         "sha256":  "5251d9d8862ff35fe2a8bb4649539f780a6b4c312bb33379f5fd8accfec7c801",
         "length":  12262,
-        "last_write_time":  "2026-04-28T17:38:08.8768995+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4650892+05:30"
     },
     {
         "path":  "raw/Andrej Karpathy Stopped Using AI to Write Code. He\u0027s Using It to Build a Second Brain Instead  by Nikhil  in Neural Notions.md",
         "sha256":  "cf54e853aac0b2d7ebcea733dd32971bff8cf183a397075b71ac43360de2b6d3",
         "length":  19783,
-        "last_write_time":  "2026-04-28T17:38:08.8768995+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4650892+05:30"
     },
     {
         "path":  "raw/Backend Performance Engineering - Profiling Bottleneck Analysis and Optimization.md",
-        "sha256":  "abf21031b38b4411c2acd8e6f24c0d1ebda706d9ef53d70c24692f9531c9f7c9",
-        "length":  4080,
-        "last_write_time":  "2026-06-06T19:20:46.4167626+05:30"
+        "sha256":  "b8d337189529dfa8603f7018f62d728afd92d85eba2b5ca5d0b033249facee85",
+        "length":  4172,
+        "last_write_time":  "2026-06-14T10:31:25.4650892+05:30"
     },
     {
         "path":  "raw/Beyond code generation rethinking engineering productivity in the age of AI agents.md",
-        "sha256":  "6b2be0dc9603c222bcfb41a26f55b564ddc55ca05fa4797e536993775bfa4591",
-        "length":  10552,
-        "last_write_time":  "2026-06-01T11:40:12.2494434+05:30"
+        "sha256":  "4ab085533bb688626be1ca232b2e758224264012109142bbd9cd4da771bf455e",
+        "length":  10626,
+        "last_write_time":  "2026-06-14T10:31:25.4666074+05:30"
     },
     {
         "path":  "raw/Beyond Shipped What Actually Breaks in Production AI.md",
-        "sha256":  "07476379c5e367d5550aaa9094b259926a7514aaa5a84de35e3e3a923e27265a",
-        "length":  7613,
-        "last_write_time":  "2026-05-05T18:45:37.8237497+05:30"
+        "sha256":  "27a5bbc94ea56b24188681619bfefbf3fab772c33000383d05f09a7196e98235",
+        "length":  7874,
+        "last_write_time":  "2026-06-14T10:31:25.4650892+05:30"
     },
     {
         "path":  "raw/Building a Bulletproof CI CD Pipeline.md",
-        "sha256":  "0a17d9cae3d8b060dba90d2567f34e77371a2b5b7f934f741e6ae928359b322f",
-        "length":  3046,
-        "last_write_time":  "2026-06-06T18:57:48.2786104+05:30"
+        "sha256":  "e84c7e5118fec89dd27d6457815131edb59cf670804ded7ba683965e49cde2a3",
+        "length":  3114,
+        "last_write_time":  "2026-06-14T10:31:25.4666074+05:30"
     },
     {
         "path":  "raw/Building collaborative prompt engineering playgrounds using Jupyter Notebook.md",
-        "sha256":  "d4934f4482027b1f3e4a834608a6d995e44916a854778dcfcc232af0832d1825",
-        "length":  12785,
-        "last_write_time":  "2026-06-01T11:49:58.1799738+05:30"
+        "sha256":  "2e80084ab8dae03053436db29cb39eab0d80c0aae8119276cc2e7fc26abd6c74",
+        "length":  12893,
+        "last_write_time":  "2026-06-14T10:31:25.4666074+05:30"
     },
     {
         "path":  "raw/Byte Storage vs. IO.md",
-        "sha256":  "0d17c0f8f07fe19af41127d42e13129074a584dea896b760541183daf4532c01",
-        "length":  7154,
-        "last_write_time":  "2026-06-05T10:38:57.8022955+05:30"
+        "sha256":  "1b3961b890a1a8b9c180480c9c2bb3f5250aff9d52c35e67212f7cca32cedaf6",
+        "length":  7222,
+        "last_write_time":  "2026-06-14T10:31:25.4666074+05:30"
     },
     {
         "path":  "raw/Claude Code Best Practices 12 Patterns Agentic Engineers Use  by huizhou92  in Level Up Coding.md",
-        "sha256":  "5ee15cf440749b981f177941fa1a665d3ac49dffbab9dca1cb15df9377f570a5",
-        "length":  15028,
-        "last_write_time":  "2026-05-05T18:34:42.5932576+05:30"
+        "sha256":  "ef113f6b4977b36271deebb0829544453cb5a1bc79c25ce427c5c15a42bc500b",
+        "length":  15267,
+        "last_write_time":  "2026-06-14T10:31:25.4676266+05:30"
     },
     {
         "path":  "raw/Code got cheap. Judgement did not.md",
-        "sha256":  "d42a8bdd8b5cf10763c5201841eaa79f0d96c0466c4f12403ef06cba092fb4d9",
-        "length":  9827,
-        "last_write_time":  "2026-05-26T12:54:09.9664050+05:30"
+        "sha256":  "ee70bcaf872ef47bce716833f1166dbd355a53c92796cadeb6ff5bf1700ec60f",
+        "length":  9908,
+        "last_write_time":  "2026-06-14T10:31:25.4676266+05:30"
     },
     {
         "path":  "raw/Code Smells and Refactoring Techniques - A Practical Catalog.md",
-        "sha256":  "e0b29a9a78fd16fb918f845c099475edc27db965a5a56b256c3ccf0ba17adaec",
-        "length":  4458,
-        "last_write_time":  "2026-06-06T19:19:40.7496079+05:30"
+        "sha256":  "6fd6d32c3371d8218df2e42c04eb60ee1226c394a1325d099942e965c52f603c",
+        "length":  4506,
+        "last_write_time":  "2026-06-14T10:31:25.4676266+05:30"
     },
     {
         "path":  "raw/Create a tunnel (dashboard).md",
-        "sha256":  "073c854a9963674e6241051f47a6b1583a6b2645f6665dfdb32e7e55b3366e4c",
-        "length":  4461,
-        "last_write_time":  "2026-05-05T18:16:25.8915387+05:30"
+        "sha256":  "db9567940d4ad8f69d327db04d61dbac0b675df72aaf26e1b65b5c22e9f63b40",
+        "length":  4517,
+        "last_write_time":  "2026-06-14T10:31:25.4676266+05:30"
     },
     {
         "path":  "raw/Developer Time Management - Deep Work GTD Calendar Blocking and Burnout Prevention.md",
-        "sha256":  "f68d5a44e8a30a179d2b574d83cac6e1dbb8300515e2a9b4f3a38b284d6d1ed5",
-        "length":  4453,
-        "last_write_time":  "2026-06-06T19:20:34.8002436+05:30"
+        "sha256":  "af23c89f4619ba6bc7d4b86dc71ab41bbdcdd8306b1eba11b3d6cfae44c6555d",
+        "length":  4545,
+        "last_write_time":  "2026-06-14T10:31:25.4686263+05:30"
     },
     {
         "path":  "raw/Docker Was Slowing My Deploys. Podman Fixed It in 45 Seconds.  by inprogrammer.md",
-        "sha256":  "d7ec5ff7f24f7825dd0c3aa983c9f6987a06010aa967a333060057d8d1cc72b1",
-        "length":  12784,
-        "last_write_time":  "2026-05-05T18:35:39.7718755+05:30"
+        "sha256":  "84f27f4bc47b3f520f365541082b4521ba4697f2f73a42dc1b5e72aadd250ffa",
+        "length":  13175,
+        "last_write_time":  "2026-06-14T10:31:25.4686263+05:30"
     },
     {
         "path":  "raw/Don\u0027t Outsource the Learning.md",
-        "sha256":  "a08bf5330699b0bc37f59a73a39a156ba4c519a0872572c6fedd3cf7fddb8b39",
-        "length":  9533,
-        "last_write_time":  "2026-05-19T17:41:48.5618026+05:30"
+        "sha256":  "7e50ed3ca87cdcca9eabb4398e4869340a197dc0e1e3bb2a24fa6ebcf3c2a4e8",
+        "length":  9634,
+        "last_write_time":  "2026-06-14T10:31:25.4686263+05:30"
     },
     {
         "path":  "raw/Enhance productivity with AI + Remote Dev.md",
-        "sha256":  "e879215f334235d6036f07bcddd7aa248e34d381394244113405321f2a4deb4b",
-        "length":  12522,
-        "last_write_time":  "2026-05-26T18:52:35.4460899+05:30"
+        "sha256":  "dd4bc117b47f836564caf1cf974cd5b2fdbe97dfd1aabc80020b1ef5f3ab84b0",
+        "length":  12665,
+        "last_write_time":  "2026-06-14T10:31:25.4686263+05:30"
     },
     {
         "path":  "raw/Escaping the Fork How Meta Modernized WebRTC Across 50+ Use Cases.md",
-        "sha256":  "92a44fd0113bbbe5871eb3ffe8ce126891507213d03eb3dca44b4674717ce2f1",
-        "length":  16746,
-        "last_write_time":  "2026-05-27T17:40:12.4818031+05:30"
+        "sha256":  "4a4f16814a27e53bd12bc9bf85efa5aa07f7314e23bc342368731d9a08f6a586",
+        "length":  16899,
+        "last_write_time":  "2026-06-14T10:31:25.4696442+05:30"
     },
     {
         "path":  "raw/FishDB - a generic retrieval engine for scaling LinkedIn’s feed.md",
-        "sha256":  "5a42f22d230f06b0ec1a48aab7548de38d730d54e4a112269c62bbc503eee503",
-        "length":  20354,
-        "last_write_time":  "2026-06-01T11:47:39.6959888+05:30"
+        "sha256":  "7e0d9dcec9826aa1263ec692d5fb750b7f9f3aab5e0fa3bf5ddda77e2339545b",
+        "length":  20530,
+        "last_write_time":  "2026-06-14T10:31:25.4696442+05:30"
     },
     {
         "path":  "raw/Going from Junior - Senior engineer in 2 years.md",
-        "sha256":  "b5688244b4b82d2190d42179a623d2cd0b72ed2cafb7ba458dd98b3ed94ff0a2",
-        "length":  14572,
-        "last_write_time":  "2026-06-04T19:24:10.1979459+05:30"
+        "sha256":  "9db558023a4236edce93bad030201a48605f3212fb13bb55d4317f1b15ea73da",
+        "length":  14720,
+        "last_write_time":  "2026-06-14T10:31:25.4706443+05:30"
     },
     {
         "path":  "raw/GPT-5.5 Agents Replaced My Python Backend. 83% Cost Cut.  by inprogrammer.md",
         "sha256":  "f0103609881e0fa0b74fc5326af5e6bcf8f7ae55ace22ea4fe7e92fa66c3ac79",
         "length":  10645,
-        "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4696442+05:30"
     },
     {
         "path":  "raw/Have We Reached the End of Legacy Code  by David Rodenas PhD.md",
-        "sha256":  "ae3238ee8c2000dce5f5d20e31ad196084362d144cc8b7781bfacf280329417a",
-        "length":  13280,
-        "last_write_time":  "2026-05-26T12:57:29.8650409+05:30"
+        "sha256":  "47af8de0da9aa0b6628155bdcf2206bf0f924fe574984b9370f61b7a2f92e2d1",
+        "length":  13406,
+        "last_write_time":  "2026-06-14T10:31:25.4706443+05:30"
     },
     {
         "path":  "raw/How Edison is helping us build a faster, more powerful Dropbox on the web.md",
-        "sha256":  "f43b161d5380b526a2ec58031f431bd818a31e907d724f90984698e3c5ad6f26",
-        "length":  30571,
-        "last_write_time":  "2026-06-01T11:42:49.3067964+05:30"
+        "sha256":  "98ef52c27b7eb99a5de5bfe9c968159f7a2c04d71ea779e062b3ed1a29cb8b3c",
+        "length":  30839,
+        "last_write_time":  "2026-06-14T10:31:25.4706443+05:30"
     },
     {
         "path":  "raw/How I Get 100% Out of AI When Coding — The Workflow Nobody Taught Me  by Udara Abeythilake  in Level Up Coding.md",
-        "sha256":  "c274e862d581506e69dc5057930ffad296e4e9da3544fb9bfe91df9730881c3f",
-        "length":  14313,
-        "last_write_time":  "2026-05-09T14:45:30.0219252+05:30"
+        "sha256":  "5f4d73daae7c0535cccd62076261296fab3b9ea7b16576b2f816f0737b8668c8",
+        "length":  14536,
+        "last_write_time":  "2026-06-14T10:31:25.4706443+05:30"
     },
     {
         "path":  "raw/How I Made a Desktop App Invisible to Screen Sharing (Electron + OS-Level Tricks).md",
-        "sha256":  "0529bc89f8af6be3897f141f6fe482045bfee964be7c814fe5f094ae17a470ef",
-        "length":  38492,
-        "last_write_time":  "2026-05-05T18:47:27.9425093+05:30"
+        "sha256":  "1e99f0ddf062001b62acb9b0afa7001dde9687a39ad8b8759e0b4ba982d2b8ad",
+        "length":  39282,
+        "last_write_time":  "2026-06-14T10:31:25.4716390+05:30"
     },
     {
         "path":  "raw/How I Scrubbed 100% of the AI Slop From My Game \u0026 Cut Code by 45%.md",
-        "sha256":  "8622efd922798987f6921f179070b96018bef4408cea584d49320159f9672ed0",
-        "length":  32240,
-        "last_write_time":  "2026-06-01T10:30:41.2471367+05:30"
+        "sha256":  "7ee1f0ab228bb21e97ee112d8463f1fe967c753a494c2092652395aa81aa1814",
+        "length":  32631,
+        "last_write_time":  "2026-06-14T10:31:25.4716390+05:30"
     },
     {
         "path":  "raw/How Kensho built a multi-agent framework with LangGraph to solve trusted financial data retrieval.md",
-        "sha256":  "e5f028e8f81ac70f7c75974dfe416597beb497c75b90767db3a7bc61df482880",
-        "length":  7732,
-        "last_write_time":  "2026-05-26T12:49:57.6480065+05:30"
+        "sha256":  "4f6e455fe969d7d420d8e167b58472bb5ef7e1626feea0146e643e388f727a1d",
+        "length":  7783,
+        "last_write_time":  "2026-06-14T10:31:25.4716390+05:30"
     },
     {
         "path":  "raw/How Madrigal Built a Flexible and Scalable Multi-Agent Research and Intelligence Platform for Pharma with LangChain and LangSmith.md",
-        "sha256":  "566b8221f3fb6f19d214a9fd67fef9a245e0f456dd864635eb95e9fc034cfa75",
-        "length":  15363,
-        "last_write_time":  "2026-05-26T12:50:45.5017003+05:30"
+        "sha256":  "ae71ee8ceec75e8f9275cf0cb7d77f1e8613146defa08421d77212be2bd5ef7f",
+        "length":  15506,
+        "last_write_time":  "2026-06-14T10:31:25.4726413+05:30"
     },
     {
         "path":  "raw/How Netflix is Using Multimodal AI to Power Video Search.md",
-        "sha256":  "589b0675ccd64ba3c16e7d14f4299785cc21cc0825af178a22ec17f872118b94",
-        "length":  18080,
-        "last_write_time":  "2026-05-26T12:40:42.9025525+05:30"
+        "sha256":  "7580ccf7257d085faefb7e0e1da1e6dede74b0d8f20a9005e93f9452e8305077",
+        "length":  18272,
+        "last_write_time":  "2026-06-14T10:31:25.4726413+05:30"
     },
     {
         "path":  "raw/How Remote uses LangChain and LangGraph to onboard thousands of customers with AI.md",
-        "sha256":  "152a27774b250b22289ecdca0b765fd0c17193d42cbdb2dc5f3c5a3ff24fac9b",
-        "length":  8094,
-        "last_write_time":  "2026-05-26T12:51:03.8450346+05:30"
+        "sha256":  "e4f2fabce2c736acfa7b76be304031ab28abea9651ec2860e97fbdcac5b7a2ec",
+        "length":  8164,
+        "last_write_time":  "2026-06-14T10:31:25.4726413+05:30"
     },
     {
         "path":  "raw/How Snapchat Serves a Billion Predictions Per Second.md",
-        "sha256":  "f1a6d5766b43578718fa8658f1b3fad5953becb48aee3754e56a4fd389a13f69",
-        "length":  20065,
-        "last_write_time":  "2026-05-26T12:45:11.2631712+05:30"
+        "sha256":  "d1b2b8cf8c58c8aad08b7f03bd7e9b223ef2ffb58b4851e8c55858564561906a",
+        "length":  20251,
+        "last_write_time":  "2026-06-14T10:31:25.4736429+05:30"
     },
     {
         "path":  "raw/How To Build An AI Brain That Never Forgets.md",
-        "sha256":  "ee47b4efe22c6be8d2cf975236bc72db765f33376b40cf044cb0e5d7890742db",
-        "length":  17157,
-        "last_write_time":  "2026-05-08T12:37:44.8073175+05:30"
+        "sha256":  "1d249ff0418dc5d7d668fad0155b2fd2d75e1eae4a50569115cec386b2cf76e0",
+        "length":  17458,
+        "last_write_time":  "2026-06-14T10:31:25.4736429+05:30"
     },
     {
         "path":  "raw/How to Learn from Course Content Without Paying for It.md",
         "sha256":  "5769146992dd0f11b0baf8e73b13bbe8b9053636ca7bf8ec66147131b836826b",
         "length":  2775,
-        "last_write_time":  "2026-04-28T17:38:08.8778974+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4736429+05:30"
     },
     {
         "path":  "raw/How to Move from Monolith to a Service Based Architecture.md",
-        "sha256":  "1905b6040cb1e6ec3f1c89311341bbda5eb8c73e372ae1e62080ea36836a719f",
-        "length":  6181,
-        "last_write_time":  "2026-05-26T14:27:38.3067487+05:30"
+        "sha256":  "225aca1e1b1d8d036626b45ba382ab37ad0689adcf48ff1df274ceb140a2998e",
+        "length":  6312,
+        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
     },
     {
         "path":  "raw/How to Secure and Optimize Docker images  Best Practices.md",
-        "sha256":  "ec578ce3ec5b5e42174ae642aa26d2cbd9dabbe694a0921b4db4ee405e6cfe8d",
-        "length":  7970,
-        "last_write_time":  "2026-05-05T18:54:06.7451385+05:30"
+        "sha256":  "f92c3e14bbaf2b966ef2066fb66d29213b4b5ba7b83afed6fb520ac87d838d77",
+        "length":  8080,
+        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
     },
     {
         "path":  "raw/How to Structure .claude Folder for Maximum Efficiency.md",
-        "sha256":  "c352dcd77d44e70bbf87b56da561f91285d87c66fd42eb5095af478e1f6255e4",
-        "length":  15455,
-        "last_write_time":  "2026-05-05T19:26:19.1929978+05:30"
+        "sha256":  "886fce5839868af5d26d35e0f5f7cdd083f6adbaa8de4f084d2375bac8be9be9",
+        "length":  15737,
+        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
     },
     {
         "path":  "raw/How to Use AI at Work Without Breaking Your Systems.md",
-        "sha256":  "6165ab322385b7c5ded3c5f409a0787de2425cc98bf6d2ecae7250fd6668457d",
-        "length":  7033,
-        "last_write_time":  "2026-05-08T12:16:26.2792384+05:30"
+        "sha256":  "8808850f23e78279eeee9cb1b320222cf0ff24487402c3f3964ee5a3ccacf373",
+        "length":  7138,
+        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
     },
     {
         "path":  "raw/How to Use Google Stitch\u0027s Design.md File with Claude Code for Consistent UI.md",
-        "sha256":  "06499da55453c028b4939b1c0f7d76aadcc0aef3bda1a9c8631290264c1a2e76",
-        "length":  17335,
-        "last_write_time":  "2026-05-26T18:52:35.4699248+05:30"
+        "sha256":  "be15582d83c26d64724c29682ad9d24e4c8f8bb93ae6bda28a21819a7f6376b9",
+        "length":  17336,
+        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
     },
     {
         "path":  "raw/I Deployed Local LLMs in Production for a Year. Part 1 The Mental Model  by Mustafa Genc  in AI Advances.md",
-        "sha256":  "c83b64f56cb319f9e98c69fd07752e177b71bdfa8f069e73dd4536394c3cca4e",
-        "length":  29892,
-        "last_write_time":  "2026-05-05T18:24:59.6679645+05:30"
+        "sha256":  "45806d54cfc996139f0b6431df10a5e223cbd0524512170827de54e40dc44384",
+        "length":  30134,
+        "last_write_time":  "2026-06-14T10:31:25.4746470+05:30"
     },
     {
         "path":  "raw/I Deployed Local LLMs in Production for a Year. Part 2 The Operational Playbook  by Mustafa Genc  in AI Advances.md",
-        "sha256":  "1fb56b60334497149bc98f05213264da7b5cfcdf2b66ae98df11bd2d563f83bf",
-        "length":  40690,
-        "last_write_time":  "2026-05-05T18:27:41.9566675+05:30"
+        "sha256":  "c952b91e5d53648c9e7e2212379c903e9f54926cc76ff8e112a38f4402e242ec",
+        "length":  41222,
+        "last_write_time":  "2026-06-14T10:31:25.4761671+05:30"
     },
     {
         "path":  "raw/I Used Git Wrong for Years.md",
-        "sha256":  "4b69356c7a123fa79de3edfe355a6f4dffbce8332d164de6d273781445f0dee1",
-        "length":  11248,
-        "last_write_time":  "2026-05-26T13:58:32.2923001+05:30"
+        "sha256":  "431b67f3d0a8fc8d083848cbf228fa6013cea1cc837911be1f0bea8e973c1b6e",
+        "length":  11657,
+        "last_write_time":  "2026-06-14T10:31:25.4767404+05:30"
     },
     {
         "path":  "raw/I Used the Terminal Wrong for Years.md",
-        "sha256":  "c8061cba984180ed7c39441a9b28ac40b44dce10d8b2c0901aa3c7798030a334",
-        "length":  11385,
-        "last_write_time":  "2026-05-26T13:58:29.5748302+05:30"
+        "sha256":  "1f9ba78b3a41c65024999c75074b1bcd8d718cc1c7c0448d9d28e42a5e8cf13b",
+        "length":  11766,
+        "last_write_time":  "2026-06-14T10:31:25.4767404+05:30"
     },
     {
         "path":  "raw/I’m a 10× Dev. Here’s How I Use a $250Month LLM To Code 250% Faster Without Generating “Slop”.md",
-        "sha256":  "1480233fe6594e1ef7946ea35495abd6c2b99b3a8e51419fb06b51457bacd972",
-        "length":  8112,
-        "last_write_time":  "2026-06-01T10:45:51.3651974+05:30"
+        "sha256":  "8e074f5fb4ece1dda551d30412593fc1d1d6a5d55d296099321bc5be6300ea75",
+        "length":  8244,
+        "last_write_time":  "2026-06-14T10:31:25.4777673+05:30"
     },
     {
         "path":  "raw/Image Transformations for Developers.md",
-        "sha256":  "5aa8089ac04d56184ebe93b504f7291212ad7baf32c13cf9443f63265987074e",
-        "length":  29153,
-        "last_write_time":  "2026-06-06T18:50:54.1741596+05:30"
+        "sha256":  "7409f64f5b6bb3812410bdaf40352129756c1b9ecb901bd9646a75890e0096f6",
+        "length":  28783,
+        "last_write_time":  "2026-06-14T10:39:16.3003731+05:30"
     },
     {
         "path":  "raw/Improving Site Performance With Webpack Tree Shaking.md",
-        "sha256":  "148ecf81c7b1e7847ac142a1d270d227b21b250d4b5695f4e5391846098b6a26",
-        "length":  9641,
-        "last_write_time":  "2026-05-05T18:19:28.5160178+05:30"
+        "sha256":  "4b9c904d72b4ac43919e80cb4f23ec1520a4021d4e2d8c62d30d712a36b80bc2",
+        "length":  9817,
+        "last_write_time":  "2026-06-14T10:31:25.4767404+05:30"
     },
     {
         "path":  "raw/Integration Testing with Real Services - A Pragmatic Guide.md",
-        "sha256":  "f5b76d6d65836eb5d9e38c7fdacea0d066c5fda0f15be309977d74bd5b2fbbf6",
-        "length":  2900,
-        "last_write_time":  "2026-06-06T18:57:41.2547237+05:30"
+        "sha256":  "0eafc0f24b06bf4f3082a49d05aa2f890d13dae384350670aa85c05662f9d357",
+        "length":  2965,
+        "last_write_time":  "2026-06-14T10:31:25.4777673+05:30"
     },
     {
         "path":  "raw/Intro to WebSockets.md",
-        "sha256":  "c0c4cf63dbcbdd77539c796d0b6d47ce19e44ea77a99b3ad24de7fb636a6486d",
-        "length":  8963,
-        "last_write_time":  "2026-06-05T11:32:54.8051472+05:30"
+        "sha256":  "ef422cfea3204369e21fb9e646a74696603e2117fe9205edc9b5d4d65c5af4de",
+        "length":  9066,
+        "last_write_time":  "2026-06-14T10:31:25.4777673+05:30"
     },
     {
         "path":  "raw/Junior Devs Use try-catch Everywhere. Senior Devs Use These 4 Exception Handling Patterns.md",
-        "sha256":  "154725a0eb41e2086d54e3635cc9dda1b8ea6d8e089342d387948037d2846360",
-        "length":  12063,
-        "last_write_time":  "2026-05-09T10:49:06.3834743+05:30"
+        "sha256":  "6febe06d9b5078adb5602a4c4e9ecdb6e2c4ea20de7c6b92a5cc29fc41db923e",
+        "length":  12346,
+        "last_write_time":  "2026-06-14T10:31:25.4777673+05:30"
+    },
+    {
+        "path":  "raw/Key Components of a Prod Web Application.md",
+        "sha256":  "36994ee3570076044ac9ea91e0885d0d402f45cddf4fc38b2513ee649259ca50",
+        "length":  6669,
+        "last_write_time":  "2026-06-14T10:39:31.8169764+05:30"
     },
     {
         "path":  "raw/Learn how to design systems at scale and prepare for system design interviews.md",
         "sha256":  "6723bfa1448b3035c0e433f99d631e57fde562ee0f9e46a83b878284f806f52d",
         "length":  291580,
-        "last_write_time":  "2026-04-28T17:38:08.8808888+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4828398+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 10 Caching Patterns.md",
+        "sha256":  "30dcba5f7cdc7fefd2815a13db0a102843472b811798fb7151e39fc6e75cd67b",
+        "length":  16438,
+        "last_write_time":  "2026-06-14T11:32:41.3893583+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 11 API Gateway \u0026 Proxy Patterns.md",
+        "sha256":  "11a9823f76af9a2c024505324b724c03d1df1b89d19ba109d5c7143a9cc0aef0",
+        "length":  20294,
+        "last_write_time":  "2026-06-14T11:01:50.6745530+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 12 Message Queue Patterns.md",
+        "sha256":  "2f4ad23ccade973d9a164d605a9fac820f9fa3d8cc6ecd4e85e8cdb173ddccf5",
+        "length":  30174,
+        "last_write_time":  "2026-06-14T11:33:48.5353103+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 13 Event Sourcing \u0026 CQRS Patterns ….md",
+        "sha256":  "cad3bd06c7fd1c377843cfc67690bd7749649cc788969a438dc268aa678f0d47",
+        "length":  25393,
+        "last_write_time":  "2026-06-14T11:35:13.4658803+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 14 Monitoring \u0026 Observer Patterns ….md",
+        "sha256":  "71949cea02b3eba76e31a2dabc014a18d367fc96286e9b818fb03f048630f9ab",
+        "length":  33954,
+        "last_write_time":  "2026-06-14T11:37:13.0938465+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 15 Microservices Patterns.md",
+        "sha256":  "8fb32317e53c1820fcc5887944152883c613951e0a26552c1a191cbdc02a275b",
+        "length":  28938,
+        "last_write_time":  "2026-06-14T11:38:44.8277404+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 16 Distributed System Patterns.md",
+        "sha256":  "5b4ff9d6dc8a1a2cdf50b451073d6662e3a03050c84659c0bd241e2a069ec1a5",
+        "length":  30424,
+        "last_write_time":  "2026-06-14T11:43:19.0183162+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 17 Resilience Patterns.md",
+        "sha256":  "c84a830074cf434161df5cd74b1db817f37526f96af6ad5564e737e26b2bf11e",
+        "length":  29568,
+        "last_write_time":  "2026-06-14T11:44:01.1857372+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 18 Caching \u0026 CDN Patterns.md",
+        "sha256":  "f5d8193d44923f62f2a7afd5a429615dcb7cfd253b7b3ad73adf761be14e0947",
+        "length":  15809,
+        "last_write_time":  "2026-06-14T11:46:03.3575389+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 19 Database Scaling Patterns.md",
+        "sha256":  "ee5f3d50e9ccac28ae675048903508e9cfd32f9e1bf503f1f4b6b49f9a6518b3",
+        "length":  18210,
+        "last_write_time":  "2026-06-14T11:47:58.0738886+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 2 Strategy \u0026 Observer Patterns for System Design  by The Latency Gambler.md",
         "sha256":  "a4732651a990e8ec98c162c49b304a080be5ddad2c18e10f0f213997e1f7c817",
         "length":  14548,
-        "last_write_time":  "2026-05-26T16:18:01.5242557+05:30"
+        "last_write_time":  "2026-06-14T10:40:29.4401357+05:30"
+    },
+    {
+        "path":  "raw/Learn System Design With Me . Day 20 Security Patterns.md",
+        "sha256":  "4a3449be653d7a2aa5078f9bca6fe08db2fca33f59acea94bd52e0865c9705cb",
+        "length":  22838,
+        "last_write_time":  "2026-06-14T12:12:58.4870141+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 3 Decorator \u0026 Proxy Patterns. Adding Superpowers Without Surgery  by The Latency Gambler.md",
         "sha256":  "2ba0155ad24fbd9f3033c3357f0d18db03fe94b7a39a76a1a43f97ca57fa55fa",
         "length":  18727,
-        "last_write_time":  "2026-05-26T16:16:34.2378569+05:30"
+        "last_write_time":  "2026-06-14T10:40:41.3746688+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 4 Singleton \u0026 Builder Patterns (The Right Way)  by The Latency Gambler.md",
         "sha256":  "ebbdf4e6532605f38eb220d71481f2d11db26dd9e26e0e0ed60dd2e165c8234b",
         "length":  17705,
-        "last_write_time":  "2026-05-26T16:18:04.2252974+05:30"
+        "last_write_time":  "2026-06-14T10:40:40.1731744+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 5 Command \u0026 Template Method Patterns  by The Latency Gambler.md",
         "sha256":  "939c2f5689718a0cf9cb15a868f9213af9d2bb81a0c762ee7462a27b52dd8dff",
         "length":  26077,
-        "last_write_time":  "2026-05-26T16:53:07.1194681+05:30"
+        "last_write_time":  "2026-06-14T10:40:37.3890243+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 7 Chain of Responsibility \u0026 State Patterns .  by The Latency Gambler.md",
         "sha256":  "fbfd1475f163236305bb49fe9ffa17b3ac1989714a73e768c858e0d3c4971988",
         "length":  28093,
-        "last_write_time":  "2026-05-27T12:28:18.3404708+05:30"
+        "last_write_time":  "2026-06-14T10:40:36.3178341+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 8 Load Balancing \u0026 Circuit Breaker….md",
         "sha256":  "c8a7e6556baa378e0543a6e287d1c56b52c141cbe768bea8140568211c3ac66a",
         "length":  26639,
-        "last_write_time":  "2026-05-27T12:29:22.0362565+05:30"
+        "last_write_time":  "2026-06-14T10:40:35.0247977+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me . Day 9 Database Patterns \u0026 Repository P….md",
         "sha256":  "60f9af6b596371fc072b5c3d71f8713d04cb1dd4d63111fb853bb20606ce0af0",
         "length":  27807,
-        "last_write_time":  "2026-05-27T16:40:02.0868235+05:30"
+        "last_write_time":  "2026-06-14T10:40:48.6185421+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me Day 1 Building Your Architect Mindset  by The Latency Gambler.md",
         "sha256":  "0cf2a7ad71c8e830cb4c0aa8d2a966bd27a0203faa97e3980b1acd713cccb649",
         "length":  7738,
-        "last_write_time":  "2026-05-26T16:13:11.2573545+05:30"
+        "last_write_time":  "2026-06-14T10:40:33.3559521+05:30"
     },
     {
         "path":  "raw/Learn System Design With Me Part 6  by The Latency Gambler.md",
         "sha256":  "b0c676e25b25af3f69ee094b13f101bf25bf9b150b8b13f3c28fac58a39ecb3f",
         "length":  25852,
-        "last_write_time":  "2026-05-26T17:15:23.5327288+05:30"
+        "last_write_time":  "2026-06-14T10:40:31.5715058+05:30"
     },
     {
         "path":  "raw/Microservices vs. Monoliths When to Choose What (and Why It Matters).md",
         "sha256":  "5022dbe5353820789332ededd41c235eb576a9b2e091c46f14ad74ef92afe017",
         "length":  8194,
-        "last_write_time":  "2026-04-28T17:38:08.8808888+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4828398+05:30"
     },
     {
         "path":  "raw/Netflix\u0027s CDN Strategy Delivering Video to 300M Users Instantly.md",
-        "sha256":  "fb7fee557c19a5be91c5d7343ce3a53c5447946ed633052bc564db121a623e68",
-        "length":  10231,
-        "last_write_time":  "2026-06-05T11:46:14.3073134+05:30"
+        "sha256":  "8c96199f09f934c84fcafc8f3fc2a7f3b59abab8c2d4612b8aa0d4f22fa3d8d5",
+        "length":  10368,
+        "last_write_time":  "2026-06-14T10:31:25.4828398+05:30"
     },
     {
         "path":  "raw/Observability in Distributed Systems - Logs, Metrics and Traces.md",
-        "sha256":  "31a02e6e1d510975e863702fec167dfe198bc17fc23acffacee0c10da488261c",
-        "length":  3206,
-        "last_write_time":  "2026-06-06T18:57:13.6501240+05:30"
+        "sha256":  "17ffd46264a2d31a2591417b68c46fbcc0fc83e6e6ba0783197eb630a985bef7",
+        "length":  3267,
+        "last_write_time":  "2026-06-14T10:31:25.4838356+05:30"
     },
     {
         "path":  "raw/OpenMythos - a theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research literature.md",
         "sha256":  "8e5498b60be77e9359dff7ebfa964bb386a00c4dd0cc61e3d469293d4d65bac4",
         "length":  22654,
-        "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4838356+05:30"
     },
     {
         "path":  "raw/PostgreSQL Advanced Indexing - GIN, GiST, BRIN, and Partial Index.md",
-        "sha256":  "eee7c5cb0698fa5cc75f9fa1f604c0eaad1a62a4508d6137c08ee5276b0fa985",
-        "length":  3483,
-        "last_write_time":  "2026-06-06T18:57:23.8164559+05:30"
+        "sha256":  "bdf7f65b636568404085139a4fb1657de1c180abfa377fe34e6bb3ce59e53a40",
+        "length":  3547,
+        "last_write_time":  "2026-06-14T10:31:25.4838356+05:30"
     },
     {
         "path":  "raw/Raft Consensus Explained for Engineers.md",
-        "sha256":  "e20068dd4274a501cd6bc3ac35fb995e769765c9a5ddeca8b6352ea436e7bac8",
-        "length":  3518,
-        "last_write_time":  "2026-06-06T18:57:33.3544585+05:30"
+        "sha256":  "ef8038452b30fca0e7c1ea5a88808233acc41b3a9798c901de6bd87ed3ee8686",
+        "length":  3587,
+        "last_write_time":  "2026-06-14T10:31:25.4848373+05:30"
     },
     {
         "path":  "raw/RAG, LLM Wiki, or Gbrain -  How Your Agent Remembers Changes Everything.md",
-        "sha256":  "21ef9e53b753d5018084c7491b86176695d200432d3182adac720b4c0ec79b0c",
-        "length":  26113,
-        "last_write_time":  "2026-05-05T18:33:01.9595059+05:30"
+        "sha256":  "6775fc4789877b298095fef6e8a997daa5ef96ec293789d15bf7976bae44cc94",
+        "length":  26400,
+        "last_write_time":  "2026-06-14T10:31:25.4848373+05:30"
     },
     {
         "path":  "raw/Reimagining LinkedIn’s search tech stack.md",
-        "sha256":  "c014c9f248261ba85dfed1564755a0557fe536f36de8b1e2906f2b1eaf8f4eb5",
-        "length":  29030,
-        "last_write_time":  "2026-06-01T12:09:36.2161833+05:30"
+        "sha256":  "e3a0d048ad04402c37cfce93362dec7948c070c583809f044a1b4aa9fccb7b62",
+        "length":  29259,
+        "last_write_time":  "2026-06-14T10:31:25.4848373+05:30"
     },
     {
         "path":  "raw/REST vs GraphQL vs gRPC Which Should You Actually Use.md",
-        "sha256":  "6be8675a0a42ac46eb853ec1bb4eb9e2c5148043c3298e3d3a83284f61e9055c",
-        "length":  8211,
-        "last_write_time":  "2026-06-06T18:50:54.4135878+05:30"
+        "sha256":  "0eb72212fdc30bc8f7beadb499a2d51b757fa96bae7a181db741244491b323e7",
+        "length":  8349,
+        "last_write_time":  "2026-06-14T10:31:25.4848373+05:30"
     },
     {
         "path":  "raw/Retaining Computer Science Knowledge.md",
         "sha256":  "a7caa1d8cc768bd6481b168916c036de06e56989657dca8a6081064e2f08395e",
         "length":  3751,
-        "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4848373+05:30"
     },
     {
         "path":  "raw/Rust at Scale An Added Layer of Security for WhatsApp.md",
-        "sha256":  "b6b35fbc7e6362d185b51aabcab66cff1db59dec85827eabb89279e27ca930e1",
-        "length":  9287,
-        "last_write_time":  "2026-06-01T19:06:17.6283277+05:30"
+        "sha256":  "c38fa493f79442c4b9592cf7b94abcfa794d72fb89037dda31b13c5a2eb48cbd",
+        "length":  9350,
+        "last_write_time":  "2026-06-14T10:31:25.4848373+05:30"
     },
     {
         "path":  "raw/Scaling the Instagram Explore recommendations system.md",
-        "sha256":  "fd4c88eff494dac6c803a2a1f90482df6ff34f70745f1909a739c67343db54a5",
-        "length":  14997,
-        "last_write_time":  "2026-06-01T16:32:09.6417231+05:30"
+        "sha256":  "97bd8da1473a3455c39f4dbb8ca676f776096b0ec49ed3486a800c14864e2b1e",
+        "length":  15189,
+        "last_write_time":  "2026-06-14T10:31:25.4864124+05:30"
     },
     {
         "path":  "raw/Self-Evolving Hooks.md",
         "sha256":  "d3f6b5e24c9f63f7795fdb30a6887f575a18790b0154a0e29b14ce14e84d4aca",
         "length":  12853,
-        "last_write_time":  "2026-04-28T17:38:08.8818862+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4864124+05:30"
     },
     {
         "path":  "raw/Skills for Real Engineers. Straight from my .claude directory.md",
         "sha256":  "7109637a44c9d768520cedc10cbba6cc6a5f1489dd9f69e502d33fc3ea798f7b",
         "length":  7582,
-        "last_write_time":  "2026-04-28T17:38:08.8828837+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4864124+05:30"
     },
     {
         "path":  "raw/Software Estimation Techniques - Story Points T-Shirt Sizing and Beyond.md",
-        "sha256":  "f06f11db014044acfe60272e1feecfa5439f683223c61e855cbb237d5fb22d2d",
-        "length":  3223,
-        "last_write_time":  "2026-06-06T19:19:49.0524065+05:30"
+        "sha256":  "4b8ae3ef1f3e3c232e63636ee5855a1a3a5783a7e75165ed7beabc695fdf6ba2",
+        "length":  3287,
+        "last_write_time":  "2026-06-14T10:31:25.4874906+05:30"
     },
     {
         "path":  "raw/SRE Incident Management - From Detection to Blameless Postmortem.md",
-        "sha256":  "33cfe62958e18b0eb733479db33c59eee3086d06e359a892f5c1419d0fb03c0b",
-        "length":  4153,
-        "last_write_time":  "2026-06-06T19:20:00.0147769+05:30"
+        "sha256":  "4195a350bfc680810f0f9d115617ad1aa3f6558cfff12f3f21f9dba82212a506",
+        "length":  4232,
+        "last_write_time":  "2026-06-14T10:31:25.4864124+05:30"
     },
     {
         "path":  "raw/Stop Feeding Me AI Slop.md",
         "sha256":  "b993dc33fa6425acf38f3b9b147fc5deace2277c05229061f9e4359dfb90f121",
         "length":  10407,
-        "last_write_time":  "2026-04-28T17:38:08.8828837+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4874906+05:30"
     },
     {
         "path":  "raw/Stop Memorizing Design Patterns Use This Decision Tree Instead  by Alina Kovtun✨  in Women in Technology.md",
-        "sha256":  "947d256832beae802057a15226b1ebfec28d61d1e9b89048ee37e1f073071df3",
-        "length":  14554,
-        "last_write_time":  "2026-05-09T10:48:37.5294045+05:30"
+        "sha256":  "f165d6207b10ca736087679194cf03efb4b86e9486ceb0409ea8bb95526f3659",
+        "length":  14832,
+        "last_write_time":  "2026-06-14T10:31:25.4874906+05:30"
     },
     {
         "path":  "raw/Stop Using the Wrong LLM  by Jose Crespo, PhD  in AI Advances.md",
-        "sha256":  "5f887ba8976c3848c9247c554fb22fd0e29ce9096cba290d4fd334f7df13c787",
-        "length":  19656,
-        "last_write_time":  "2026-05-05T18:28:31.3707897+05:30"
+        "sha256":  "7374afb0302dc0f9f8d17506f07339a8c0db7fa04bb1718e7f3b6685d74e9bf6",
+        "length":  19785,
+        "last_write_time":  "2026-06-14T10:31:25.4884390+05:30"
     },
     {
         "path":  "raw/Structured Engineering Hiring - A Practical Guide.md",
-        "sha256":  "9b783a852bd908837983abfc478820396c7e42c40f6669f8dc9afba95bdc6248",
-        "length":  4387,
-        "last_write_time":  "2026-06-06T19:20:22.4002322+05:30"
+        "sha256":  "486177c2942569be3b757d72cfba2cf1ffc374fdd36c1279411c7523f4aa8a27",
+        "length":  4472,
+        "last_write_time":  "2026-06-14T10:31:25.4884390+05:30"
     },
     {
         "path":  "raw/Team Topologies - Engineering Organization Design for Fast Flow.md",
-        "sha256":  "ef3c1bbd5c9ffa937b86df019fc4ed2ccf7c8cad64dd7db706a6e07c501a03f7",
-        "length":  4086,
-        "last_write_time":  "2026-06-06T19:20:10.4286387+05:30"
+        "sha256":  "e31b1c59ec7e05b027a15e120d9dc116a8cf7955abf0cd694d69aa691f2a4fdd",
+        "length":  4143,
+        "last_write_time":  "2026-06-14T10:31:25.4884390+05:30"
     },
     {
         "path":  "raw/Tech Companies Are Tracking AI Usage, And The Employees Have Already Figured Out How To Beat It  by Vivek Naskar.md",
-        "sha256":  "47d7fefe81a5b3da9b00b470df40ccdac1d7d298a79592898149ead0ae9c3f4d",
-        "length":  7868,
-        "last_write_time":  "2026-05-26T12:55:36.4581977+05:30"
+        "sha256":  "7a69c3cac72a561fc65f50c09b25e89ac3b5ddc74c61acb8e8e0cf82b4f14493",
+        "length":  7972,
+        "last_write_time":  "2026-06-14T10:31:25.4884390+05:30"
     },
     {
         "path":  "raw/tech skills vs system design Unlock case study in Production.md",
-        "sha256":  "9af5318203f0cdb607f3d473c2f80977c7112a475cc7832fe1aef4f905d314df",
-        "length":  6235,
-        "last_write_time":  "2026-05-05T19:20:22.6753834+05:30"
+        "sha256":  "ef9c05fd2fbd25aef5eb4f95b160bf83ffd231d370cf400b002d4d0ae0883d8c",
+        "length":  6288,
+        "last_write_time":  "2026-06-14T10:31:25.4934583+05:30"
     },
     {
         "path":  "raw/The 4 Cognitive Archetypes of Developers Using AI.md",
-        "sha256":  "cb6d0692d14af4226b8c15cf3955cc2b3b1ac52d00526c382ab5d98267f0448f",
-        "length":  5778,
-        "last_write_time":  "2026-05-05T19:07:36.8657658+05:30"
+        "sha256":  "b4fa5ae64dc5b1d0fdb75e8537439f59dfd04763ddbf0fd6ed5129a97d0ae246",
+        "length":  5930,
+        "last_write_time":  "2026-06-14T10:31:25.4894601+05:30"
     },
     {
         "path":  "raw/The 58-Million-Key Freeze What a HashMap Resize Taught Us About Memory Allocation at Scale.md",
-        "sha256":  "c41e88df4abbc9f4a8a4e1bdf86eff4724eedcc8aa18f043fc3f6204766c6ded",
-        "length":  19148,
-        "last_write_time":  "2026-06-01T11:45:17.7418585+05:30"
+        "sha256":  "e06a7a50b43d6a2bb496571b845d6b0bf970276f5d0d0344dc6d8551c920b6f1",
+        "length":  19332,
+        "last_write_time":  "2026-06-14T10:31:25.4894601+05:30"
     },
     {
         "path":  "raw/The Anatomy of an Agent Harness.md",
-        "sha256":  "ff142cb22d92c72ac0b67b41014e2d104eaa9227bc2e957cb50539ae6ffad1c9",
-        "length":  13965,
-        "last_write_time":  "2026-05-26T12:45:30.4042079+05:30"
+        "sha256":  "e1dfb4bf19ca4c9f319c34acb41d364e24c6a917ecb0527352e368f9297a36a8",
+        "length":  14108,
+        "last_write_time":  "2026-06-14T10:31:25.4904580+05:30"
     },
     {
         "path":  "raw/The Day a Google L7 Engineer Tore My System Design to Shreds  by Cloud With Azeem  in ExpoComputing.md",
-        "sha256":  "62b0fcdba8e32d876141f36a7a6db801543cc189ca0bfc6e7571b24c2e89ed5d",
-        "length":  10417,
-        "last_write_time":  "2026-05-26T14:05:37.5962169+05:30"
+        "sha256":  "c5d688f8b5399dfdb52e9f66faf4a9e90d4a6299d16ce49fedf688cecbc81622",
+        "length":  10540,
+        "last_write_time":  "2026-06-14T10:31:25.4904580+05:30"
     },
     {
         "path":  "raw/The Dictionary Problem Fast Lookups in Large Collections.md",
-        "sha256":  "6e18c241c40141be9c77e745ed25bd479b812f2e3cc19731f811a7334135ddd3",
-        "length":  15509,
-        "last_write_time":  "2026-05-08T11:48:38.5877648+05:30"
+        "sha256":  "46d63d63e5dda26c49c1606d8ac3c8893c84d28d3e2abcebf88ede36dda5b8f0",
+        "length":  15667,
+        "last_write_time":  "2026-06-14T10:31:25.4904580+05:30"
     },
     {
         "path":  "raw/The last year of localhost.md",
-        "sha256":  "00c62b957d322b6db0e439a48ec41da9470707b57212e75a8868828b9a468ad8",
-        "length":  23922,
-        "last_write_time":  "2026-05-30T12:43:01.1095814+05:30"
+        "sha256":  "8fad692d9b135289aafdb0deb2fe5b258df77603aaad31323e63a798e7089551",
+        "length":  24074,
+        "last_write_time":  "2026-06-14T10:31:25.4914607+05:30"
     },
     {
         "path":  "raw/The Packet Drop That Froze Three Requests at Once.md",
-        "sha256":  "e9345ba9e9253d267756e0409085553a7218cfee667085744a09a4302b7a582e",
-        "length":  11240,
-        "last_write_time":  "2026-06-01T10:13:44.2579521+05:30"
+        "sha256":  "4d503453f67239e717aeb7911af793bbf2cd0b6f6751edaad5f87154255fdbc0",
+        "length":  11360,
+        "last_write_time":  "2026-06-14T10:31:25.4904580+05:30"
     },
     {
         "path":  "raw/The Read That Was Killing the Write.md",
-        "sha256":  "fb4c9aa4acb6deacdeb76e5a4e20f0633dda8f3ac5b2020c3061ba116c074b10",
-        "length":  9960,
-        "last_write_time":  "2026-06-01T10:30:17.5029102+05:30"
+        "sha256":  "21fa2bcecc322c39c03c69db59ac376a91a52d0b4a90630992cd6631518051c7",
+        "length":  10061,
+        "last_write_time":  "2026-06-14T10:31:25.4914607+05:30"
     },
     {
         "path":  "raw/The technology behind Amazon’s GenAI-powered shopping assistant, Rufus.md",
         "sha256":  "27c04c6773763ba1a098cdd0ce8cd36f1bf2a8e811b8892fb9f7965fed2b28e1",
         "length":  8018,
-        "last_write_time":  "2026-04-28T17:38:08.8838812+05:30"
+        "last_write_time":  "2026-06-14T10:31:25.4924589+05:30"
     },
     {
         "path":  "raw/The Untold Architecture Behind Production Firewalls Build Your Own SafeLine in Rust From Zero  by Souradip Pal  in Level Up Coding.md",
-        "sha256":  "23fe7e31eefe32f49f05583e67324250292bb559c03d60c48b9da90971af6a15",
-        "length":  11833,
-        "last_write_time":  "2026-05-26T13:18:02.6666663+05:30"
+        "sha256":  "ed5908c52425cdc958238d5a34698144d33b6f58790349ebd798daf87c198233",
+        "length":  12023,
+        "last_write_time":  "2026-06-14T10:31:25.4914607+05:30"
     },
     {
         "path":  "raw/Top Skills Frontend Developers Need in 2026 (Beyond React)  by Kevin - MERN Stack Developer.md",
-        "sha256":  "ea47935c19a6151e5edb781ee977715163dea433468a3fa178320a7dee421580",
-        "length":  6551,
-        "last_write_time":  "2026-05-05T18:24:16.9725330+05:30"
+        "sha256":  "7d422e2f5ba1fb48585cf4243379bab356f8d777d3e4dcbc957abc162c4a1e10",
+        "length":  6671,
+        "last_write_time":  "2026-06-14T10:31:25.4924589+05:30"
     },
     {
         "path":  "raw/Watching 100 System Design Videos Won\u0027t Get You Hired. This Will.  by The Latency Gambler.md",
-        "sha256":  "1d7e520d3251bb2959d0a687c31b98231ecffb085d714f96d451a47739afef9b",
-        "length":  10516,
-        "last_write_time":  "2026-05-26T14:06:00.8559892+05:30"
+        "sha256":  "a5284a36c1f88ec582972e30d9ddf310ccb54bb8836db51d090b86cdfa283765",
+        "length":  10746,
+        "last_write_time":  "2026-06-14T10:31:25.4924589+05:30"
     },
     {
         "path":  "raw/What Really Makes a Succesful Software Engineer.md",
-        "sha256":  "7f2aaa0c40e62495d525cf9c7f5e1cc9fa78794169f5a27f15487e5abe8b7bd1",
-        "length":  10650,
-        "last_write_time":  "2026-06-04T19:34:59.8610613+05:30"
+        "sha256":  "71a05259eaabe9f29231b196732e7e410c493fc22b884cb5d05dbaf8e8942048",
+        "length":  10771,
+        "last_write_time":  "2026-06-14T10:31:25.4924589+05:30"
     },
     {
         "path":  "raw/Your Database Has Been Writing an Event Log the Whole Time.md",
-        "sha256":  "3cb70912f83919eaff8dbcea8d6b4d0b5395f5d29702522f31a46fca88b91411",
-        "length":  12500,
-        "last_write_time":  "2026-06-01T10:13:09.0110119+05:30"
+        "sha256":  "ccf41e23865af9c604ffc72f2c907cfc5de49a95819bb6af011c0037045362dd",
+        "length":  12615,
+        "last_write_time":  "2026-06-14T10:31:25.4934583+05:30"
     }
 ]

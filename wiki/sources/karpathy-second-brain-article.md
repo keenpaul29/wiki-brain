@@ -22,10 +22,15 @@ The article breaks the workflow into raw sources, schema instructions, and gener
 - The value comes from persistent structure: summaries, entity pages, concept pages, comparisons, and synthesis pages.
 - Query outputs can be filed back into the wiki so exploration compounds.
 - The human still supplies judgment and original synthesis; the LLM removes organizational drudgery.
+- **Knowledge Compounding**: Every query answer can be filed back as a new wiki page, creating a compounding knowledge base where exploration begets more structure over time rather than ephemeral chat history.
+- **Inspectability Advantage**: Plain markdown output means the entire knowledge base is version-controllable, diffable, and reviewable in standard tools (Obsidian, VS Code), avoiding vendor lock-in to any vector database or proprietary format.
+- **Three Operations, Not One**: Ingest (source → wiki), Query (wiki → answer + possibly new pages), and Lint (consistency, broken links, stale summaries) form a closed loop; the lint pass is what separates a growing wiki from a growing pile of files.
 
 ## Links
 
 - Extends [[sources/llm-wiki-idea-file|LLM Wiki Idea File]]
 - Supports [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]]
 - Connects to [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
+- Connects to [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]]
+- Connects to [[concepts/shared-engineering-language|Shared Engineering Language]]
 

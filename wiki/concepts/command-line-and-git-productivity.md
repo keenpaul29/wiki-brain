@@ -58,6 +58,29 @@ Modern shell setups should increase history limits to preserve context across mo
 
 ---
 
+## Remote and Cloud Development Environments
+
+As AI agents and multi-machine workflows become common, the terminal extends beyond the local machine.
+
+### VS Code Remote Development
+
+[[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]] covers five remote targets: Remote SSH, Dev Containers, WSL, Remote Tunnels, and GitHub Codespaces. Key productivity patterns:
+
+- **Dev container images** include Copilot custom instructions so AI output reflects the environment (installed toolchains, path assumptions, container type) instead of generic local-machine assumptions.
+- **Chat participants** like `@remote-ssh` provide domain-specific help for configuring or diagnosing remote connections.
+- **Agent mode with tool approvals** — auto-approval is safer in isolated containers than on a local workstation because the blast radius is bounded. Any environment with credentials remains sensitive.
+- **Environment-context files** (`devcontainer.json`, `.claude/settings.json`) encode toolchains, ports, lifecycle hooks, and editor integration so both humans and agents have the same setup.
+
+### Cloud Devboxes for Agent Fleets
+
+[[sources/localhost-cloud-dev-agents|The Last Year of Localhost]] argues that background coding agents make cloud development environments newly urgent. The bottleneck shifts from model capability to environment reproducibility:
+
+- **Local worktrees do not scale** to multiple concurrent agents. Monorepo worktrees compete for dependency installs, ports, caches, databases, services, and laptop resources.
+- **VM isolation over containers**: agents execute arbitrary code, so each environment needs a VM boundary with its own kernel, memory, and network stack. Containers alone do not provide sufficient isolation.
+- **Declarative specs** (`devcontainer.json`) provide vendor-neutral definitions for runtimes, tools, and lifecycle hooks. An environment must boot, install, seed, run, test, and iterate without human hand-holding.
+- **Network context matters**: agents become more useful when environments can safely reach internal services, APIs, databases, and staging systems through scoped credentials.
+- **Assume compromise**: agent runtime security should use short-lived scoped credentials plus kernel-level policy enforcement, not trust in prompt-injection prevention.
+
 ## Tooling and Workspace Orchestration
 
 Tying CLI utilities together turns the terminal into a cohesive workflow engine.
@@ -74,3 +97,5 @@ Tying CLI utilities together turns the terminal into a cohesive workflow engine.
 - Related: [[concepts/shared-engineering-language|Shared Engineering Language]]
 - Source: [[sources/effective-git|Effective Git Workflows and Commands]]
 - Source: [[sources/effective-terminal|Effective Terminal Workflows and Productivity]]
+- Source: [[sources/ai-remote-development|Enhance Productivity with AI + Remote Dev]]
+- Source: [[sources/localhost-cloud-dev-agents|The Last Year of Localhost]]

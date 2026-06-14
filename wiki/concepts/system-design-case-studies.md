@@ -343,6 +343,22 @@ Useful patterns:
 - **80/20 rule**: proper indexing solves ~80% of database performance problems. Read every slow query's execution plan.
 - **Caching**: frequently-read rarely-changed data, 30-60 sec TTL, monitor hit rate (below 80% means ineffective).
 
+## Production Web Application Stack
+
+Core problem: assemble and operate the essential components of a production-grade web application — CI/CD, DNS, load balancing, CDN, API layer, databases, caches, job queues, search, monitoring, and alerting — as an integrated system rather than isolated tools.
+
+Useful patterns:
+
+- **CI/CD pipelines**: automate testing, linting, and deployment. Blue-green or canary deployments minimize deployment risk.
+- **DNS + CDN integration**: DNS caching and HTTP/2 at the initial handshake. CDN edge servers reduce latency and absorb DDoS traffic.
+- **Load balancer + reverse proxy**: Nginx/HAProxy/ALB distribute traffic across instances, handle SSL termination, URL rewriting, and basic caching.
+- **API layer split**: frontend communicates with backend through REST or GraphQL APIs behind authentication, rate limits, and versioning.
+- **Database + cache**: PostgreSQL/MySQL for persistent data; Redis/Memcached for in-memory hot data. Cache-aside is the default pattern.
+- **Job queues**: RabbitMQ/Sidekiq/Celery for async work (email, report gen, image processing) — never block the request cycle for batch work.
+- **Search service**: Elasticsearch/Solr for full-text search, fuzzy matching, faceted search, and autocomplete — far better than SQL LIKE queries.
+- **Monitoring stack**: Grafana (dashboards) + Prometheus (metrics) + Sentry (errors) + Datadog/New Relic (APM) for real-time health and bottleneck detection.
+- **Alerting pipeline**: PagerDuty/Opsgenie/Slack notifications based on thresholds (CPU > 90%, 5xx > 5%). Fast alerts = faster response = reduced downtime.
+
 ## Bulletproof CI/CD Pipeline
 
 Core problem: build a deployment pipeline that fails safely, fails early, recovers quickly, and never surprises production.
@@ -392,3 +408,15 @@ Useful patterns:
 - Source: [[sources/backend-performance-engineering|Backend Performance Engineering]]
 - Source: [[sources/sre-incident-management|SRE Incident Management]]
 - Source: [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]]
+- Source: [[sources/prod-web-application-components|Key Components of a Prod Web Application]]
+- Source: [[sources/latency-gambler-day-10|Caching Patterns]]
+- Source: [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
+- Source: [[sources/latency-gambler-day-12|Message Queue Patterns]]
+- Source: [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]]
+- Source: [[sources/latency-gambler-day-14|Monitoring & Observer Patterns]]
+- Source: [[sources/latency-gambler-day-15|Microservices Patterns]]
+- Source: [[sources/latency-gambler-day-16|Distributed System Patterns]]
+- Source: [[sources/latency-gambler-day-17|Resilience Patterns]]
+- Source: [[sources/latency-gambler-day-18|Caching & CDN Patterns]]
+- Source: [[sources/latency-gambler-day-19|Database Scaling Patterns]]
+- Source: [[sources/latency-gambler-day-20|Security Patterns]]

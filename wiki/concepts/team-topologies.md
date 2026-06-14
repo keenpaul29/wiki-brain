@@ -49,9 +49,38 @@ Team Topologies (Skelton & Pais) is a model for designing team-of-teams organiza
 
 Most internal platforms become bloated. TVP provides just enough capability without unnecessary complexity. A good platform makes stream-aligned teams move faster, not generate more dependencies.
 
+## Cognitive Load Management
+
+The four-team topology model is a direct application of cognitive load limits to team design:
+
+| Cognitive Load Type | Team Topology Mitigation |
+|---|---|
+| **Intrinsic** (domain complexity) | Stream-aligned teams own a bounded business domain. The team's intrinsic load is the complexity of its domain. |
+| **Extraneous** (environment friction) | Platform team absorbs infrastructure, deployment, and observability complexity, reducing extraneous load on stream-aligned teams. |
+| **Germane** (learning and improvement) | Enabling teams transfer skills so stream-aligned teams build capability without increasing permanent load. |
+
+The rule: a team's total cognitive load should not exceed what the team can sustainably carry. If a stream-aligned team needs deep expertise in a complicated subsystem (video encoding, ML inference, financial calculations), split that subsystem into a dedicated complicated-subsystem team.
+
+## Team Interaction Modes in Practice
+
+The three interaction modes (Collaboration, X-as-a-Service, Facilitation) should be chosen explicitly based on the maturity of the interface:
+
+- **Discovery phase** → Collaboration: two teams work together to define a new API, practice, or technology. Time-box this to avoid indefinite pairing.
+- **Stable interface** → X-as-a-Service: once the contract is stable, the consuming team uses it with minimal interaction. The providing team owns evolution.
+- **Capability building** → Facilitation: the enabling team helps the stream-aligned team learn a new skill. Ends when the stream-aligned team can operate independently.
+
+Common mistake: staying in Collaboration mode too long after the interface is stable, creating an invisible dependency where both teams must coordinate for every change.
+
+## Conway's Law in Reverse: The Inverse Conway Maneuver
+
+The Inverse Conway Maneuver deliberately reorganizes team structure to produce a desired system architecture before building it. For example, if the target architecture is microservices with bounded contexts, reorganize teams to own those contexts. The architecture will follow the team boundaries.
+
+Practical application for migration: before starting a monolith-to-microservices migration, organize teams around the target bounded contexts. Let the teams own their extraction. The resulting architecture will naturally reflect the team structure, which was designed to match the desired architecture.
+
 ## Links
 
 - Related: [[concepts/reliability-and-operations|Reliability and Operations]]
 - Related: [[concepts/system-design|System Design]]
 - Related: [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]
+- Related: [[concepts/microservices-architecture|Microservices Architecture]]
 - Source: [[sources/team-topologies-org-design|Team Topologies: Engineering Organization Design]]

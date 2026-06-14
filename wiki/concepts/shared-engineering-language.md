@@ -132,6 +132,54 @@ Instagram Explore's multi-stage funnel (retrieval → first-stage ranking → se
 
 Related: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
 
+### Cognitive Debt
+
+The gap between task completion and understanding. When AI generates a solution before the engineer has formed their own hypothesis, the engineer leaves the session feeling they learned but cannot reproduce the reasoning later. Prevention: hypothesis before prompt, re-derive after session, treat AI output as a peer's draft.
+
+Related: [[sources/dont-outsource-learning|Don't Outsource the Learning]]
+
+### Bottleneck Shift (Engineering)
+
+Accelerating code generation moves the constraint from writing code to reviewing, testing, integrating, and releasing. Measurement must shift from PR throughput to system outcomes (velocity, quality, rework rate). See also: Bottleneck Shift (agentic measurement, Fuel→Adoption→Output→Impact).
+
+Related: [[sources/dropbox-beyond-code-generation|Beyond Code Generation: Dropbox Nova]]
+
+### Tokenmaxxing
+
+The gaming of AI-usage metrics by running automated background tasks to inflate token counts without delivering real value. A Goodhart's Law failure mode: when token consumption becomes a success metric, it ceases to be useful.
+
+Related: [[sources/tracking-ai-usage-goodharts-law|Goodhart's Law in Corporate AI Usage Tracking]]
+
+### PagedAttention
+
+A memory management technique for LLM serving that divides KV cache into fixed-size blocks (pages). Blocks are allocated on demand and shared across requests with common prefixes, dramatically reducing memory fragmentation and increasing throughput 2-4x under high concurrency.
+
+Related: [[concepts/local-llm-serving|Local LLM Serving]]
+
+### Two-Instance Serving Pattern
+
+A deployment architecture where short-context high-concurrency requests and rare long-context requests are served by separate model instances. Each instance is optimized for its traffic profile — smaller context window + higher throughput vs. larger context + lower concurrency.
+
+Related: [[concepts/local-llm-serving|Local LLM Serving]]
+
+### Feature Co-location
+
+An ML inference pattern where candidate features are loaded directly into the inference engine's memory, eliminating high-fanout network retrieval calls during scoring. Used by Snapchat Bento to avoid microservice-style feature fetching. The opposite of a service-oriented architecture for feature serving.
+
+Related: [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]
+
+### Order-of-Operations Risk
+
+The learning failure that occurs when AI generates the complete solution before the human has formed their own hypothesis. If the AI answers before the human asks, the human never practices retrieval and the knowledge does not consolidate in long-term memory.
+
+Related: [[sources/dont-outsource-learning|Don't Outsource the Learning]], [[concepts/structured-learning-and-retention|Structured Learning and Retention]]
+
+### Defense in Depth (Security)
+
+A layered security strategy where multiple independent controls protect the same asset. If one layer is bypassed, the next still enforces. Applied at the application level (TLS → Auth → RBAC → Input Validation) and infrastructure level (WAF → Network ACL → Container Isolation → OS Hardening).
+
+Related: [[concepts/security-patterns|Security Patterns]], [[concepts/memory-safety-strategy|Memory Safety and Defense-inDepth]]
+
 ## Decision Log
 
 - 2026-05-19: Maintain a shared engineering language page in the wiki for recurring project terms and lightweight decisions, similar to a `CONTEXT.md`.

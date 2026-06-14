@@ -116,6 +116,13 @@ These apply to ALL brain-writing skills:
 - `skills/_brain-filing-rules.md` — where files go
 - `skills/_output-rules.md` — output quality standards
 
+## Wiki maintenance
+
+| Trigger | Skill |
+|---------|-------|
+| "wiki maintain", "wiki maintenance", "update wiki", "daily wiki", "wiki scan", "wiki sync", "run wiki workflow" | `skills/wiki-maintain/SKILL.md` |
+| "wiki deepen", "deepen wiki", "deep content", "depth campaign", "wiki coverage", "coverage gap", "deep expansion", "auto deepen" | `skills/wiki-deepen/SKILL.md` |
+
 ## Uncategorized
 
 | Trigger | Skill |

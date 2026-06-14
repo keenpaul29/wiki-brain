@@ -127,19 +127,22 @@ use generic placeholders (`alice-example`, `acme-example`, `fund-a`).
 If you are a fork, regenerate `llms.txt` + `llms-full.txt` with your own URL base before
 publishing: `LLMS_REPO_BASE=https://raw.githubusercontent.com/your-org/your-fork/main bun run build:llms`.
 
-# Codex Wiki Maintainer Instructions
+# Wiki Maintainer Instructions
 
-This workspace is an LLM-maintained Obsidian-style wiki.
+This workspace is an LLM-maintained Obsidian-style wiki linked to GBrain.
 
 ## Folders
 
 - `raw/`: immutable source documents. Read only.
 - `wiki/`: generated and maintained markdown wiki. Edit here.
 - `scripts/`: helper scripts for scan/state checks.
+- `skills/wiki-maintain/`: full lifecycle wiki maintenance skill.
+- `skills/wiki-deepen/`: automated deep-content expansion skill.
 
 ## Daily Workflow
 
-Run:
+Use `skills/wiki-maintain/SKILL.md` for the full orchestrated pipeline.
+Or run manually:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1
@@ -153,13 +156,20 @@ If new or changed raw files exist:
 2. Create or update a source summary in `wiki/sources/`.
 3. Update related concept and synthesis pages.
 4. Add backlinks.
-5. Update `wiki/index.md`.
-6. Append a dated entry to `wiki/log.md`.
-7. Run the link check from `wiki/automation.md`.
-8. Commit state with:
+5. Run auto-deepen: invoke `skills/wiki-deepen/SKILL.md` (deepen up to 5 thin concepts per week).
+6. Update `wiki/index.md`.
+7. Append a dated entry to `wiki/log.md`.
+8. Run link check + lint check from `wiki/automation.md`.
+9. Commit state with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/update-wiki-state.ps1 -CommitState
+```
+
+10. Sync to GBrain:
+
+```powershell
+bun run src/cli.ts sync --source brain --no-embed --no-pull
 ```
 
 Do not modify `raw/`.

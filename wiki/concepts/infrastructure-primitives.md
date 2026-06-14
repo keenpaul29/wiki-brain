@@ -65,6 +65,49 @@ Local-first web applications introduce infrastructure primitives on the client s
 
 WebSockets upgrade an HTTP request into a long-lived TCP channel. They are useful when clients and servers both need to push updates, such as chat, collaborative editing, games, live financial data, and live media. The infrastructure cost is connection state: heartbeats, memory per active connection, load balancing, failover, and session/state sharing.
 
+## Multi-Level Caching
+
+Caching operates as a hierarchy from closest to furthest from the user:
+
+1. **Browser cache** (0–5ms): HTTP cache headers (`Cache-Control`, `ETag`) enable browsers to serve repeated requests without a network round trip. ETags enable conditional requests — the browser sends `If-None-Match` and the server returns `304 Not Modified` with no body if the content is unchanged.
+
+2. **CDN cache** (20–50ms): Edge servers cache static assets and, increasingly, dynamic content. Modern CDNs (Cloudflare Workers, AWS Lambda@Edge) run code at edge locations for personalization by geography, device type, or A/B test variant.
+
+3. **Application cache** (1–5ms): In-memory caches (Redis, Memcached, Caffeine) sitting between application servers and databases. This is where the majority of cache engineering effort goes — pattern selection (cache-aside, write-through, write-behind), TTL tuning, eviction policies, and stampede prevention.
+
+4. **Database query cache** (10–20ms): Built-in database mechanisms (MySQL Query Cache, PostgreSQL shared buffers). Least controllable but provides baseline improvements automatically.
+
+**Cache invalidation** is the hard problem. Three strategies:
+- **TTL**: Time-based expiry. Simple but risks stale data.
+- **Event-based**: Explicit eviction on data mutation, with invalidation events propagating through all layers.
+- **Tag-based**: Group cache entries by tags for bulk invalidation (e.g., invalidate all entries tagged `dept:engineering`).
+
+**Cache stampede prevention:** When a popular key expires and N concurrent requests all miss cache, the database is hammered. Mitigations include request coalescing (one thread loads, others wait), probabilistic early expiration (refresh before expiry with random probability), and distributed locking around cache reload.
+
+**Cache warming:** Pre-populate caches before expected traffic. Three patterns: scheduled (cron at 8am daily), write-through (cache on every write), and lazy with background refresh (serve stale data while async-refetching the latest).
+
+## Content Delivery Network (CDN) Patterns
+
+Beyond basic static asset caching, CDNs serve as a global infrastructure layer:
+
+- **Edge computing**: Cloudflare Workers, Lambda@Edge run request-time logic — URL rewriting, A/B testing, geo-personalization, authentication checks — without returning to origin.
+- **Cache invalidation**: On data update, purge the CDN path (`cdnService.purge("/api/products/" + id)`). Use surrogate keys for group invalidation.
+- **Cache key design**: Include relevant request attributes (language, currency, device) in the cache key so different variants are cached separately. Avoid including irrelevant attributes that fragment the cache.
+- **Dynamic content caching**: Cache API responses at the edge with short TTLs (30–300 seconds) for read-heavy endpoints. Monitor cache hit ratio — below 50% suggests the CDN layer is adding latency without benefit.
+
+## Rate Limiting Algorithms
+
+Rate limiting protects infrastructure from abuse and accidental traffic spikes. Each algorithm has different properties:
+
+| Algorithm | Memory | Burst Tolerance | Accuracy |
+|-----------|--------|-----------------|----------|
+| **Token Bucket** | Low (one counter per client) | High (bucket capacity) | Good |
+| **Sliding Window Log** | High (stores all timestamps) | Low | Best |
+| **Sliding Window Counter** | Medium (scores in Redis) | Medium | Good |
+| **Fixed Window** | Low (one counter per window) | High at boundaries | Poor at edges |
+
+**Token Bucket** is the most common production choice — it allows natural traffic bursts while maintaining a long-term rate limit. For distributed rate limiting, Redis with sorted sets (sliding window) is the reference implementation.
+
 ## Storage Performance Provisioning
 
 Storage infrastructure must provision both capacity and access velocity. Throughput measures large sequential transfer volume; IOPS measures discrete operation count. Databases and highly concurrent workloads can saturate IOPS while using little of the available byte capacity, which is why cloud storage products price provisioned IOPS separately from raw GB/TB.
@@ -119,3 +162,7 @@ Client applications also carry infrastructure primitives when they process untru
 - Related source: [[sources/intro-to-websockets|Intro to WebSockets]]
 - Related source: [[sources/byte-storage-vs-io|Byte Storage vs. I/O]]
 - Related source: [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]]
+- Related source: [[sources/prod-web-application-components|Key Components of a Prod Web Application]]
+- Related source: [[sources/latency-gambler-day-10|Caching Patterns]]
+- Related source: [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
+- Related source: [[sources/latency-gambler-day-18|Caching & CDN Patterns]]

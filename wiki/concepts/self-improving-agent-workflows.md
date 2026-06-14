@@ -59,6 +59,34 @@ Remote and containerized development environments can carry their own agent inst
 
 Dropbox's Nova demonstrates agentic coding at production scale: Nova produces ~1 in 12 pull requests at Dropbox. Agents handle migrations, flaky test remediation, bug investigation, and dependency updates alongside feature work. The key measurement model tracks four stages: Fuel (AI usage), Adoption (workflow changes), Output (production contributions), and Impact (customer value). The insight is that agentic engineering moves more pressure upstream into product and design — sharper problem framing and specs matter more when agents execute implementation.
 
+## Federated Multi-Agent Architectures
+
+Two production patterns extend self-improving workflows across multiple specialized agents:
+
+### Kensho Grounding: Router-Orchestrated Retrieval
+
+[[sources/kensho-multi-agent|Kensho Financial Multi-Agent Retrieval Architecture]] uses a centralized RouterGraph (LangGraph) to orchestrate federated data retrieval across structured financial datasets. A single routing agent classifies the query intent and dispatches to specialized data agents, each responsible for one dataset domain.
+
+Key design properties:
+
+- **Custom communication protocols**: agents query, respond, and pass execution metadata through typed contracts. Protocol versioning prevents silent drift between router and agent interfaces.
+- **LangGraph tracing**: end-to-end observability across nested routing paths. Essential for debugging the multi-step routing decisions that produce incorrect results.
+- **Multi-stage evaluation**: router accuracy is measured at two levels — routing decision correctness (did the router pick the right agent?) and tool-call correctness (did the agent execute the right query?). Both are checked against exact-match ground-truth datasets.
+
+The learning loop: routing mistakes are captured, classified, and fed back as refinement prompts for the router agent's instructions. This is the same capture→distill→file pattern applied to agent orchestration.
+
+### Madrigal: Modular Agent Platforms
+
+[[sources/madrigal-multi-agent|Madrigal Pharmaceuticals Agentic Research Platform]] abstracts data sources into standardized tool interfaces, decoupling orchestration from ingestion. Skills are swappable modules that can be composed into new research workflows without modifying the main orchestrator.
+
+Key design properties:
+
+- **Managed deployment containers**: agents run as microservices in Docker containers, each research team invoking agent skills via APIs. This is the team-topologies platform-team model applied to agent infrastructure.
+- **Evaluative feedback loops**: production errors are captured, converted into assertions, and added as regression tests. The system's knowledge of what went wrong compounds over time.
+- **LangSmith tracing**: transparency into model decisions, tool calls, and data retrievals across the agent lifecycle — not just at inference time.
+
+The learning loop: Madrigal's capture→assert→test cycle is the behavioral equivalent of the wiki's ingest→summarize→link cycle. Both turn transient execution outcomes into durable system knowledge.
+
 ## Source Support
 
 - [[sources/self-evolving-hooks|Self-Evolving Hooks]]

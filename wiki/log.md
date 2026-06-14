@@ -2,10 +2,33 @@
 title: Wiki Log
 type: log
 created: 2026-04-28
-updated: 2026-04-28
+updated: 2026-06-14
 ---
 
 # Wiki Log
+
+## [2026-06-14] ingest | Prod web app components, caching, gateway, message queues, event sourcing, monitoring, microservices, distributed systems, resilience, CDN, DB scaling, and security patterns
+
+Processed 12 new raw sources: the Prod Web App overview and Days 10-20 of The Latency Gambler's system design series.
+
+Added source summaries:
+
+- [[sources/prod-web-application-components|Key Components of a Prod Web Application]] (CI/CD, DNS, LB, CDN, APIs, DBs, caches, queues, search, monitoring, alerting — the full production stack).
+- [[sources/latency-gambler-day-10|Caching Patterns]] (cache-aside, write-through, write-behind, read-through, refresh-ahead, multi-level caching, invalidation, stampede prevention).
+- [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]] (API gateway, forward/reverse proxy, token bucket/sliding window rate limiting, BFF, versioning).
+- [[sources/latency-gambler-day-12|Message Queue Patterns]] (pub/sub, message queue vs topic, command pattern, DLQ, deduplication, priority queues).
+- [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]] (event sourcing, CQRS, Saga pattern, event snapshotting, versioning, projection rebuilding).
+- [[sources/latency-gambler-day-14|Monitoring & Observer Patterns]] (three pillars, observer-based monitoring, structured logging, distributed tracing, alerting with multi-channel notifications).
+- [[sources/latency-gambler-day-15|Microservices Patterns]] (service registry/discovery, API gateway pattern, Bulkhead, Netflix OSS stack).
+- [[sources/latency-gambler-day-16|Distributed System Patterns]] (leader election, Raft consensus, vector clocks, conflict detection and resolution).
+- [[sources/latency-gambler-day-17|Resilience Patterns]] (retry with exponential backoff + jitter, layered timeouts, fallback chains, graceful degradation).
+- [[sources/latency-gambler-day-18|Caching & CDN Patterns]] (multi-level cache hierarchy, cache warming, CDN edge patterns, cache stampede prevention, ETags).
+- [[sources/latency-gambler-day-19|Database Scaling Patterns]] (read replicas, hash/range/geographic sharding, DB per service, hybrid real-world strategies).
+- [[sources/latency-gambler-day-20|Security Patterns]] (defense in depth, JWT, OAuth 2.0, RBAC, ABAC, TLS, API key management, request signing).
+
+Updated concept pages with new source references: [[concepts/system-design|System Design]], [[concepts/system-design-case-studies|System Design Case Studies]], [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]], [[concepts/reliability-and-operations|Reliability and Operations]], [[concepts/data-storage-and-consistency|Data Storage and Consistency]], [[concepts/infrastructure-primitives|Infrastructure Primitives]].
+
+Updated [[index]], [[log]].
 
 ## [2026-06-06] ingest | Code smells, estimation, incident management, team topologies, hiring, time management, and backend performance
 
@@ -381,4 +404,129 @@ Updated concept pages:
 - [[concepts/data-storage-and-consistency|Data Storage and Consistency]] with the Repository Pattern, Connection Pools, and Connection Factories.
 
 Updated [[index]] to list the new sources.
+
+## [2026-06-14] deep analysis | Coverage gap analysis, 5 new concept pages, deep content expansion
+
+Analyzed coverage gaps from the 12 Latency Gambler (Days 10-20) + Prod Web App sources. Identified that while individual patterns were captured by existing concept pages, no pages existed for five cross-cutting topic clusters.
+
+Created 5 new concept pages:
+
+- [[concepts/api-management|API Management and Gateway Patterns]] — API gateways, forward/reverse proxies, rate limiting (token bucket, sliding window), BFF, API versioning, and protocol mediation.
+- [[concepts/distributed-coordination|Distributed Coordination and Consensus]] — Leader election, Raft consensus details (term, quorum, log replication, ConflictTerm backtracking), Vector clocks, gossip protocols, ZooKeeper/etcd patterns.
+- [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] — Retry with exponential backoff + jitter, circuit breaker (closed/open/half-open), bulkhead isolation, timeout budgets, fallback chains, graceful degradation, and layered resilience stack.
+- [[concepts/security-patterns|Security Patterns]] — Defense in depth, JWT structure and validation, OAuth 2.0 grant types, RBAC vs ABAC, TLS termination, API key management with rotation, HMAC request signing, and production security checklist.
+- [[concepts/microservices-architecture|Microservices Architecture]] — Service boundaries and decomposition, inter-service communication (sync/async), service registry and discovery, API gateway routing, orchestration vs choreography, Bulkhead isolation, and Netflix OSS stack.
+
+Expanded existing concept pages with deep content:
+
+- [[concepts/system-design|System Design]] — Added 5 new building blocks (API Gateway, Rate Limiting, Service Discovery/Registry, Distributed Consensus/Raft, Bulkhead Isolation) and 8 new case study references from Latency Gambler Days 10-20.
+- [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] — Added new pattern-specific sections: API Gateways (routing, cross-cutting concerns), Rate Limiting (token bucket, sliding window, distributed), CQRS with Event Sourcing, Event versioning and schema evolution, DLQ + poison message handling, Producer/consumer flow observability.
+- [[concepts/reliability-and-operations|Reliability and Operations]] — Added new sections: Graceful Shutdown pattern (deregister, drain, close, exit), Graceful Degradation (feature flags, degraded responses, fallbacks), Observability for reliability (health endpoints, structured logging in production), production security checklist.
+- [[concepts/data-storage-and-consistency|Data Storage and Consistency]] — Added new sections: CQRS (read model vs write model separation, eventual consistency window), Projection Rebuilding (full rebuild vs incremental update, versioned events), Cache Invalidation strategies (TTL, write-through, write-behind, refresh-ahead, stampede prevention).
+- [[concepts/infrastructure-primitives|Infrastructure Primitives]] — Added new sections: CDN Edge patterns (Static offload, Dynamic acceleration, API caching at edge, Geo-distributed origin pull), Cache Hierarchy patterns (L1/L2/L3, multi-tier TTL, origin shielding, cache stampede prevention).
+- [[concepts/system-design-case-studies|System Design Case Studies]] — Added 3 new case studies: Prod Web App Architecture (full production stack from CI/CD to alerting), Microservices with Netflix OSS Stack (service registry, API gateway, bulkhead, circuit breaker, graceful shutdown), and Production Web Application Stack (integrated CI/CD/DNS/LB/CDN/API/DB/cache/queue/search/monitoring).
+
+Updated [[index]], [[log]].
+
+## [2026-06-14] deep content | 50-pass expansion series — Part 1: 8 untouched concept pages deepened
+
+Performed 8 deep-content expansion passes on concept pages that had been created but not yet deepened with cross-source content:
+
+**Pass 1 — [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]]**: Added Kensho federated multi-agent architecture (RouterGraph, LangGraph tracing, multi-stage eval) and Madrigal modular agent platform (standardized tool interfaces, evaluative feedback loops). Cross-referenced Dropbox Nova and Claude Code practices sources.
+
+**Pass 2 — [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]]**: Added AI Brain operating model sections (control files: _hot.md, _pending.md, _log.md), daily/weekly/monthly cadence tiers with risk profiles, and multi-source compilation rules. Cross-referenced AI brain architecture and RAG/wiki/GBrain sources.
+
+**Pass 3 — [[concepts/system-design-interview-workflow|System Design Interview Workflow]]**: Added Google L7 common pitfalls (memorizing patterns, horizontal scaling as default, hot key/thundering herd, cache utility math) and structured preparation strategy. Cross-referenced Google L7 system design study roadmap.
+
+**Pass 4 — [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]**: Added No-Code AI Platforms section (validation signal, integration-layer value) and Cognitive Archetypes section (supportive/mixed/risky/abstinence modes with task-fit guidance). Cross-referenced AI developer cognitive archetypes and Unlock case study.
+
+**Pass 5 — [[concepts/recurrent-depth-transformers|Recurrent Depth Transformers]]**: Added latent-reasoning vs chain-of-thought comparison (no intermediate token trace, compute efficiency, untruncated reasoning), stability mechanisms (gating, residual scaling, LayerNorm placement), adaptive halting, and production considerations.
+
+**Pass 6 — [[concepts/shared-engineering-language|Shared Engineering Language]]**: Added 8 new terms: Cognitive Debt, Bottleneck Shift (Engineering), Tokenmaxxing, PagedAttention, Two-Instance Serving Pattern, Feature Co-location, Order-of-Operations Risk, Defense in Depth (Security).
+
+**Pass 7 — [[concepts/fishdb|FishDB]]**: Expanded with Document Data Model section, fully fleshed Index Types (B-tree sorted-set, bit-sliced for numeric ranges, inverted with skip-list posting lists), detailed cross-layer Key Incident analysis table (Application/Allocator/Kernel/Runtime layers), and Production Deployment section (48 shards, Envoy sidecars, monitoring axes).
+
+**Pass 8 — [[concepts/team-topologies|Team Topologies]]**: Added Cognitive Load Management table (intrinsic/extraneous/germane mapped to team topology mitigations), Team Interaction Modes in Practice (discovery→collaboration, stable interface→X-as-a-Service, capability building→facilitation), and Inverse Conway Maneuver section.
+
+Link check and lint pass clean.
+
+## [2026-06-14] deep content | 50-pass expansion series — Part 3: 9 new concept pages created
+
+Created 9 new concept pages from cross-source synthesis of previously uncaptured topics:
+
+**Pass 14 — [[concepts/observability-and-monitoring|Observability and Monitoring]]**: Three pillars (logs/metrics/traces), four golden signals (latency/traffic/errors/saturation), structured logging with required fields, metrics collection (counter/gauge/histogram/summary), distributed tracing with W3C traceparent propagation, SLO burn-rate alerting with multi-window approach, diagnostic workflow (metrics→traces→logs), dashboard tiers and anti-patterns, alert severity levels and anti-patterns.
+
+**Pass 15 — [[concepts/production-ai-operations|Production AI Operations]]**: AI failure mode taxonomy (hallucination/grounding, retrieval failures, inference latency, cost management), cost-per-successful-outcome metric, model selection by cognitive task, deterministic agent orchestration with state machines, tool security (input/output validation, trust boundaries), evaluation offline in CI/CD and online in production, memory tiers (session/working/long-term/ephemeral).
+
+**Pass 16 — [[concepts/agent-memory-architecture|Agent Memory Architecture]]**: Three paradigms (RAG retrieval, LLM Wiki compilation, fat skills/GBrain action-embedded) with hybrid architecture decision flowchart, short-term vs long-term memory tiers (session context, working memory, long-term, ephemeral state), memory quality metrics (precision, recall, synthesis accuracy, staleness, reuse rate), and nine common failure modes in agent memory.
+
+**Pass 17 — [[concepts/event-driven-architecture|Event-Driven Architecture]]**: Events vs commands vs messages, pub/sub vs message queues, CQRS with dual-write problem solution via CDC, Change Data Capture from WAL/binlog with Debezium pipeline and operational risks, Event Sourcing with snapshots and versioning, projections (full rebuild vs incremental), Saga pattern (choreographed vs orchestrated), CloudEvents standard for schema interoperability.
+
+**Pass 18 — [[concepts/multi-agent-orchestration|Multi-Agent Orchestration]]**: Four agent topologies (router graph, planning-execution separation, peer-to-peer/debate, hierarchical), structured inter-agent communication protocols, shared context surface via filesystem, agent harness architecture (filesystem, sandbox, tool registry, memory manager, self-verification, Ralph Loop), evaluation at router/specialist/end-to-end/latency/cost levels.
+
+**Pass 19 — [[concepts/code-quality-and-ai-slop|Code Quality and AI Slop Management]]**: Traditional code smell families (bloaters, OO abusers, change preventers, dispensables, couplers) with refactoring techniques, AI-specific quality problems (comment slop, instrumentation slop, vibe architecture, architecture drift multiplier), anti-slop pillars (context completeness, human-owned architecture, review gates, anti-pattern rules file, no speculative generation, instrumentation discipline), expected vs exceptional failure distinction.
+
+**Pass 20 — [[concepts/performance-engineering|Performance Engineering]]**: The performance engineering loop (budget→measure→bottleneck→fix→verify), performance budgets by metric, CPU/memory/I/O profiling with flame graphs, six load test types with anti-patterns, database performance (80/20 rule, indexing strategy, N+1 query fixes, connection pool sizing), caching strategy, and cross-layer debugging (LinkedIn HashMap freeze case study spanning application→allocator→kernel→async runtime).
+
+**Pass 21 — [[concepts/integration-testing-and-test-strategy|Integration Testing and Test Strategy]]**: 50/40/10 test pyramid (unit/integration/E2E), Testcontainers pattern for real-service integration tests, Toxiproxy failure injection, clean-before strategy, CI test layering with fast feedback, flaky test management, AI-generated behavioral tests, and contract testing with Pact-style verification.
+
+**Pass 22 — [[concepts/incident-management-sre|Incident Management and SRE Practice]]**: Incident lifecycle (detection→triage→mitigation→resolution→postmortem), ICS roles (IC, Scribe, SME, Comms Lead), severity definitions, mitigation vs resolution distinction, blameless postmortem template, on-call rotation structures and pager budgets, alert hygiene, and DORA metrics.
+
+Updated [[index]] with all 9 new entries, link check and lint pass clean.
+
+## [2026-06-14] deep content | 50-pass expansion series — Part 3 continued: 5 more new concept pages
+
+**Pass 23 — [[concepts/api-protocol-selection|API Protocol Selection]]**: REST vs GraphQL vs gRPC vs WebSocket comparison with benchmarks, layered decision framework (default REST, add GraphQL for frontend bottlenecks, add gRPC for internal service calls, add WebSocket for realtime), and layered architecture pattern.
+
+**Pass 24 — [[concepts/ci-cd-pipeline-and-deployment|CI/CD Pipeline and Deployment Strategy]]**: Pipeline stages (commit→lint→test→build→integration→security→staging→e2e→production), immutable artifacts, deployment strategies (rolling/blue-green/canary/feature flags), rollback automation, container multi-stage build optimization, and DORA metrics.
+
+**Pass 25 — [[concepts/vector-semantic-search-architecture|Vector and Semantic Search Architecture]]**: Search spectrum (keyword→hybrid→semantic), embedding pipeline, vector index types (HNSW, IVF, DiskANN), multimodal search with CLIP/CLAP, hybrid retrieval with RRF, LinkedIn-scale semantic search architecture.
+
+**Pass 26 — [[concepts/ai-coding-workflow-productivity|AI Coding Workflow and Productivity]]**: Context-first workflow (context→plan→review→execute→test), cognitive modes (supportive/mixed/exploratory/review-only), bottleneck shift awareness, and learning-oriented AI use patterns.
+
+**Pass 27 — [[concepts/cloud-devboxes-for-agent-execution|Cloud Devboxes for Agent Execution]]**: Cloud devbox architecture for parallel agent execution, VM isolation, declarative devcontainer specs, automated lifecycle, scoped credentials, and network context for agent environments.
+
+Updated [[index]] with all 5 new entries, link check and lint pass clean.
+
+## [2026-06-14] deep content | 50-pass expansion series — Part 2: 5 new concept pages deepened
+
+Performed 5 deep-content expansion passes on concept pages created in the previous session:
+
+**Pass 9 — [[concepts/api-management|API Management and Gateway Patterns]]**: Added Protocol Translation section (HTTP→gRPC, GraphQL→REST, WebSocket→SSE, MQTT→HTTP with decision criteria) and Distributed Rate Limiting section (Redis sliding window, local cache + periodic sync, leaky bucket per node, rate limiting as backpressure). Cross-referenced latency-gambler-day-11 and prod-web-application-components.
+
+**Pass 10 — [[concepts/distributed-coordination|Distributed Coordination and Consensus]]**: Added Raft in Production section (disk I/O sensitivity, quorum math, leader election storms, defragmentation) and Gossip Protocols section (SWIM/Serf pattern, membership detection, when to use vs Raft). Cross-referenced raft-consensus-explained.
+
+**Pass 11 — [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]]**: Added Production Circuit Breaker Tuning (per-service failure threshold, open duration, half-open probing strategy, metrics window shape), Health Endpoint Pattern (liveness vs readiness with observability), Graceful Shutdown Sequence (deregister, drain, close, exit), and Rate Limiting as Backpressure. Cross-referenced latency-gambler-days 8, 15, 17, and prod-web-application-components.
+
+**Pass 12 — [[concepts/security-patterns|Security Patterns]]**: Added OAuth 2.0 Grant Type Decision Tree, API Key Rotation Mechanics (overlapping rotation pattern with overlap period management, key hash storage), TLS Termination Decisions table, and Cloudflare Tunnel pattern for ingress security. Cross-referenced latency-gambler-day-20, create-tunnel-dashboard, docker-image-security-optimization.
+
+**Pass 13 — [[concepts/microservices-architecture|Microservices Architecture]]**: Added Orchestration vs Choreography comparison with decision table, Event-Driven Microservices section (event schema, CloudEvents, at-least-once delivery, idempotency, Saga pattern with choreographed vs orchestrated forms), Service Mesh Deployment (sidecar pattern, what mesh handles, when to use mesh), and Migration Strategies (Strangler Fig, Parallel Run, Database Per Service). Cross-referenced latency-gambler-days 12, 13, 15.
+
+Link check and lint pass clean.
+
+## [2026-06-14] deep content | 10-pass deep content expansion across 9 concept pages
+
+Performed 10 deep-content expansion passes across the wiki concept and synthesis pages, cross-referencing the full source set for each:
+
+**Pass 1 — [[concepts/software-design-patterns|Software Design Patterns]]**: Added SOLID principles for distributed systems, Repository Pattern, Connection Pool tuning, and Connection Factory read/write routing.
+
+**Pass 2 — [[concepts/structured-learning-and-retention|Structured Learning and Retention]]**: Added Cognitive Debt and the Order-of-Operations Risk, Context-First Workflow as a Learning System, System Design Study Roadmap.
+
+**Pass 3 — [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]**: Added Software Estimation as a Senior Skill, Engineering Judgment When Code Is Cheap.
+
+**Pass 4 — [[concepts/local-llm-serving|Local LLM Serving]]**: Added PagedAttention, Quantization Strategy table, 5-phase Model Loading, Production Serving Architecture.
+
+**Pass 5 — [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]**: Added Snapchat Bento, Netflix Multimodal Video Search, LinkedIn Semantic Search, cross-platform comparison table.
+
+**Pass 6 — [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]**: Added Rust WAF case study, Container Defense-in-Depth, Memory Safety Beyond Rust (HashMap freeze).
+
+**Pass 7 — [[concepts/local-first-architecture|Local-First Architecture]]**: Expanded Edison architecture, Conflict Resolution Strategies (LWW vs OT vs CRDT), Offline Resilience patterns.
+
+**Pass 8 — [[concepts/frontend-build-performance|Frontend Build Performance]]**: Added TypeScript modeling, App Router mental model, AI UX Patterns, Performance Infrastructure Integration table.
+
+**Pass 9 — [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]]**: Added Remote/Cloud Dev Environments, Cloud Devboxes for Agent Fleets, VM isolation model.
+
+**Pass 10 — [[synthesis/software-engineering-learning-os|Software Engineering Learning OS]]**: Extended with all 9 passes, expanded study spine from 11 to 16 building blocks.
+
+Updated [[index]], [[log]]. Link check and lint pass clean.
 

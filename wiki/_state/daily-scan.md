@@ -1,34 +1,28 @@
 ﻿---
 title: Daily Wiki Scan
 type: state
-updated: 2026-06-06
+updated: 2026-06-14
 ---
 
 # Daily Wiki Scan
 
-Generated: 2026-06-06 19.25.25 +05:30
+Generated: 2026-06-14 12:18:28 +05:30
 
 ## Summary
 
-- Raw files: 98
-- New files: 7
-- Changed files: 0
+- Raw files: 110
+- New files: 0
+- Changed files: 1
 - Deleted files: 0
 - State committed: True
 
 ## New Files
 
-- `raw/Backend Performance Engineering - Profiling Bottleneck Analysis and Optimization.md`
-- `raw/Code Smells and Refactoring Techniques - A Practical Catalog.md`
-- `raw/Developer Time Management - Deep Work GTD Calendar Blocking and Burnout Prevention.md`
-- `raw/Software Estimation Techniques - Story Points T-Shirt Sizing and Beyond.md`
-- `raw/SRE Incident Management - From Detection to Blameless Postmortem.md`
-- `raw/Structured Engineering Hiring - A Practical Guide.md`
-- `raw/Team Topologies - Engineering Organization Design for Fast Flow.md`
+- None
 
 ## Changed Files
 
-- None
+- `raw/Learn System Design With Me . Day 20 Security Patterns.md`
 
 ## Deleted Files
 

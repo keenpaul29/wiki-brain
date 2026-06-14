@@ -2,6 +2,7 @@
 title: Software Engineering Learning OS
 type: synthesis
 created: 2026-04-28
+updated: 2026-06-14
 tags:
   - synthesis
   - software-engineering
@@ -96,15 +97,20 @@ Use the expanded system design notes as a study spine:
 
 1. [[concepts/system-design-interview-workflow|System Design Interview Workflow]] for the conversation structure.
 2. [[concepts/infrastructure-primitives|Infrastructure Primitives]] for the basic vocabulary.
-3. [[concepts/data-storage-and-consistency|Data Storage and Consistency]] for the hardest correctness and scaling tradeoffs.
+3. [[concepts/api-management|API Management and Gateway Patterns]] for API gateway, rate limiting, versioning, and BFF patterns.
 4. [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] for component interaction.
-5. [[concepts/reliability-and-operations|Reliability and Operations]] for production survival.
-6. [[concepts/system-design-case-studies|System Design Case Studies]] for applying the patterns.
-7. [[concepts/frontend-build-performance|Frontend Build Performance]] for client-side bundle and build-tool optimization.
-8. [[concepts/local-llm-serving|Local LLM Serving]] for inference latency, context, KV cache, and serving operations.
-9. [[concepts/fishdb|FishDB]] for storage engine architecture, index design, and memory-allocator interactions at scale.
-10. [[concepts/local-first-architecture|Local-First Architecture]] for client-side sync engines, optimistic UI, offline resilience, and multi-tab coordination.
-11. [[concepts/software-design-patterns|Software Design Patterns]] for choosing abstractions from code pain rather than memorized names.
+5. [[concepts/microservices-architecture|Microservices Architecture]] for service decomposition, discovery, orchestration vs choreography.
+6. [[concepts/data-storage-and-consistency|Data Storage and Consistency]] for the hardest correctness and scaling tradeoffs.
+7. [[concepts/distributed-coordination|Distributed Coordination and Consensus]] for leader election, Raft, vector clocks, and conflict resolution.
+8. [[concepts/reliability-and-operations|Reliability and Operations]] for production survival.
+9. [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] for retry, circuit breaker, bulkhead, timeout, fallback, and graceful degradation.
+10. [[concepts/security-patterns|Security Patterns]] for defense in depth, JWT, OAuth 2.0, RBAC/ABAC, TLS, and API key management.
+11. [[concepts/system-design-case-studies|System Design Case Studies]] for applying the patterns.
+12. [[concepts/frontend-build-performance|Frontend Build Performance]] for client-side bundle and build-tool optimization.
+13. [[concepts/local-llm-serving|Local LLM Serving]] for inference latency, context, KV cache, and serving operations.
+14. [[concepts/fishdb|FishDB]] for storage engine architecture, index design, and memory-allocator interactions at scale.
+15. [[concepts/local-first-architecture|Local-First Architecture]] for client-side sync engines, optimistic UI, offline resilience, and multi-tab coordination.
+16. [[concepts/software-design-patterns|Software Design Patterns]] for choosing abstractions from code pain rather than memorized names.
 
 ## Everyday Workflow
 
@@ -129,6 +135,32 @@ The daily workflow is now documented in [[automation]]. A helper script scans `r
 [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] demonstrates multi-stage ranking at billions-scale, connecting system-design primitives (Two Tower models, cached embeddings, value-model tuning, distillation, ANN retrieval) to real ML infrastructure in Instagram Explore.
 
 [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]] adds a blog-reading practice for real-world system-design exposure across production tradeoffs, incident stories, migration lessons, and platform constraints.
+
+The 2026-06-06 deep-analysis pass identified five cross-cutting pattern clusters from the 12 Latency Gambler (Days 10-20) and Prod Web App sources that lacked dedicated concept pages. Five new concept pages were created: [[concepts/api-management|API Management and Gateway Patterns]] (gateway routing, rate limiting, versioning, BFF), [[concepts/distributed-coordination|Distributed Coordination and Consensus]] (leader election, Raft, vector clocks), [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] (retry, circuit breaker, bulkhead, timeout, fallback, graceful degradation), [[concepts/security-patterns|Security Patterns]] (defense in depth, JWT, OAuth 2.0, RBAC/ABAC, TLS, API key management), and [[concepts/microservices-architecture|Microservices Architecture]] (service decomposition, registry/discovery, orchestration vs choreography, Netflix OSS stack).
+
+Six existing concept pages received deep content expansion incorporating all 12 new sources: [[concepts/system-design|System Design]] (5 new building blocks, 8 new case study references), [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] (API gateways, rate limiting, CQRS+event sourcing, DLQ, producer/consumer observability), [[concepts/reliability-and-operations|Reliability and Operations]] (graceful shutdown, graceful degradation, observability for reliability, security checklist), [[concepts/data-storage-and-consistency|Data Storage and Consistency]] (CQRS, projection rebuilding, cache invalidation strategies), [[concepts/infrastructure-primitives|Infrastructure Primitives]] (CDN edge patterns, cache hierarchy), and [[concepts/system-design-case-studies|System Design Case Studies]] (Prod Web App Architecture, Microservices with Netflix OSS Stack, Production Web Application Stack).
+
+The system design study spine now extends to 16 building blocks with the addition of API gateways, distributed coordination, resilience patterns, security, and microservices architecture.
+
+The 2026-06-14 ten-pass deep content expansion deepened 9 additional concept pages with cross-source synthesis from the full wiki source set:
+
+- **[[concepts/software-design-patterns|Software Design Patterns]]**: added SOLID principles re-interpreted for distributed systems (Day 1 architect mindset), Repository Pattern, Connection Pool, and Connection Factory patterns (Day 9). The SOLID table maps each principle from class-level meaning to distributed-system interpretation — Single Responsibility as independent failure isolation, Liskov Substitution as swappable service contracts through strict interface contracts.
+
+- **[[concepts/structured-learning-and-retention|Structured Learning and Retention]]**: added three major sections — Cognitive Debt and the Order-of-Operations Risk (the research-backed failure pattern where AI answers before the human asks, preventing schema-building), Context-First Workflow as a Learning System (mapping the plan-first review-gated workflow to the learning loop), and System Design Study Roadmap (the canonical resources and the insight that passive video consumption produces poor retention for design interviews).
+
+- **[[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]]**: added Software Estimation as a Senior Skill (relative sizing, Planning Poker, Monte Carlo simulation, affinity estimation — choosing the right technique and communicating uncertainty) and Engineering Judgment When Code Is Cheap (the bottleneck-shift insight from Dropbox Nova — feature curation and refusal become the most valuable senior skill when every feature can be generated quickly).
+
+- **[[concepts/local-llm-serving|Local LLM Serving]]**: added PagedAttention and memory management (block-based KV cache allocation, page sharing for shared prefixes, 2-4x throughput improvement), Quantization Strategy (weight vs KV cache, GGUF/GPTQ/AWQ/FP8 comparison table), Model Loading Phases (5-phase readiness model from disk I/O through CUDA graph capture and cache warming), and Production Serving Architecture (reverse proxy with TLS/rate limiting/auth/model router, two-instance pattern for mixed workloads).
+
+- **[[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]]**: added Snapchat Bento ML Platform (CPU/GPU model splitting, feature co-location, raw bytes optimization, train-serve skew prevention at a billion predictions/second), Netflix Multimodal Video Search (CLIP/CLAP embedding space, temporal segment hashing, fusion layer alignment), LinkedIn Semantic Search (GPU-accelerated EBR, Cross-Encoder SLM on SGLang, auction layer), and a Common Patterns Across Production RecSys comparison table spanning Instagram, Snapchat, Netflix, and LinkedIn.
+
+- **[[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]]**: added Rust WAF case study (5-layer architecture with borrow-checker guarantees across layers, pre-compiled regex engine, compile-time rule safety), Container Defense-in-Depth (multi-stage builds, rootless containers, distroless images, Docker socket protection), and Memory Safety Beyond Rust (the HashMap freeze case study showing that even memory-safe languages need allocation predictability — preallocation, jemalloc tuning, mmap_lock awareness).
+
+- **[[concepts/local-first-architecture|Local-First Architecture]]**: expanded Edison Engine Architecture with two-layer design details (Edison Engine + Sync Service, BroadcastChannel multi-tab coordination, IndexedDB schema design), added Conflict Resolution Strategies (Last-Writer-Wins, Operational Transform, CRDT comparison with use-case guidance), and Offline Resilience patterns (local reads always work, write queueing, conflict detection on reconnect, sync state visibility).
+
+- **[[concepts/frontend-build-performance|Frontend Build Performance]]**: added Broader Frontend Skill Surface sections (TypeScript state modeling, App Router rendering and caching mental model, disciplined Tailwind component extraction), AI UX Patterns (streaming responses, optimistic UI with async verification, search/summarization/chat component architecture, performance budget interaction with unpredictable AI latency), and Performance Infrastructure Integration table mapping frontend concerns to system-design infrastructure layers.
+
+- **[[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]]**: added Remote and Cloud Development Environments section covering VS Code remote targets (SSH, dev containers, WSL, tunnels, Codespaces) with AI context patterns, and Cloud Devboxes for Agent Fleets (VM isolation over containers, declarative specs, automated lifecycle, scoped credentials, assume-compromise security model).
 
 The 2026-06-06 ingest adds seven sources across entry-, mid-, and senior-level engineering coverage, filling the wiki's largest remaining coverage gaps.
 

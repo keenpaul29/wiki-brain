@@ -87,6 +87,56 @@ Local-first architectures shift reliability requirements to the client:
 - **Offline operation**: the local store (IndexedDB) serves reads without network. The sync layer must handle reconnection, queue management, and conflict resolution when connectivity returns.
 - **Durable store schema**: IndexedDB with specialized schemas for file metadata and content, designed for recovery and consistency across sessions.
 
+## Code-Level Resilience Patterns
+
+While the patterns above address infrastructure and process reliability, individual service calls also need resilience at the code level. The [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] concept page covers the full stack:
+
+- **Retry with exponential backoff + jitter**: Handles transient network and DB failures. Only retry idempotent operations. Add random jitter to prevent thundering herd on recovery.
+- **Layered timeouts**: Connection timeout (2s) + read timeout (5s) + total operation timeout (10s). Each layer is independently tuned. The innermost fires first.
+- **Circuit breaker**: Fail fast when a downstream service is known to be unhealthy. Three states: CLOSED (normal), OPEN (fast-fail), HALF_OPEN (probe for recovery).
+- **Fallback chains**: Cache → degraded service → default value → graceful error. Each fallback is independently failure-isolated.
+- **Graceful degradation**: Classify features by criticality. Critical features fail loudly; important features return partial data; nice-to-have features are skipped silently.
+- **Bulkhead**: Isolate thread pools per downstream service so one slow service cannot exhaust all threads.
+
+These patterns compose into a layered stack: circuit breaker → retry → timeout → fallback, wrapped in a bulkhead.
+
+## Alerting and Notification Patterns
+
+Alerting converts observability data into actionable notifications. The Observer pattern provides the decoupled architecture:
+
+### Alert Conditions
+
+Alert conditions evaluate monitoring events against thresholds:
+- **High error rate**: Sliding window of error percentage exceeding a threshold.
+- **Service down**: No heartbeats received from a service within a timeout window.
+- **Latency spike**: P99 latency exceeding a threshold for N consecutive measurements.
+- **Budget burn rate**: Error budget consumed faster than expected (SLO burn-rate alerting).
+
+### Multi-Channel Notification
+
+Route alerts through the appropriate channel based on severity:
+
+| Severity | Channels | Response Time |
+|----------|----------|---------------|
+| CRITICAL | SMS + Phone call + Slack + Email | < 5 minutes |
+| WARNING | Slack + Email | < 30 minutes |
+| INFO | Slack only | Next business day |
+
+### Alert Fatigue Prevention
+
+- **Deduplication**: Suppress duplicate alerts within a cooldown period (10 minutes).
+- **Aggregation**: Group related alerts into a single incident rather than firing one alert per event.
+- **Actionability**: Every page must have a runbook. If there is no runbook, the alert should not page.
+- **Quarterly review**: Re-evaluate alert thresholds and remove stale alerts.
+
+## Cache Resilience
+
+Caches introduce their own failure modes that need reliability patterns:
+
+- **Circuit breaker for cache**: If Redis or Memcached is slow or failing, the circuit breaker bypasses the cache and reads directly from the database. This prevents cache failures from cascading into application failures.
+- **Stampede prevention**: When a hot cache key expires under load, concurrent requests all miss cache simultaneously. Mitigate with request coalescing (one request loads, others wait), probabilistic early expiration, or distributed locks around cache reload.
+- **Local cache fallback**: If the distributed cache (L2) is unavailable, fall back to a local in-memory cache (L1) with a smaller TTL. The data may be slightly stale but the system stays operational.
+
 ## Agent Operations
 
 Agent-backed production paths need reliability controls that ordinary request handlers may not expose by default: decision logs, tool-call traces, output validation, fallback paths, latency distribution monitoring, and API cost tracking. Debugging shifts from stack traces alone toward reconstructing the agent's context, instructions, tools, and intermediate decisions.
@@ -289,3 +339,7 @@ A bulletproof pipeline fails safely, fails early, recovers quickly, and never su
 - Source: [[sources/raft-consensus-explained|Raft Consensus Explained]]
 - Source: [[sources/sre-incident-management|SRE Incident Management]]
 - Source: [[sources/backend-performance-engineering|Backend Performance Engineering]]
+- Source: [[sources/latency-gambler-day-14|Monitoring & Observer Patterns]]
+- Source: [[sources/latency-gambler-day-17|Resilience Patterns]]
+- Source: [[sources/latency-gambler-day-20|Security Patterns]]
+- Source: [[sources/prod-web-application-components|Key Components of a Prod Web Application]]

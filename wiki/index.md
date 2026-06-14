@@ -2,7 +2,7 @@
 title: Wiki Index
 type: index
 created: 2026-04-28
-updated: 2026-04-28
+updated: 2026-06-14
 ---
 
 # Wiki Index
@@ -15,34 +15,65 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 
 ## Concepts
 
-- [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]] - Capturing user corrections and turning repeated feedback into persistent agent rules.
-- [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]] - A persistent markdown knowledge base maintained by an LLM instead of one-off retrieval.
+- [[concepts/agent-memory-architecture|Agent Memory Architecture]] - Retrieve vs compile vs act: the three paradigms for persistent agent memory across sessions.
+- [[concepts/ai-coding-workflow-productivity|AI Coding Workflow and Productivity]] - Context-first workflow, implementation planning, cognitive modes, and bottleneck awareness.
 - [[concepts/ai-era-software-engineering|AI-Era Software Engineering]] - The shift from syntax production toward architecture, debugging, accountability, and human alignment.
+- [[concepts/api-management|API Management and Gateway Patterns]] - API gateways, rate limiting, versioning, BFF patterns, and protocol mediation for production APIs.
+- [[concepts/api-protocol-selection|API Protocol Selection]] - REST vs GraphQL vs gRPC vs WebSocket: layered decision framework and performance benchmarks.
+- [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] - Non-technical growth skills: communication, feedback, patience, learning, mentorship, and scope.
+- [[concepts/ci-cd-pipeline-and-deployment|CI/CD Pipeline and Deployment Strategy]] - Pipeline stages, deployment strategies, rollback, container optimization, and DORA metrics.
+- [[concepts/cloud-devboxes-for-agent-execution|Cloud Devboxes for Agent Execution]] - VM-isolated environments for background coding agents, declarative specs, and scoped credentials.
+- [[concepts/code-quality-and-ai-slop|Code Quality and AI Slop Management]] - Traditional code smells, AI-generated anti-patterns, and quality discipline for the LLM era.
+- [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]] - Terminal efficiency patterns and advanced Git timeline mechanics for robust workflow execution.
+- [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] - Monoliths, microservices, event-driven systems, queues, pub/sub, REST, GraphQL, gRPC, and realtime patterns.
+- [[concepts/data-storage-and-consistency|Data Storage and Consistency]] - Storage types, database families, replication, sharding, transactions, and consistency tradeoffs.
+- [[concepts/distributed-coordination|Distributed Coordination and Consensus]] - Leader election, Raft consensus, vector clocks, conflict resolution, and coordination primitives.
+- [[concepts/event-driven-architecture|Event-Driven Architecture]] - CQRS, CDC, event sourcing, projections, sagas, and message-driven service decomposition.
+- [[concepts/fishdb|FishDB]] - LinkedIn's Rust-based storage and retrieval engine for Feed, using Tokio, jemalloc, and hashbrown.
+- [[concepts/frontend-build-performance|Frontend Build Performance]] - Tree shaking, module-system migration, bundle footprint, and rollout strategy for frontend optimization.
+- [[concepts/infrastructure-primitives|Infrastructure Primitives]] - Networking, traffic, compute, delivery, and service-discovery building blocks.
+- [[concepts/incident-management-sre|Incident Management and SRE Practice]] - Incident lifecycle, ICS roles, on-call engineering, blameless postmortems, and DORA metrics.
+- [[concepts/integration-testing-and-test-strategy|Integration Testing and Test Strategy]] - Test pyramid, Testcontainers, Toxiproxy, CI test layering, contract testing, and AI-generated tests.
+- [[concepts/llm-maintained-wiki|LLM-Maintained Wiki]] - A persistent markdown knowledge base maintained by an LLM instead of one-off retrieval.
+- [[concepts/local-first-architecture|Local-First Architecture]] - Local reads/writes with background sync, optimistic UI, and multi-tab coordination.
+- [[concepts/local-llm-serving|Local LLM Serving]] - Prefill/decode, KV cache, context length, scheduler, and observability patterns for local model serving.
+- [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]] - Memory-safe language adoption, attack-surface reduction, and Rust security migrations.
+- [[concepts/microservices-architecture|Microservices Architecture]] - Service boundaries, decomposition strategies, inter-service communication, orchestration vs choreography, and the Netflix OSS stack.
+- [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] - Retrieval, Two Tower embeddings, staged ranking, precomputation, and reranking controls.
+- [[concepts/multi-agent-orchestration|Multi-Agent Orchestration]] - Router graphs, planning-execution separation, agent harnesses, and multi-agent communication patterns.
+- [[concepts/observability-and-monitoring|Observability and Monitoring]] - Three pillars, four golden signals, structured logging, distributed tracing, SLO burn-rate alerting, and observability-driven diagnosis.
+- [[concepts/performance-engineering|Performance Engineering]] - Profiling, load testing, database optimization, caching strategy, performance budgets, and cross-layer debugging.
+- [[concepts/production-ai-operations|Production AI Operations]] - AI failure modes, retrieval engineering, inference latency, cost management, model selection, and evaluation pipelines.
+- [[concepts/project-operating-architecture|Project Operating Architecture]] - The local GBrain, wiki, codebase, and agent handoff architecture for this checkout.
+- [[concepts/recurrent-depth-transformers|Recurrent-Depth Transformers]] - Looped transformer architectures, latent reasoning, stability, MoE breadth, and inference-time depth.
+- [[concepts/reliability-and-operations|Reliability and Operations]] - Availability, fault tolerance, rate limiting, circuit breakers, SLOs, disaster recovery, and identity/security.
+- [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] - Retry with backoff, circuit breakers, bulkheads, timeouts, fallback chains, graceful degradation, and layered resilience.
+- [[concepts/security-patterns|Security Patterns]] - Defense in depth, JWT, OAuth 2.0, RBAC/ABAC, TLS, API key management, request signing, and security checklist.
+- [[concepts/self-improving-agent-workflows|Self-Improving Agent Workflows]] - Capturing user corrections and turning repeated feedback into persistent agent rules.
+- [[concepts/shared-engineering-language|Shared Engineering Language]] - A lightweight CONTEXT-style glossary for recurring project terms and durable engineering decisions.
+- [[concepts/software-design-patterns|Software Design Patterns]] - Choosing design patterns from concrete creation, structure, or behavior pain.
 - [[concepts/structured-learning-and-retention|Structured Learning and Retention]] - Using curricula, practice, spaced repetition, and source synthesis to make learning compound.
 - [[concepts/system-design|System Design]] - Principles, primitives, scaling patterns, and interview-style design workflows.
-- [[concepts/system-design-interview-workflow|System Design Interview Workflow]] - A repeatable flow for requirements, estimates, data models, APIs, components, deep dives, and bottlenecks.
-- [[concepts/infrastructure-primitives|Infrastructure Primitives]] - Networking, traffic, compute, delivery, and service-discovery building blocks.
-- [[concepts/data-storage-and-consistency|Data Storage and Consistency]] - Storage types, database families, replication, sharding, transactions, and consistency tradeoffs.
-- [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]] - Monoliths, microservices, event-driven systems, queues, pub/sub, REST, GraphQL, gRPC, and realtime patterns.
-- [[concepts/reliability-and-operations|Reliability and Operations]] - Availability, fault tolerance, rate limiting, circuit breakers, SLOs, disaster recovery, and identity/security.
 - [[concepts/system-design-case-studies|System Design Case Studies]] - URL shortener, WhatsApp, Twitter, Netflix, and GenAI shopping-assistant design patterns.
-- [[concepts/recurrent-depth-transformers|Recurrent-Depth Transformers]] - Looped transformer architectures, latent reasoning, stability, MoE breadth, and inference-time depth.
-- [[concepts/frontend-build-performance|Frontend Build Performance]] - Tree shaking, module-system migration, bundle footprint, and rollout strategy for frontend optimization.
-- [[concepts/local-llm-serving|Local LLM Serving]] - Prefill/decode, KV cache, context length, scheduler, and observability patterns for local model serving.
-- [[concepts/software-design-patterns|Software Design Patterns]] - Choosing design patterns from concrete creation, structure, or behavior pain.
-- [[concepts/project-operating-architecture|Project Operating Architecture]] - The local GBrain, wiki, codebase, and agent handoff architecture for this checkout.
-- [[concepts/shared-engineering-language|Shared Engineering Language]] - A lightweight CONTEXT-style glossary for recurring project terms and durable engineering decisions.
-- [[concepts/command-line-and-git-productivity|Command-Line and Git Productivity]] - Terminal efficiency patterns and advanced Git timeline mechanics for robust workflow execution.
-- [[concepts/fishdb|FishDB]] - LinkedIn's Rust-based storage and retrieval engine for Feed, using Tokio, jemalloc, and hashbrown.
-- [[concepts/local-first-architecture|Local-First Architecture]] - Local reads/writes with background sync, optimistic UI, and multi-tab coordination.
-- [[concepts/career-growth-meta-skills|Career Growth and Meta-Skills]] - Non-technical growth skills: communication, feedback, patience, learning, mentorship, and scope.
-- [[concepts/memory-safety-strategy|Memory Safety and Defense-in-Depth]] - Memory-safe language adoption, attack-surface reduction, and Rust security migrations.
-- [[concepts/ml-recommendation-systems|ML Recommendation Systems at Scale]] - Retrieval, Two Tower embeddings, staged ranking, precomputation, and reranking controls.
+- [[concepts/system-design-interview-workflow|System Design Interview Workflow]] - A repeatable flow for requirements, estimates, data models, APIs, components, deep dives, and bottlenecks.
 - [[concepts/team-topologies|Team Topologies]] - Engineering organization design with stream-aligned, enabling, complicated-subsystem, and platform team types.
+- [[concepts/vector-semantic-search-architecture|Vector and Semantic Search Architecture]] - Embedding-based retrieval, HNSW indexes, multimodal search, and hybrid retrieval pipelines.
 
 ## Sources
 
 - [[sources/llm-wiki-idea-file|LLM Wiki Idea File]] - The operating pattern for compiling raw sources into a living wiki.
+- [[sources/prod-web-application-components|Key Components of a Prod Web Application]] - A big-picture view of the essential components (CI/CD, DNS, LB, CDN, APIs, DBs, caches, queues, search, monitoring) in a production web stack.
+- [[sources/latency-gambler-day-10|Caching Patterns]] - Day 10: Core caching, invalidation, multi-level cache, and stampede prevention strategies.
+- [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]] - Day 11: API gateways, forward/reverse proxies, rate limiting, versioning, and BFF patterns.
+- [[sources/latency-gambler-day-12|Message Queue Patterns]] - Day 12: Pub/sub, message queues vs topics, command pattern, DLQ, deduplication, and priority queues.
+- [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]] - Day 13: Event sourcing, CQRS, Saga pattern, event snapshotting, and projection rebuilding.
+- [[sources/latency-gambler-day-14|Monitoring & Observer Patterns]] - Day 14: Three pillars of observability, observer-based monitoring, structured logging, distributed tracing, and alerting.
+- [[sources/latency-gambler-day-15|Microservices Patterns]] - Day 15: Service registry/discovery, API gateway, Bulkhead pattern, and Netflix OSS stack.
+- [[sources/latency-gambler-day-16|Distributed System Patterns]] - Day 16: Leader election, Raft consensus, Vector clocks, and conflict resolution.
+- [[sources/latency-gambler-day-17|Resilience Patterns]] - Day 17: Retry with backoff, timeout, fallback chains, graceful degradation, and layered resilience.
+- [[sources/latency-gambler-day-18|Caching & CDN Patterns]] - Day 18: Multi-level caching hierarchy, cache warming, CDN patterns, cache stampede prevention, and production tips.
+- [[sources/latency-gambler-day-19|Database Scaling Patterns]] - Day 19: Read replicas, sharding strategies, database per service, and hybrid scaling approaches.
+- [[sources/latency-gambler-day-20|Security Patterns]] - Day 20: Defense in depth, JWT, OAuth 2.0, RBAC, ABAC, TLS, API keys, request signing, and security checklist.
 - [[sources/karpathy-second-brain-article|Karpathy Second Brain Article]] - A popular explanation of Karpathy's LLM-built research wiki workflow.
 - [[sources/ai-replaced-80-percent-coding|AI Replaced 80% of Coding]] - Seven human engineering skills that remain valuable as code generation becomes cheap.
 - [[sources/learn-from-course-content|How to Learn from Course Content Without Paying for It]] - A learning strategy based on extracting structure from course curricula.
@@ -146,6 +177,18 @@ This wiki compiles the current `raw/` sources into linked notes about AI-assiste
 
 ## Newest Sources
 
+- [[sources/prod-web-application-components|Key Components of a Prod Web Application]]
+- [[sources/latency-gambler-day-10|Caching Patterns]]
+- [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
+- [[sources/latency-gambler-day-12|Message Queue Patterns]]
+- [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]]
+- [[sources/latency-gambler-day-14|Monitoring & Observer Patterns]]
+- [[sources/latency-gambler-day-15|Microservices Patterns]]
+- [[sources/latency-gambler-day-16|Distributed System Patterns]]
+- [[sources/latency-gambler-day-17|Resilience Patterns]]
+- [[sources/latency-gambler-day-18|Caching & CDN Patterns]]
+- [[sources/latency-gambler-day-19|Database Scaling Patterns]]
+- [[sources/latency-gambler-day-20|Security Patterns]]
 - [[sources/observability-in-distributed-systems|Observability in Distributed Systems]]
 - [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]]
 - [[sources/raft-consensus-explained|Raft Consensus Explained]]

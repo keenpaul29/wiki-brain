@@ -109,6 +109,74 @@ Dictionary-style lookups are a basic form of data-system design. Unsorted arrays
 
 Read models and downstream indexes must be treated as rebuildable projections. CQRS projectors need projection-lag monitoring and idempotent handling. CDC consumers need schema-evolution discipline, replication-slot monitoring, and idempotency keys such as LSNs or transaction IDs because delivery is at least once.
 
+## Database Scaling Patterns
+
+When a single database instance is insufficient, three primary scaling patterns apply:
+
+### Read Replicas
+
+For read-heavy workloads (90:10 read-to-write ratio typical), add read replicas that asynchronously replicate from a primary. Writes go to the primary; reads go to replicas.
+
+**Replication lag problem:** If a user writes to the primary and immediately reads from a replica, the read may return stale data. Solutions include:
+- **Read-your-own-writes**: Force reads for the writing user to the primary for N seconds after a write.
+- **Session affinity** (sticky sessions): Route the same user to the same replica during a session.
+- **Write confirmation**: Wait for the write to be confirmed by at least one replica before returning.
+
+### Sharding Strategies
+
+Sharding splits data across multiple databases horizontally. No single approach is universally best:
+
+| Strategy | Distribution | Range Queries | Resharding |
+|----------|-------------|---------------|------------|
+| **Hash-based** (`user_id % N`) | Even | Impossible | Hard — reshuffles all data |
+| **Range-based** (`A–M`, `N–Z`) | Uneven possible | Natural | Easier — add ranges |
+| **Geographic** (region-based) | Natural for geo | Regional | Data sovereignty friendly |
+
+**Shard key selection is the most critical decision in sharding.** A bad shard key causes hot spots and makes resharding painful. Prefer keys that distribute evenly and colocate related data. `user_id` is common. Timestamps are poor choices because recent data dominates.
+
+**Cross-shard operations break:**
+- **Joins across shards**: Not possible in SQL. Use denormalization (store user name with each post) or application-level joins.
+- **Distributed transactions**: Avoid ACID across shards. Use sagas or eventual consistency with compensating actions.
+- **Unique constraints**: Only enforceable per shard. Use globally unique IDs (UUIDs, Snowflake).
+
+**Tooling:** Vitess (YouTube), Citus (Postgres extension), and MongoDB's built-in sharding handle shard management, query routing, and resharding. Rolling your own sharding is rarely justified.
+
+### Database Per Service (Microservices)
+
+Each microservice owns its database. No shared databases. Benefits: technology flexibility (Postgres for users, MongoDB for inventory, Redis for sessions), independent scaling, and fault isolation. Cost: cross-service queries require API composition or CQRS read models.
+
+### Hybrid Strategies
+
+Production systems combine patterns. Example: read replicas for hot data + hash sharding for user posts + separate database for messaging + geographic sharding for cross-region deployment.
+
+## Multi-Level Caching Hierarchy
+
+Caching operates at four levels, each with different latency and scope:
+
+| Level | Latency | Scope | Example |
+|-------|---------|-------|---------|
+| Browser cache | 0–5ms | Per user | HTTP cache headers, ETags |
+| CDN cache | 20–50ms | Geographic region | Cloudflare, CloudFront |
+| Application cache | 1–5ms | Per service instance | Redis, Memcached, Caffeine |
+| Database query cache | 10–20ms | Per database | Shared buffers, query cache |
+
+**Cache invalidation strategies:**
+- **TTL-based**: Simplest — data expires after a fixed duration. Risk of serving stale data.
+- **Event-based**: Explicitly invalidate on data mutation. Publish invalidation events so all cache layers can evict stale entries.
+- **Tag-based**: Group cached items by tags for bulk invalidation (e.g., invalidate all items tagged with a department when that department's data changes).
+
+**Cache stampede prevention:** When a hot key expires under load, N concurrent requests all miss cache and hit the database. Solutions:
+- **Request coalescing**: Only one thread/request fetches from DB; others wait for that result.
+- **Probabilistic early expiration**: Refresh the cache before expiry with some probability.
+- **Distributed locking for cache reload**: Only one instance loads the data; others wait briefly and recheck cache.
+
+**Cache warming:** Pre-populate caches before traffic arrives. Patterns: scheduled warm-up (cron before peak hour), write-through warming (cache on every write), background refresh (serve stale data while refetching async).
+
+**When not to cache:**
+- Rapidly changing data (stock prices, live scores)
+- User-specific data with low reuse probability
+- Queries that are already fast (< 5ms) — caching overhead may exceed the query cost
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -130,3 +198,8 @@ Read models and downstream indexes must be treated as rebuildable projections. C
 - Source: [[sources/byte-storage-vs-io|Byte Storage vs. I/O]]
 - Source: [[sources/netflix-open-connect-cdn-strategy|Netflix Open Connect CDN Strategy]]
 - Source: [[sources/postgresql-advanced-indexing|PostgreSQL Advanced Indexing Guide]]
+- Source: [[sources/latency-gambler-day-10|Caching Patterns]]
+- Source: [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]]
+- Source: [[sources/latency-gambler-day-16|Distributed System Patterns]]
+- Source: [[sources/latency-gambler-day-18|Caching & CDN Patterns]]
+- Source: [[sources/latency-gambler-day-19|Database Scaling Patterns]]

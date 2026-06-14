@@ -22,6 +22,20 @@ Start by naming the friction:
 
 The smallest pattern that makes the pain explicit is usually better than a broad abstraction.
 
+## SOLID Principles for Distributed Systems
+
+Class-level SOLID principles map to architectural concerns when systems are decomposed into network-separated services.
+
+| Principle | Class-Level Meaning | Distributed-System Interpretation |
+|---|---|---|
+| **Single Responsibility** | One class, one reason to change | One service should fail independently. If a component goes down, its failure should not cascade. Databases, caches, and compute should be independently deployable and independently crashable. |
+| **Open / Closed** | Open for extension, closed for modification | New behavior is added by deploying new service instances or configuring existing ones (feature flags, pluggable middleware), not by rewriting the core service. |
+| **Liskov Substitution** | Subtypes must be substitutable for base types | Services exposing the same contract (e.g., a cache interface) must be swappable — Redis for local cache, or Memcached for Redis — without callers changing. This requires strict interface contracts (protobuf, OpenAPI) and behavioral equivalence guarantees. |
+| **Interface Segregation** | Many specific interfaces > one general interface | Service boundaries should be narrow and focused. A user-service should not expose payment methods. Bounded contexts in domain-driven design enforce this at the architectural level. |
+| **Dependency Inversion** | Depend on abstractions, not concretions | High-level business logic should not import database drivers or HTTP clients directly. Repository interfaces, message abstractions, and dependency injection containers decouple policy from mechanism. |
+
+Patterns become insurance policies against wrong assumptions — that load is fixed, the database never goes down, requirements won't change. Each pattern explicitly accommodates a class of future change.
+
 ## Pattern Families
 
 ### Creational Patterns
@@ -60,6 +74,23 @@ Structural patterns concern how classes and objects are composed to form larger,
 #### Facade Pattern
 - **Objective**: Simplifies client interaction by providing a single, consolidated entry point to a complex subsystem.
 - **API Gateway Facade**: Aggregates calls to multiple microservices in parallel, handling fallbacks and circuit breakers gracefully.
+
+#### Repository Pattern
+- **Objective**: Mediates between domain and data mapping layers, presenting a collection-like interface to the domain for accessing persisted objects.
+- **Aggregate Roots**: One repository per aggregate root. Repositories should not cross aggregate boundaries — load the aggregate root and its direct relations together.
+- **Read/Write Separation**: For read-heavy workloads, separate read-only repositories backed by denormalized projections from write repositories backed by normalized models (CQRS).
+- **Testing Benefits**: Repository interfaces make business-logic tests mockable without database setup. The in-memory repository implementation is the most common test double.
+- **Production Considerations**: Batch write operations for bulk inserts. Set explicit connection timeouts to prevent hung connections. Monitor pool exhaustion as an early symptom of slow queries or connection leaks.
+
+#### Connection Pool Pattern
+- **Objective**: Reuses a pre-allocated set of database connections to avoid the overhead of establishing a raw TCP connection (handshake, authentication, SSL negotiation) per request.
+- **Pool Tuning**: HikariCP (Java) and PgBouncer (Postgres proxy) are production standards. Pool size should be tuned against max database connections, not against request concurrency — a small pool (10-20 connections per CPU core) often outperforms a large one because it keeps the database from thrashing.
+- **Monitoring**: Track active vs. idle connections, pending queue depth, connection acquisition wait time, and timeout rate. A growing pending queue signals a query-performance or connection-leak problem.
+
+#### Connection Factory Pattern
+- **Objective**: Abstracts connection creation and routing so callers do not know whether a connection targets a primary, a read replica, or a failover node.
+- **Read/Write Routing**: Writes go to the primary; reads go to replicas. The factory encapsulates the routing decision, health checks, and failover logic.
+- **Failover Integration**: When the primary endpoint fails, the factory promotes a replica or falls back to a degraded read-only mode. Combine with retry logic for transient failures.
 
 ### Behavioral Patterns
 
@@ -108,8 +139,11 @@ LLM-assisted coding can multiply pattern misuse because models reproduce existin
 - Source: [[sources/latency-gambler-day-5|Command and Template Method Patterns for System Design]]
 - Source: [[sources/latency-gambler-day-6|Adapter and Facade Patterns for System Design]]
 - Source: [[sources/latency-gambler-day-7|Chain of Responsibility & State Patterns]]
+- Source: [[sources/latency-gambler-day-8|Load Balancing & Circuit Breaker Patterns]]
+- Source: [[sources/latency-gambler-day-9|Database Patterns & Repository Pattern]]
 - Source: [[sources/ai-slop-game-refactor|Scrubbing AI Slop From a Game Codebase]]
 - Related: [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
 - Related: [[concepts/ai-era-software-engineering|AI-Era Software Engineering]]
 - Related: [[concepts/system-design|System Design]]
+- Related: [[concepts/data-storage-and-consistency|Data Storage and Consistency]]
 

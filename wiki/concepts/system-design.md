@@ -63,6 +63,11 @@ Several new sources add specialized design areas:
 - [[concepts/communication-and-architecture-patterns|Communication and Architecture Patterns]]
 - [[concepts/reliability-and-operations|Reliability and Operations]]
 - [[concepts/system-design-case-studies|System Design Case Studies]]
+- [[concepts/distributed-coordination|Distributed Coordination and Consensus]]
+- [[concepts/security-patterns|Security Patterns]]
+- [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]]
+- [[concepts/api-management|API Management]]
+- [[concepts/microservices-architecture|Microservices Architecture]]
 
 ## Link to AI-Era Work
 
@@ -97,6 +102,11 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[concepts/local-llm-serving|Local LLM Serving]] — inference latency, KV cache, context length, serving operations
 - [[concepts/frontend-build-performance|Frontend Build Performance]] — bundle optimization, migration strategy, tree shaking
 - [[concepts/software-design-patterns|Software Design Patterns]] — selecting abstractions from code pain
+- [[concepts/distributed-coordination|Distributed Coordination and Consensus]] — leader election, Raft, vector clocks, consensus algorithms
+- [[concepts/security-patterns|Security Patterns]] — authentication, authorization, defense in depth, secure communication
+- [[concepts/resilience-patterns|Resilience and Fault Tolerance Patterns]] — retry, timeout, circuit breaker, fallback, graceful degradation, bulkhead
+- [[concepts/api-management|API Management]] — API gateway, rate limiting, versioning, BFF pattern
+- [[concepts/microservices-architecture|Microservices Architecture]] — service discovery, bulkhead, Netflix OSS patterns, health checks
 
 ## Source Support
 
@@ -123,3 +133,15 @@ Even small data-structure choices follow system-design logic: start from access 
 - [[sources/raft-consensus-explained|Raft Consensus Explained]]
 - [[sources/integration-testing-real-services|Testing with Real Services]]
 - [[sources/bulletproof-ci-cd-pipeline|Building a Bulletproof CI/CD Pipeline]]
+- [[sources/prod-web-application-components|Key Components of a Prod Web Application]]
+- [[sources/latency-gambler-day-10|Caching Patterns]]
+- [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
+- [[sources/latency-gambler-day-12|Message Queue Patterns]]
+- [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]]
+- [[sources/latency-gambler-day-14|Monitoring & Observer Patterns]]
+- [[sources/latency-gambler-day-15|Microservices Patterns]]
+- [[sources/latency-gambler-day-16|Distributed System Patterns]]
+- [[sources/latency-gambler-day-17|Resilience Patterns]]
+- [[sources/latency-gambler-day-18|Caching & CDN Patterns]]
+- [[sources/latency-gambler-day-19|Database Scaling Patterns]]
+- [[sources/latency-gambler-day-20|Security Patterns]]

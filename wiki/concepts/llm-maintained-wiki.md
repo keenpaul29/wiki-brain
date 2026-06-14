@@ -24,7 +24,29 @@ The human and LLM have separate jobs. The human curates sources, asks questions,
 
 ## Control Files and Cadence
 
-A wiki stops being an ad hoc notes folder when it has control files. An active cache, a pending queue, and an audit log separate current context, unprocessed source material, and maintenance history. Cadence also matters: mechanical daily scans can run with low risk, weekly compilation can do interpretation, and monthly linting can diagnose stale or orphaned pages without silently rewriting the corpus.
+A wiki stops being an ad hoc notes folder when it has control files. An active cache, a pending queue, and an audit log separate current context, unprocessed source material, and maintenance history.
+
+[[sources/ai-brain-never-forgets|How To Build An AI Brain That Never Forgets]] specifies three control files that keep the system usable at production scale:
+
+- **`_hot.md` / active cache**: the current working set — pages the agent is actively writing, reviewing, or referencing. Cleared when the session ends or when context pressure requires pruning.
+- **`_pending.md` / compilation queue**: unprocessed source material waiting for triage. New raw files land here before being distilled into source summaries.
+- **`_log.md` / audit trail**: chronological record of what was ingested, created, updated, or linted. The wiki's [[log]] serves this role.
+
+Cadence also matters:
+
+| Cadence | Risk Profile | Activity |
+|---|---|---|
+| Daily | Low (mechanical) | Scan raw/ for new/changed files, update daily-scan.md |
+| Weekly | Medium (interpretive) | Compile pending sources into summaries and concept pages |
+| Monthly | Higher (diagnostic) | Lint for stale claims, contradictions, orphan pages, weak backlinks |
+
+The cadence tiers prevent the wiki from silently rewriting itself. Daily runs are safe enough to automate. Weekly runs need human review of concept placement. Monthly runs should produce a report the human reviews before committing changes.
+
+## Multi-Source Compilation
+
+As the source set grows beyond a single topic domain, the wiki faces a compilation challenge: how to connect insights from a production GenAI assistant case study ([[sources/amazon-rufus-technology|Amazon Rufus]]) with a frontend build optimization case ([[sources/webpack-tree-shaking-performance|Webpack Tree Shaking]]) with a Rust WAF architecture ([[sources/production-firewalls-rust|Production Firewall Architecture]]) without either page becoming a dumping ground.
+
+The compilation rule: each concept page should answer a single question or define a single reusable idea. If a source belongs on multiple pages, link it from each but keep each page's focus tight. The [[synthesis/software-engineering-learning-os|synthesis page]] is where cross-domain connections live — individual concept pages should not try to be comprehensive across all domains.
 
 ## Why It Matters
 

@@ -29,6 +29,42 @@ AI-assisted learning should preserve ownership. Supportive AI use explains, crit
 
 The same distinction applies inside production coding. If AI closes the ticket but the engineer cannot explain the failure, reconstruct the fix, or identify the tradeoffs, the session produced output without retention. A learning-preserving workflow starts with a human hypothesis, uses the model to compare explanations, then re-derives important parts often enough to keep the mental model alive.
 
+## Cognitive Debt and the Order-of-Operations Risk
+
+[[sources/dont-outsource-learning|Don't Outsource the Learning]] identifies a specific failure pattern: when AI generates the complete solution before the engineer has formed their own hypothesis or attempted their own approach, the learning opportunity is foreclosed. The critical moment is the *order of operations* — if the AI answers before the human asks, the human never practices retrieval, never exercises incomplete knowledge, and never builds the neural pathways that make the knowledge durable.
+
+The research-backed risk is that AI-assisted problem-solving, when done in "answer-first" mode, produces a feeling of understanding without actual schema-building in long-term memory. The engineer leaves the session thinking they learned something but cannot reproduce the reasoning a day later. The guardrails are:
+- Form your own hypothesis before prompting (write it down if needed).
+- Use AI to critique and compare, not to generate the first answer.
+- Re-derive key parts after the session (re-implement, explain to a peer, write a wiki entry).
+- Treat AI-generated solutions as a peer's draft that needs your reasoned approval, not as a final answer.
+
+## Context-First Workflow as a Learning System
+
+[[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]] pairs well with structured learning. Its plan-first, review-gated approach mirrors the learning loop's steps:
+
+1. **Full context** — Provide the task artifact (requirements, constraints, existing code structure) so the model reasons from the same information you have.
+2. **Plan before code** — Ask for an implementation plan as markdown before any code is generated. This forces the model (and you) to reason about scope, approach, and tradeoffs upfront.
+3. **Challenge decisions** — Review the plan with business and architecture context the model cannot infer. This is where learning happens: you must articulate *why* a simpler approach is better or *what constraint* the model missed.
+4. **Step-by-step execution with review gates** — Generate and review each increment, then tests, then manual test scenarios. Each review gate is a learning check: can you explain why this step is correct, what edge cases it handles, and what tradeoffs it makes?
+
+The result is that coding speed increases (the model handles mechanical generation) while learning is preserved (the human stays in the review and decision role).
+
+## System Design Study Roadmap
+
+[[sources/system-design-study-roadmap|Curated System Design Study Roadmap]] extends the learning loop into the system design domain. The key insight is that passive video consumption (Netflix-style tutorial watching) produces poor retention for design interviews because system design requires *active mental model construction* under pressure.
+
+The recommended structured path:
+- **Foundations**: System Design Primer for the vocabulary and building blocks.
+- **Applied concepts**: Alex Xu's volumes for worked design examples and tradeoff analysis.
+- **Pattern recognition**: designgurus.io for identifying repeated patterns across problems.
+- **Visual learning**: ByteByteGo for seeing data flow and architecture evolution.
+- **Real depth**: Company engineering blogs (Netflix, Uber, AWS, Google, Meta) and High Scalability for real post-mortems and production tradeoffs.
+- **Calibration**: LeetCode System Design discussions for feedback on what real interviewers expect.
+- **Verbal practice**: Recorded mock interviews with live requirement extraction under time pressure.
+
+The roadmap reinforces that accumulation of technical vocabulary without verbalized tradeoff reasoning is the mistake most candidates make.
+
 ## The Speed-vs-Retention Tension in AI-Assisted Coding
 
 Structured LLM coding workflows (break tasks into small increments, provide rich context, review every output, test incrementally) can preserve learning while accelerating output. The key insight is that the bottleneck shifts from writing code to reviewing, testing, and integrating generated code. When these review gates are maintained, the engineer still engages with correctness, tradeoffs, and edge cases — preserving learning.
@@ -56,4 +92,7 @@ A durable learning loop needs a steady input stream of real engineering material
 - [[sources/engineering-blogs-2025|Engineering Blogs To Follow in 2025]]
 - [[sources/junior-to-senior-engineer|Going from Junior to Senior Engineer in 2 Years]]
 - [[sources/successful-software-engineer-passive-skills|What Really Makes a Successful Software Engineer]]
+- [[sources/system-design-study-roadmap|Curated System Design Study Roadmap]]
+- [[sources/ai-coding-workflow-context-first|Context-First AI Coding Workflow]]
+- [[sources/stop-using-wrong-llm|Stop Using the Wrong LLM]]
 

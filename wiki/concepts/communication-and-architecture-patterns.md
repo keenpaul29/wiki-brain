@@ -73,6 +73,45 @@ Object-oriented design patterns follow the same caution. Adapter, Facade, Strate
 
 CQRS and CDC are similarly conditional tools. They are valuable when read/write model shapes conflict, when multiple systems need reliable reactions to database changes, or when application-level dual writes have become a consistency hazard. They add projection lag, schema-evolution work, idempotency requirements, and event-stream operations, so simple CRUD flows should stay simple.
 
+## Service Discovery Patterns
+
+In dynamic microservice environments where instances auto-scale, deploy, and fail, services need to find each other without hard-coded endpoints:
+
+1. **Registration**: Service instances register with a registry on startup, providing host, port, health endpoint, and metadata tags.
+2. **Heartbeat**: Registered instances send periodic heartbeats (10–30s interval). The registry marks instances unhealthy when heartbeats are missed.
+3. **Discovery**: Consumers query the registry for healthy instances. The registry returns live endpoints.
+4. **Cleanup**: The registry removes instances that fail to heartbeat within a timeout window.
+
+**Client-side discovery** (the client queries the registry directly) adds per-language client logic but removes a network hop. **Server-side discovery** (a load balancer or mesh proxy does the lookup) is language-agnostic but adds latency and a potential bottleneck. In practice, server-side via a service mesh (Istio, Linkerd) is more maintainable at scale.
+
+## Gateway as Cross-Cutting Concern Layer
+
+An [[concepts/api-management|API Gateway]] centralizes concerns that every service would otherwise duplicate: authentication, rate limiting, logging, request shaping, and protocol translation. In a microservice architecture, the gateway also integrates with service discovery to route to healthy instances without hard-coded addresses.
+
+The gateway should remain thin — only cross-cutting concerns and routing. Business logic, data aggregation, and client-specific transformations belong in dedicated services or [[concepts/api-management|BFF layers]].
+
+## Async Messaging: Queue vs. Topic vs. Command
+
+Beyond the basic pub/sub model, production messaging systems distinguish three patterns:
+
+| Pattern | Delivery | Use Case |
+|---------|----------|----------|
+| **Message Queue** | Each message consumed by exactly one worker. FIFO ordering if configured. | Work distribution (image processing, report gen), load balancing across workers |
+| **Topic (Pub/Sub)** | Each message delivered to all subscribers. | Event broadcasting, real-time updates, audit logging |
+| **Command Pattern** | Operations serialized as message objects with retry, audit, and scheduling metadata. | Task queues, workflow engines, sagas |
+
+**Dead Letter Queue (DLQ):** Messages that exhaust their retry attempts move to a DLQ for manual investigation. Never lose a DLQ message — log, alert, and store for reprocessing.
+
+**Message deduplication:** Use idempotency keys stored in Redis with TTL (24h window). Check `SET key NX` before processing — if the key exists, the message is a duplicate.
+
+## Event-Driven Error Handling
+
+Event-driven systems need explicit error handling for poisoned events:
+
+- **Retry with backoff**: Use `@RetryableTopic` on event listeners with exponential backoff.
+- **Dead letter topic**: Events that fail after N retries land in a DLQ topic for manual inspection.
+- **Monitoring**: Track event processing lag, retry counts, and DLQ depth. Rising DLQ is an early warning sign of systemic issues.
+
 ## Links
 
 - Parent concept: [[concepts/system-design|System Design]]
@@ -88,3 +127,10 @@ CQRS and CDC are similarly conditional tools. They are valuable when read/write 
 - Source: [[sources/linkedin-fishdb-retrieval-engine|FishDB: LinkedIn Feed Retrieval Engine]]
 - Source: [[sources/intro-to-websockets|Intro to WebSockets]]
 - Source: [[sources/rest-vs-graphql-vs-grpc|REST vs GraphQL vs gRPC]]
+- Source: [[sources/latency-gambler-day-11|API Gateway & Proxy Patterns]]
+- Source: [[sources/latency-gambler-day-12|Message Queue Patterns]]
+- Source: [[sources/latency-gambler-day-13|Event Sourcing & CQRS Patterns]]
+- Source: [[sources/latency-gambler-day-15|Microservices Patterns]]
+- Source: [[sources/latency-gambler-day-19|Database Scaling Patterns]]
+- Source: [[sources/latency-gambler-day-20|Security Patterns]]
+- Source: [[sources/prod-web-application-components|Key Components of a Prod Web Application]]

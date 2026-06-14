@@ -50,6 +50,23 @@ Career-growth sources reinforce the same point outside AI tooling. Strong engine
 
 Codemods and AI-generated edits both reduce the cost of broad code changes, but they do not remove the need for review. Large migrations still need staged rollout, edge-case inspection, production verification, and rollback-aware sequencing.
 
+## No-Code AI Platforms as a Signal
+
+[[sources/no-code-ai-platforms|No-Code AI Development Platforms]] lower the barrier to AI product creation, shifting focus from syntax implementation to strategic product design. While not a replacement for custom engineering at scale, these platforms (Copy.ai, Bubble, Zapier, CustomGPT) are useful for validation — testing assumptions with an MVP before investing in custom infrastructure.
+
+The signal for AI-era engineers: if a problem can be solved with a no-code platform, the engineering value shifts to the integration layer, the data pipeline, and the custom evaluation that the platform cannot provide. The durable skill is knowing when a platform is enough and when it is a trap.
+
+## Cognitive Archetypes of AI-Assisted Development
+
+[[sources/ai-developer-cognitive-archetypes|AI Developer Cognitive Archetypes]] identifies four modes engineers use when working with AI:
+
+1. **Supportive mode**: AI explains, critiques, explores tradeoffs, and tests assumptions. The engineer retains decision ownership and learns from the interaction.
+2. **Mixed mode**: AI handles routine implementations while the engineer reviews and adjusts. High throughput with moderate learning preservation.
+3. **Risky mode**: AI frames the problem, generates the solution, and the engineer accepts with minimal review. Produces output but accumulates cognitive debt.
+4. **Abstinence mode**: AI is avoided entirely. Preserves learning but forfeits leverage on mechanical work.
+
+The effective engineer moves fluidly between modes based on task risk and familiarity, not habit or dogma. Familiar tasks with clear acceptance criteria are candidates for mixed mode. Unfamiliar domains or architecture-bearing decisions should stay in supportive mode.
+
 ## AI Usage Ownership
 
 AI leverage has different cognitive costs depending on how it is used. Explanation, critique, tradeoff exploration, and assumption testing can expand engineering judgment. Blindly accepting generated solutions, delegating architecture too early, or outsourcing debugging without understanding the root cause can erode ownership. The durable skill is choosing the right mode for the task and being able to explain the result afterward.
